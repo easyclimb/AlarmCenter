@@ -11,6 +11,11 @@ message reply {
     string place_holder = 1;
 }
 
+message is_show_mgr_dlg {
+	string show = 1;
+	int32 user_level = 2;
+}
+
 message zone_uuid {
     int32 ademco_id = 1;
     int32 zone_value = 2;
@@ -69,7 +74,7 @@ message hisroty_record {
 service video_service {
     rpc update_db(request) returns (reply) {}
     rpc is_db_updated(request) returns (reply) {}
-    rpc get_is_show_video_user_mgr_dlg(request) returns (reply) {}
+    rpc get_is_show_video_user_mgr_dlg(request) returns (is_show_mgr_dlg) {}
     rpc get_alarming_devs(request) returns (stream alarm_info) {}
     rpc get_updated_bind_infos(request) returns (stream bind_info) {}
     rpc insert_history_record(stream hisroty_record) returns (reply) {}

@@ -28,6 +28,9 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* reply_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   reply_reflection_ = NULL;
+const ::google::protobuf::Descriptor* is_show_mgr_dlg_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  is_show_mgr_dlg_reflection_ = NULL;
 const ::google::protobuf::Descriptor* zone_uuid_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   zone_uuid_reflection_ = NULL;
@@ -89,7 +92,23 @@ void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto() {
       sizeof(reply),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(reply, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(reply, _is_default_instance_));
-  zone_uuid_descriptor_ = file->message_type(2);
+  is_show_mgr_dlg_descriptor_ = file->message_type(2);
+  static const int is_show_mgr_dlg_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(is_show_mgr_dlg, show_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(is_show_mgr_dlg, user_level_),
+  };
+  is_show_mgr_dlg_reflection_ =
+    ::google::protobuf::internal::GeneratedMessageReflection::NewGeneratedMessageReflection(
+      is_show_mgr_dlg_descriptor_,
+      is_show_mgr_dlg::default_instance_,
+      is_show_mgr_dlg_offsets_,
+      -1,
+      -1,
+      -1,
+      sizeof(is_show_mgr_dlg),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(is_show_mgr_dlg, _internal_metadata_),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(is_show_mgr_dlg, _is_default_instance_));
+  zone_uuid_descriptor_ = file->message_type(3);
   static const int zone_uuid_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, ademco_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, zone_value_),
@@ -106,7 +125,7 @@ void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto() {
       sizeof(zone_uuid),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(zone_uuid, _is_default_instance_));
-  camera_info_descriptor_ = file->message_type(3);
+  camera_info_descriptor_ = file->message_type(4);
   static const int camera_info_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, dev_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, productor_type_),
@@ -122,7 +141,7 @@ void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto() {
       sizeof(camera_info),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(camera_info, _is_default_instance_));
-  dev_info_descriptor_ = file->message_type(4);
+  dev_info_descriptor_ = file->message_type(5);
   static const int dev_info_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, dev_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, productor_type_),
@@ -138,7 +157,7 @@ void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto() {
       sizeof(dev_info),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(dev_info, _is_default_instance_));
-  alarm_text_descriptor_ = file->message_type(5);
+  alarm_text_descriptor_ = file->message_type(6);
   static const int alarm_text_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_text, zone_value_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_text, sub_zone_),
@@ -156,7 +175,7 @@ void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto() {
       sizeof(alarm_text),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_text, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_text, _is_default_instance_));
-  alarm_info_descriptor_ = file->message_type(6);
+  alarm_info_descriptor_ = file->message_type(7);
   static const int alarm_info_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, devinfo_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, zone_uuid_),
@@ -173,7 +192,7 @@ void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto() {
       sizeof(alarm_info),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(alarm_info, _is_default_instance_));
-  bind_info_descriptor_ = file->message_type(7);
+  bind_info_descriptor_ = file->message_type(8);
   static const int bind_info_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, uuid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, dev_),
@@ -191,7 +210,7 @@ void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto() {
       sizeof(bind_info),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, _internal_metadata_),
       GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(bind_info, _is_default_instance_));
-  hisroty_record_descriptor_ = file->message_type(8);
+  hisroty_record_descriptor_ = file->message_type(9);
   static const int hisroty_record_offsets_[4] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, ademco_id_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(hisroty_record, zone_value_),
@@ -226,6 +245,8 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       reply_descriptor_, &reply::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+      is_show_mgr_dlg_descriptor_, &is_show_mgr_dlg::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       zone_uuid_descriptor_, &zone_uuid::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
       camera_info_descriptor_, &camera_info::default_instance());
@@ -248,6 +269,8 @@ void protobuf_ShutdownFile_alarm_5fcenter_5fvideo_2eproto() {
   delete request_reflection_;
   delete reply::default_instance_;
   delete reply_reflection_;
+  delete is_show_mgr_dlg::default_instance_;
+  delete is_show_mgr_dlg_reflection_;
   delete zone_uuid::default_instance_;
   delete zone_uuid_reflection_;
   delete camera_info::default_instance_;
@@ -273,43 +296,46 @@ void protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto() {
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
     "\n\030alarm_center_video.proto\022\022alarm_center"
     "_video\"\037\n\007request\022\024\n\014place_holder\030\001 \001(\t\""
-    "\035\n\005reply\022\024\n\014place_holder\030\001 \001(\t\">\n\tzone_u"
-    "uid\022\021\n\tademco_id\030\001 \001(\005\022\022\n\nzone_value\030\002 \001"
-    "(\005\022\n\n\002gg\030\003 \001(\005\"5\n\013camera_info\022\016\n\006dev_id\030"
-    "\001 \001(\005\022\026\n\016productor_type\030\002 \001(\005\"2\n\010dev_inf"
-    "o\022\016\n\006dev_id\030\001 \001(\005\022\026\n\016productor_type\030\002 \001("
-    "\005\"Y\n\nalarm_text\022\022\n\nzone_value\030\001 \001(\005\022\020\n\010s"
-    "ub_zone\030\002 \001(\005\022\022\n\nevent_code\030\003 \001(\005\022\021\n\tala"
-    "rm_txt\030\004 \001(\t\"\240\001\n\nalarm_info\022-\n\007devinfo\030\001"
-    " \001(\0132\034.alarm_center_video.dev_info\0220\n\tzo"
-    "ne_uuid\030\002 \001(\0132\035.alarm_center_video.zone_"
-    "uuid\0221\n\talarm_txt\030\003 \001(\0132\036.alarm_center_v"
-    "ideo.alarm_text\"\205\001\n\tbind_info\022+\n\004uuid\030\001 "
-    "\001(\0132\035.alarm_center_video.zone_uuid\022)\n\003de"
-    "v\030\002 \001(\0132\034.alarm_center_video.dev_info\022\014\n"
-    "\004bind\030\003 \001(\010\022\022\n\nauto_popup\030\004 \001(\010\"Z\n\016hisro"
-    "ty_record\022\021\n\tademco_id\030\001 \001(\005\022\022\n\nzone_val"
-    "ue\030\002 \001(\005\022\016\n\006record\030\003 \001(\t\022\021\n\ttimestamp\030\004 "
-    "\001(\t2\337\004\n\rvideo_service\022E\n\tupdate_db\022\033.ala"
-    "rm_center_video.request\032\031.alarm_center_v"
-    "ideo.reply\"\000\022I\n\ris_db_updated\022\033.alarm_ce"
-    "nter_video.request\032\031.alarm_center_video."
-    "reply\"\000\022Z\n\036get_is_show_video_user_mgr_dl"
-    "g\022\033.alarm_center_video.request\032\031.alarm_c"
-    "enter_video.reply\"\000\022T\n\021get_alarming_devs"
-    "\022\033.alarm_center_video.request\032\036.alarm_ce"
-    "nter_video.alarm_info\"\0000\001\022X\n\026get_updated"
-    "_bind_infos\022\033.alarm_center_video.request"
-    "\032\035.alarm_center_video.bind_info\"\0000\001\022Z\n\025i"
-    "nsert_history_record\022\".alarm_center_vide"
-    "o.hisroty_record\032\031.alarm_center_video.re"
-    "ply\"\000(\001\022T\n\022delete_camera_info\022\037.alarm_ce"
-    "nter_video.camera_info\032\031.alarm_center_vi"
-    "deo.reply\"\000(\001b\006proto3", 1381);
+    "\035\n\005reply\022\024\n\014place_holder\030\001 \001(\t\"3\n\017is_sho"
+    "w_mgr_dlg\022\014\n\004show\030\001 \001(\t\022\022\n\nuser_level\030\002 "
+    "\001(\005\">\n\tzone_uuid\022\021\n\tademco_id\030\001 \001(\005\022\022\n\nz"
+    "one_value\030\002 \001(\005\022\n\n\002gg\030\003 \001(\005\"5\n\013camera_in"
+    "fo\022\016\n\006dev_id\030\001 \001(\005\022\026\n\016productor_type\030\002 \001"
+    "(\005\"2\n\010dev_info\022\016\n\006dev_id\030\001 \001(\005\022\026\n\016produc"
+    "tor_type\030\002 \001(\005\"Y\n\nalarm_text\022\022\n\nzone_val"
+    "ue\030\001 \001(\005\022\020\n\010sub_zone\030\002 \001(\005\022\022\n\nevent_code"
+    "\030\003 \001(\005\022\021\n\talarm_txt\030\004 \001(\t\"\240\001\n\nalarm_info"
+    "\022-\n\007devinfo\030\001 \001(\0132\034.alarm_center_video.d"
+    "ev_info\0220\n\tzone_uuid\030\002 \001(\0132\035.alarm_cente"
+    "r_video.zone_uuid\0221\n\talarm_txt\030\003 \001(\0132\036.a"
+    "larm_center_video.alarm_text\"\205\001\n\tbind_in"
+    "fo\022+\n\004uuid\030\001 \001(\0132\035.alarm_center_video.zo"
+    "ne_uuid\022)\n\003dev\030\002 \001(\0132\034.alarm_center_vide"
+    "o.dev_info\022\014\n\004bind\030\003 \001(\010\022\022\n\nauto_popup\030\004"
+    " \001(\010\"Z\n\016hisroty_record\022\021\n\tademco_id\030\001 \001("
+    "\005\022\022\n\nzone_value\030\002 \001(\005\022\016\n\006record\030\003 \001(\t\022\021\n"
+    "\ttimestamp\030\004 \001(\t2\351\004\n\rvideo_service\022E\n\tup"
+    "date_db\022\033.alarm_center_video.request\032\031.a"
+    "larm_center_video.reply\"\000\022I\n\ris_db_updat"
+    "ed\022\033.alarm_center_video.request\032\031.alarm_"
+    "center_video.reply\"\000\022d\n\036get_is_show_vide"
+    "o_user_mgr_dlg\022\033.alarm_center_video.requ"
+    "est\032#.alarm_center_video.is_show_mgr_dlg"
+    "\"\000\022T\n\021get_alarming_devs\022\033.alarm_center_v"
+    "ideo.request\032\036.alarm_center_video.alarm_"
+    "info\"\0000\001\022X\n\026get_updated_bind_infos\022\033.ala"
+    "rm_center_video.request\032\035.alarm_center_v"
+    "ideo.bind_info\"\0000\001\022Z\n\025insert_history_rec"
+    "ord\022\".alarm_center_video.hisroty_record\032"
+    "\031.alarm_center_video.reply\"\000(\001\022T\n\022delete"
+    "_camera_info\022\037.alarm_center_video.camera"
+    "_info\032\031.alarm_center_video.reply\"\000(\001b\006pr"
+    "oto3", 1444);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "alarm_center_video.proto", &protobuf_RegisterTypes);
   request::default_instance_ = new request();
   reply::default_instance_ = new reply();
+  is_show_mgr_dlg::default_instance_ = new is_show_mgr_dlg();
   zone_uuid::default_instance_ = new zone_uuid();
   camera_info::default_instance_ = new camera_info();
   dev_info::default_instance_ = new dev_info();
@@ -319,6 +345,7 @@ void protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto() {
   hisroty_record::default_instance_ = new hisroty_record();
   request::default_instance_->InitAsDefaultInstance();
   reply::default_instance_->InitAsDefaultInstance();
+  is_show_mgr_dlg::default_instance_->InitAsDefaultInstance();
   zone_uuid::default_instance_->InitAsDefaultInstance();
   camera_info::default_instance_->InitAsDefaultInstance();
   dev_info::default_instance_->InitAsDefaultInstance();
@@ -902,6 +929,339 @@ void reply::clear_place_holder() {
   }
   place_holder_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), place_holder);
   // @@protoc_insertion_point(field_set_allocated:alarm_center_video.reply.place_holder)
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int is_show_mgr_dlg::kShowFieldNumber;
+const int is_show_mgr_dlg::kUserLevelFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+is_show_mgr_dlg::is_show_mgr_dlg()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:alarm_center_video.is_show_mgr_dlg)
+}
+
+void is_show_mgr_dlg::InitAsDefaultInstance() {
+  _is_default_instance_ = true;
+}
+
+is_show_mgr_dlg::is_show_mgr_dlg(const is_show_mgr_dlg& from)
+  : ::google::protobuf::Message(),
+    _internal_metadata_(NULL) {
+  SharedCtor();
+  MergeFrom(from);
+  // @@protoc_insertion_point(copy_constructor:alarm_center_video.is_show_mgr_dlg)
+}
+
+void is_show_mgr_dlg::SharedCtor() {
+    _is_default_instance_ = false;
+  ::google::protobuf::internal::GetEmptyString();
+  _cached_size_ = 0;
+  show_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  user_level_ = 0;
+}
+
+is_show_mgr_dlg::~is_show_mgr_dlg() {
+  // @@protoc_insertion_point(destructor:alarm_center_video.is_show_mgr_dlg)
+  SharedDtor();
+}
+
+void is_show_mgr_dlg::SharedDtor() {
+  show_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (this != default_instance_) {
+  }
+}
+
+void is_show_mgr_dlg::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* is_show_mgr_dlg::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return is_show_mgr_dlg_descriptor_;
+}
+
+const is_show_mgr_dlg& is_show_mgr_dlg::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  return *default_instance_;
+}
+
+is_show_mgr_dlg* is_show_mgr_dlg::default_instance_ = NULL;
+
+is_show_mgr_dlg* is_show_mgr_dlg::New(::google::protobuf::Arena* arena) const {
+  is_show_mgr_dlg* n = new is_show_mgr_dlg;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void is_show_mgr_dlg::Clear() {
+// @@protoc_insertion_point(message_clear_start:alarm_center_video.is_show_mgr_dlg)
+  show_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  user_level_ = 0;
+}
+
+bool is_show_mgr_dlg::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:alarm_center_video.is_show_mgr_dlg)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoff(127);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // optional string show = 1;
+      case 1: {
+        if (tag == 10) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_show()));
+          DO_(::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+            this->show().data(), this->show().length(),
+            ::google::protobuf::internal::WireFormatLite::PARSE,
+            "alarm_center_video.is_show_mgr_dlg.show"));
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_user_level;
+        break;
+      }
+
+      // optional int32 user_level = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_user_level:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &user_level_)));
+
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectAtEnd()) goto success;
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0 ||
+            ::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:alarm_center_video.is_show_mgr_dlg)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:alarm_center_video.is_show_mgr_dlg)
+  return false;
+#undef DO_
+}
+
+void is_show_mgr_dlg::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:alarm_center_video.is_show_mgr_dlg)
+  // optional string show = 1;
+  if (this->show().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->show().data(), this->show().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.is_show_mgr_dlg.show");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      1, this->show(), output);
+  }
+
+  // optional int32 user_level = 2;
+  if (this->user_level() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->user_level(), output);
+  }
+
+  // @@protoc_insertion_point(serialize_end:alarm_center_video.is_show_mgr_dlg)
+}
+
+::google::protobuf::uint8* is_show_mgr_dlg::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // @@protoc_insertion_point(serialize_to_array_start:alarm_center_video.is_show_mgr_dlg)
+  // optional string show = 1;
+  if (this->show().size() > 0) {
+    ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+      this->show().data(), this->show().length(),
+      ::google::protobuf::internal::WireFormatLite::SERIALIZE,
+      "alarm_center_video.is_show_mgr_dlg.show");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        1, this->show(), target);
+  }
+
+  // optional int32 user_level = 2;
+  if (this->user_level() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->user_level(), target);
+  }
+
+  // @@protoc_insertion_point(serialize_to_array_end:alarm_center_video.is_show_mgr_dlg)
+  return target;
+}
+
+int is_show_mgr_dlg::ByteSize() const {
+// @@protoc_insertion_point(message_byte_size_start:alarm_center_video.is_show_mgr_dlg)
+  int total_size = 0;
+
+  // optional string show = 1;
+  if (this->show().size() > 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::StringSize(
+        this->show());
+  }
+
+  // optional int32 user_level = 2;
+  if (this->user_level() != 0) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->user_level());
+  }
+
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void is_show_mgr_dlg::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:alarm_center_video.is_show_mgr_dlg)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  const is_show_mgr_dlg* source = 
+      ::google::protobuf::internal::DynamicCastToGenerated<const is_show_mgr_dlg>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:alarm_center_video.is_show_mgr_dlg)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:alarm_center_video.is_show_mgr_dlg)
+    MergeFrom(*source);
+  }
+}
+
+void is_show_mgr_dlg::MergeFrom(const is_show_mgr_dlg& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:alarm_center_video.is_show_mgr_dlg)
+  if (GOOGLE_PREDICT_FALSE(&from == this)) MergeFromFail(__LINE__);
+  if (from.show().size() > 0) {
+
+    show_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.show_);
+  }
+  if (from.user_level() != 0) {
+    set_user_level(from.user_level());
+  }
+}
+
+void is_show_mgr_dlg::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:alarm_center_video.is_show_mgr_dlg)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void is_show_mgr_dlg::CopyFrom(const is_show_mgr_dlg& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:alarm_center_video.is_show_mgr_dlg)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool is_show_mgr_dlg::IsInitialized() const {
+
+  return true;
+}
+
+void is_show_mgr_dlg::Swap(is_show_mgr_dlg* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void is_show_mgr_dlg::InternalSwap(is_show_mgr_dlg* other) {
+  show_.Swap(&other->show_);
+  std::swap(user_level_, other->user_level_);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  std::swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata is_show_mgr_dlg::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = is_show_mgr_dlg_descriptor_;
+  metadata.reflection = is_show_mgr_dlg_reflection_;
+  return metadata;
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// is_show_mgr_dlg
+
+// optional string show = 1;
+void is_show_mgr_dlg::clear_show() {
+  show_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ const ::std::string& is_show_mgr_dlg::show() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.is_show_mgr_dlg.show)
+  return show_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void is_show_mgr_dlg::set_show(const ::std::string& value) {
+  
+  show_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:alarm_center_video.is_show_mgr_dlg.show)
+}
+ void is_show_mgr_dlg::set_show(const char* value) {
+  
+  show_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.is_show_mgr_dlg.show)
+}
+ void is_show_mgr_dlg::set_show(const char* value, size_t size) {
+  
+  show_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.is_show_mgr_dlg.show)
+}
+ ::std::string* is_show_mgr_dlg::mutable_show() {
+  
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.is_show_mgr_dlg.show)
+  return show_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ ::std::string* is_show_mgr_dlg::release_show() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.is_show_mgr_dlg.show)
+  
+  return show_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+ void is_show_mgr_dlg::set_allocated_show(::std::string* show) {
+  if (show != NULL) {
+    
+  } else {
+    
+  }
+  show_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), show);
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.is_show_mgr_dlg.show)
+}
+
+// optional int32 user_level = 2;
+void is_show_mgr_dlg::clear_user_level() {
+  user_level_ = 0;
+}
+ ::google::protobuf::int32 is_show_mgr_dlg::user_level() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.is_show_mgr_dlg.user_level)
+  return user_level_;
+}
+ void is_show_mgr_dlg::set_user_level(::google::protobuf::int32 value) {
+  
+  user_level_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.is_show_mgr_dlg.user_level)
 }
 
 #endif  // PROTOBUF_INLINE_NOT_IN_HEADERS

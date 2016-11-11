@@ -8,7 +8,7 @@
 #include "VideoManager.h"
 #include "../video/ezviz/VideoDeviceInfoEzviz.h"
 #include "../video/jovision/VideoDeviceInfoJovision.h"
-
+#include "UserInfo.h"
 
 namespace ipc {
 
@@ -45,12 +45,16 @@ public:
 
 	virtual ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, 
 														  const ::alarm_center_video::request* request, 
-														  ::alarm_center_video::reply* response) override {
+														  ::alarm_center_video::is_show_mgr_dlg* response) override {
 		//AUTO_LOG_FUNCTION;
 		auto service = alarm_center_video_service::get_instance();
-		if (service->running_ && service->show_video_user_mgr_dlg_) {
-			service->show_video_user_mgr_dlg_ = false;
-			response->set_place_holder("show");
+		if (service->running_) {
+			if (service->show_video_user_mgr_dlg_) {
+				service->show_video_user_mgr_dlg_ = false;
+				response->set_show("show");
+			}
+
+			response->set_user_level(core::user_manager::get_instance()->GetCurUserInfo()->get_user_priority());
 		}
 		service->sub_process_mgr_->feed_watch_dog();
 		return ::grpc::Status::OK;

@@ -26,22 +26,22 @@ public:
 	void get_is_show_video_user_mgr_dlg() {
 		AUTO_LOG_FUNCTION;
 
-		alarm_center_video::reply reply;
+		alarm_center_video::is_show_mgr_dlg reply;
 		alarm_center_video::request request;
 		grpc::ClientContext context;
 
 		auto status = stub_->get_is_show_video_user_mgr_dlg(&context, request, &reply);
 		if (status.ok()) {
-			bool show = reply.place_holder() == "show";
-			if (show) {
+			bool show = reply.show() == "show";
+			//if (show) {
 				auto app = AfxGetApp();
 				if (app) {
 					auto wnd = app->GetMainWnd();
 					if (wnd) {
-						wnd->PostMessageW(WM_SHOW_USER_MGR_DLG);
+						wnd->PostMessageW(WM_SHOW_USER_MGR_DLG, show, reply.user_level());
 					}
 				}
-			}
+			//}
 		}
 	}
 

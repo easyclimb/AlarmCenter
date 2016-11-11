@@ -431,6 +431,8 @@ BOOL CVideoUserManagerDlg::OnInitDialog()
 	db_updated_observer_->dlg = this;
 	ipc::alarm_center_video_client::get_instance()->register_observer(db_updated_observer_);
 
+	OnUserLevelChanged(cur_user_level_);
+
 	//SetTimer(TIMER_ID_CHECK_USER_ACCTOKEN_TIMEOUT, 60 * 1000, nullptr);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -1330,6 +1332,41 @@ void CVideoUserManagerDlg::ShowDeviceInfoJovision(video::jovision::jovision_devi
 		m_zone.SetWindowTextW(txt);
 	} else {
 		m_zone.SetWindowTextW(L"");
+	}
+}
+
+void CVideoUserManagerDlg::OnUserLevelChanged(int user_level)
+{
+	if (cur_user_level_ == user_level) {
+		return;
+	}
+
+	cur_user_level_ = user_level;
+
+	if (user_level == core::UP_OPERATOR) {
+		m_btnBindOrUnbind.EnableWindow(0);
+		m_btnUnbind.EnableWindow(0);
+		m_chkAutoPlayVideo.EnableWindow(0);
+		m_btnAddDevice.EnableWindow(0);
+		m_btnDelDevice.EnableWindow(0);
+		m_btnSaveDevChange.EnableWindow(0);
+		m_btnRefreshDev.EnableWindow(0);
+		m_btnAddUser.EnableWindow(0);
+		m_btnDelUser.EnableWindow(0);
+		m_btnUpdateUser.EnableWindow(0);
+		m_btnRefreshDeviceList.EnableWindow(0);
+	} else {
+		m_btnBindOrUnbind.EnableWindow();
+		m_btnUnbind.EnableWindow();
+		m_chkAutoPlayVideo.EnableWindow();
+		m_btnAddDevice.EnableWindow();
+		m_btnDelDevice.EnableWindow();
+		m_btnSaveDevChange.EnableWindow();
+		m_btnRefreshDev.EnableWindow();
+		m_btnAddUser.EnableWindow();
+		m_btnDelUser.EnableWindow();
+		m_btnUpdateUser.EnableWindow();
+		m_btnRefreshDeviceList.EnableWindow();
 	}
 }
 

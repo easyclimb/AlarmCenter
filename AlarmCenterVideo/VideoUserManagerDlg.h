@@ -18,7 +18,7 @@ class CVideoUserManagerDlg : public CDialogEx
 public:
 	CVideoUserManagerDlg(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CVideoUserManagerDlg();
-
+	void OnUserLevelChanged(int user_level);
 // Dialog Data
 	enum { IDD = IDD_DIALOG_MGR_VIDEO_USER };
 
@@ -44,6 +44,8 @@ protected:
 	void ShowDeviceInfoEzviz(video::ezviz::ezviz_device_ptr device);
 	void ShowDeviceInfoJovision(video::jovision::jovision_device_ptr device);
 	//bool CheckZoneInfoExsist(const video::zone_uuid& zone);
+
+	
 private:
 	video::ezviz::ezviz_user_ptr m_curSelUserInfoEzviz;
 	video::ezviz::ezviz_device_ptr m_curSelDeviceInfoEzviz;
@@ -54,6 +56,7 @@ private:
 	video::jovision::jovision_device_ptr m_curSelDeviceInfoJovision = nullptr;
 	int m_curselUserListItemJovision = -1;
 	int m_curselDeviceListItemJovision = -1;
+	int cur_user_level_ = 0;
 	
 public:
 	CMyListCtrl m_listUserEzviz;

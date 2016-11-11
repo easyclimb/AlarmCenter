@@ -3034,10 +3034,15 @@ void CVideoPlayerDlg::OnClose()
 #endif
 }
 
-LRESULT CVideoPlayerDlg::OnMsgShowVideoUserMgrDlg(WPARAM, LPARAM)
+LRESULT CVideoPlayerDlg::OnMsgShowVideoUserMgrDlg(WPARAM wParam, LPARAM lParam)
 {
-	ShowWindow(SW_SHOW);
-	video_user_mgr_dlg_->ShowWindow(SW_SHOW);
+	if (wParam) {
+		ShowWindow(SW_SHOW);
+		video_user_mgr_dlg_->ShowWindow(SW_SHOW);
+	}
+	
+	video_user_mgr_dlg_->OnUserLevelChanged(lParam);
+
 	return 0;
 }
 

@@ -56,12 +56,12 @@ video_service::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& chan
   return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_is_db_updated_, context, request);
 }
 
-::grpc::Status video_service::Stub::get_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::reply* response) {
+::grpc::Status video_service::Stub::get_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::is_show_mgr_dlg* response) {
   return ::grpc::BlockingUnaryCall(channel_.get(), rpcmethod_get_is_show_video_user_mgr_dlg_, context, request, response);
 }
 
-::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* video_service::Stub::Asyncget_is_show_video_user_mgr_dlgRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
-  return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>(channel_.get(), cq, rpcmethod_get_is_show_video_user_mgr_dlg_, context, request);
+::grpc::ClientAsyncResponseReader< ::alarm_center_video::is_show_mgr_dlg>* video_service::Stub::Asyncget_is_show_video_user_mgr_dlgRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
+  return new ::grpc::ClientAsyncResponseReader< ::alarm_center_video::is_show_mgr_dlg>(channel_.get(), cq, rpcmethod_get_is_show_video_user_mgr_dlg_, context, request);
 }
 
 ::grpc::ClientReader< ::alarm_center_video::alarm_info>* video_service::Stub::get_alarming_devsRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request) {
@@ -111,7 +111,7 @@ video_service::Service::Service() {
   AddMethod(new ::grpc::RpcServiceMethod(
       video_service_method_names[2],
       ::grpc::RpcMethod::NORMAL_RPC,
-      new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::reply>(
+      new ::grpc::RpcMethodHandler< video_service::Service, ::alarm_center_video::request, ::alarm_center_video::is_show_mgr_dlg>(
           std::mem_fn(&video_service::Service::get_is_show_video_user_mgr_dlg), this)));
   AddMethod(new ::grpc::RpcServiceMethod(
       video_service_method_names[3],
@@ -152,7 +152,7 @@ video_service::Service::~Service() {
   return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
-::grpc::Status video_service::Service::get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response) {
+::grpc::Status video_service::Service::get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::is_show_mgr_dlg* response) {
   (void) context;
   (void) request;
   (void) response;

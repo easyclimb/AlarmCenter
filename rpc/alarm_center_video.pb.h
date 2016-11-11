@@ -42,6 +42,7 @@ class bind_info;
 class camera_info;
 class dev_info;
 class hisroty_record;
+class is_show_mgr_dlg;
 class reply;
 class request;
 class zone_uuid;
@@ -211,6 +212,96 @@ class reply : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static reply* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class is_show_mgr_dlg : public ::google::protobuf::Message {
+ public:
+  is_show_mgr_dlg();
+  virtual ~is_show_mgr_dlg();
+
+  is_show_mgr_dlg(const is_show_mgr_dlg& from);
+
+  inline is_show_mgr_dlg& operator=(const is_show_mgr_dlg& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const is_show_mgr_dlg& default_instance();
+
+  void Swap(is_show_mgr_dlg* other);
+
+  // implements Message ----------------------------------------------
+
+  inline is_show_mgr_dlg* New() const { return New(NULL); }
+
+  is_show_mgr_dlg* New(::google::protobuf::Arena* arena) const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const is_show_mgr_dlg& from);
+  void MergeFrom(const is_show_mgr_dlg& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  void InternalSwap(is_show_mgr_dlg* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return _internal_metadata_.arena();
+  }
+  inline void* MaybeArenaPtr() const {
+    return _internal_metadata_.raw_arena_ptr();
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional string show = 1;
+  void clear_show();
+  static const int kShowFieldNumber = 1;
+  const ::std::string& show() const;
+  void set_show(const ::std::string& value);
+  void set_show(const char* value);
+  void set_show(const char* value, size_t size);
+  ::std::string* mutable_show();
+  ::std::string* release_show();
+  void set_allocated_show(::std::string* show);
+
+  // optional int32 user_level = 2;
+  void clear_user_level();
+  static const int kUserLevelFieldNumber = 2;
+  ::google::protobuf::int32 user_level() const;
+  void set_user_level(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:alarm_center_video.is_show_mgr_dlg)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  bool _is_default_instance_;
+  ::google::protobuf::internal::ArenaStringPtr show_;
+  ::google::protobuf::int32 user_level_;
+  mutable int _cached_size_;
+  friend void  protobuf_AddDesc_alarm_5fcenter_5fvideo_2eproto();
+  friend void protobuf_AssignDesc_alarm_5fcenter_5fvideo_2eproto();
+  friend void protobuf_ShutdownFile_alarm_5fcenter_5fvideo_2eproto();
+
+  void InitAsDefaultInstance();
+  static is_show_mgr_dlg* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -995,6 +1086,68 @@ inline void reply::set_allocated_place_holder(::std::string* place_holder) {
 
 // -------------------------------------------------------------------
 
+// is_show_mgr_dlg
+
+// optional string show = 1;
+inline void is_show_mgr_dlg::clear_show() {
+  show_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& is_show_mgr_dlg::show() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.is_show_mgr_dlg.show)
+  return show_.GetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void is_show_mgr_dlg::set_show(const ::std::string& value) {
+  
+  show_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:alarm_center_video.is_show_mgr_dlg.show)
+}
+inline void is_show_mgr_dlg::set_show(const char* value) {
+  
+  show_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:alarm_center_video.is_show_mgr_dlg.show)
+}
+inline void is_show_mgr_dlg::set_show(const char* value, size_t size) {
+  
+  show_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:alarm_center_video.is_show_mgr_dlg.show)
+}
+inline ::std::string* is_show_mgr_dlg::mutable_show() {
+  
+  // @@protoc_insertion_point(field_mutable:alarm_center_video.is_show_mgr_dlg.show)
+  return show_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* is_show_mgr_dlg::release_show() {
+  // @@protoc_insertion_point(field_release:alarm_center_video.is_show_mgr_dlg.show)
+  
+  return show_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void is_show_mgr_dlg::set_allocated_show(::std::string* show) {
+  if (show != NULL) {
+    
+  } else {
+    
+  }
+  show_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), show);
+  // @@protoc_insertion_point(field_set_allocated:alarm_center_video.is_show_mgr_dlg.show)
+}
+
+// optional int32 user_level = 2;
+inline void is_show_mgr_dlg::clear_user_level() {
+  user_level_ = 0;
+}
+inline ::google::protobuf::int32 is_show_mgr_dlg::user_level() const {
+  // @@protoc_insertion_point(field_get:alarm_center_video.is_show_mgr_dlg.user_level)
+  return user_level_;
+}
+inline void is_show_mgr_dlg::set_user_level(::google::protobuf::int32 value) {
+  
+  user_level_ = value;
+  // @@protoc_insertion_point(field_set:alarm_center_video.is_show_mgr_dlg.user_level)
+}
+
+// -------------------------------------------------------------------
+
 // zone_uuid
 
 // optional int32 ademco_id = 1;
@@ -1540,6 +1693,8 @@ inline void hisroty_record::set_allocated_timestamp(::std::string* timestamp) {
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

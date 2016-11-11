@@ -44,9 +44,9 @@ class video_service GRPC_FINAL {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>> Asyncis_db_updated(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>>(Asyncis_db_updatedRaw(context, request, cq));
     }
-    virtual ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::reply* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>> Asyncget_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>>(Asyncget_is_show_video_user_mgr_dlgRaw(context, request, cq));
+    virtual ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::is_show_mgr_dlg* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::is_show_mgr_dlg>> Asyncget_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::is_show_mgr_dlg>>(Asyncget_is_show_video_user_mgr_dlgRaw(context, request, cq));
     }
     std::unique_ptr< ::grpc::ClientReaderInterface< ::alarm_center_video::alarm_info>> get_alarming_devs(::grpc::ClientContext* context, const ::alarm_center_video::request& request) {
       return std::unique_ptr< ::grpc::ClientReaderInterface< ::alarm_center_video::alarm_info>>(get_alarming_devsRaw(context, request));
@@ -75,7 +75,7 @@ class video_service GRPC_FINAL {
   private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>* Asyncupdate_dbRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>* Asyncis_db_updatedRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::reply>* Asyncget_is_show_video_user_mgr_dlgRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::alarm_center_video::is_show_mgr_dlg>* Asyncget_is_show_video_user_mgr_dlgRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientReaderInterface< ::alarm_center_video::alarm_info>* get_alarming_devsRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request) = 0;
     virtual ::grpc::ClientAsyncReaderInterface< ::alarm_center_video::alarm_info>* Asyncget_alarming_devsRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq, void* tag) = 0;
     virtual ::grpc::ClientReaderInterface< ::alarm_center_video::bind_info>* get_updated_bind_infosRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request) = 0;
@@ -96,9 +96,9 @@ class video_service GRPC_FINAL {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>> Asyncis_db_updated(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>>(Asyncis_db_updatedRaw(context, request, cq));
     }
-    ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::reply* response) GRPC_OVERRIDE;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>> Asyncget_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>>(Asyncget_is_show_video_user_mgr_dlgRaw(context, request, cq));
+    ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::alarm_center_video::is_show_mgr_dlg* response) GRPC_OVERRIDE;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_video::is_show_mgr_dlg>> Asyncget_is_show_video_user_mgr_dlg(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::alarm_center_video::is_show_mgr_dlg>>(Asyncget_is_show_video_user_mgr_dlgRaw(context, request, cq));
     }
     std::unique_ptr< ::grpc::ClientReader< ::alarm_center_video::alarm_info>> get_alarming_devs(::grpc::ClientContext* context, const ::alarm_center_video::request& request) {
       return std::unique_ptr< ::grpc::ClientReader< ::alarm_center_video::alarm_info>>(get_alarming_devsRaw(context, request));
@@ -129,7 +129,7 @@ class video_service GRPC_FINAL {
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* Asyncupdate_dbRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
     ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* Asyncis_db_updatedRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
-    ::grpc::ClientAsyncResponseReader< ::alarm_center_video::reply>* Asyncget_is_show_video_user_mgr_dlgRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
+    ::grpc::ClientAsyncResponseReader< ::alarm_center_video::is_show_mgr_dlg>* Asyncget_is_show_video_user_mgr_dlgRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq) GRPC_OVERRIDE;
     ::grpc::ClientReader< ::alarm_center_video::alarm_info>* get_alarming_devsRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request) GRPC_OVERRIDE;
     ::grpc::ClientAsyncReader< ::alarm_center_video::alarm_info>* Asyncget_alarming_devsRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request, ::grpc::CompletionQueue* cq, void* tag) GRPC_OVERRIDE;
     ::grpc::ClientReader< ::alarm_center_video::bind_info>* get_updated_bind_infosRaw(::grpc::ClientContext* context, const ::alarm_center_video::request& request) GRPC_OVERRIDE;
@@ -154,7 +154,7 @@ class video_service GRPC_FINAL {
     virtual ~Service();
     virtual ::grpc::Status update_db(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response);
     virtual ::grpc::Status is_db_updated(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response);
-    virtual ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response);
+    virtual ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::is_show_mgr_dlg* response);
     virtual ::grpc::Status get_alarming_devs(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::grpc::ServerWriter< ::alarm_center_video::alarm_info>* writer);
     virtual ::grpc::Status get_updated_bind_infos(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::grpc::ServerWriter< ::alarm_center_video::bind_info>* writer);
     virtual ::grpc::Status insert_history_record(::grpc::ServerContext* context, ::grpc::ServerReader< ::alarm_center_video::hisroty_record>* reader, ::alarm_center_video::reply* response);
@@ -212,11 +212,11 @@ class video_service GRPC_FINAL {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response) GRPC_FINAL GRPC_OVERRIDE {
+    ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::is_show_mgr_dlg* response) GRPC_FINAL GRPC_OVERRIDE {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    void Requestget_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, ::alarm_center_video::request* request, ::grpc::ServerAsyncResponseWriter< ::alarm_center_video::reply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+    void Requestget_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, ::alarm_center_video::request* request, ::grpc::ServerAsyncResponseWriter< ::alarm_center_video::is_show_mgr_dlg>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
@@ -347,7 +347,7 @@ class video_service GRPC_FINAL {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::reply* response) GRPC_FINAL GRPC_OVERRIDE {
+    ::grpc::Status get_is_show_video_user_mgr_dlg(::grpc::ServerContext* context, const ::alarm_center_video::request* request, ::alarm_center_video::is_show_mgr_dlg* response) GRPC_FINAL GRPC_OVERRIDE {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
