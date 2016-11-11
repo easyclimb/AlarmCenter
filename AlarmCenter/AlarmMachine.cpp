@@ -607,6 +607,12 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				NotifySubmachines(ademcoEvent);
 				return;
 				break;
+			case EVENT_I_AM_WIRE_MACHINE:
+				execute_set_machine_type(MT_WIRE);
+				notify_observers(ademcoEvent);
+				NotifySubmachines(ademcoEvent);
+				return;
+				break;
 			case EVENT_PHONE_USER_CANCLE_ALARM:
 				fmEvent = TR(IDS_STRING_PHONE_USER_CANCLE_ALARM);
 				record = get_formatted_name() + L" " + fmEvent;

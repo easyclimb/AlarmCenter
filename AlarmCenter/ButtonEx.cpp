@@ -340,12 +340,21 @@ void CButtonEx::UpdateIconAndColor(bool online, core::machine_status status)
 	} else {
 		if (online) {
 			//bmppath = exepath + L"\\Resource\\online.bmp";
-			iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\online.bmp");
+			if (_machine->get_machine_type() == core::machine_type::MT_WIRE) {
+				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\wire.bmp");
+			} else {
+				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\online.bmp");
+			}
+			
 		} else {
 			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
 				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\phone.bmp");
 			} else {
-				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\offline.bmp");
+				if (_machine->get_machine_type() == core::machine_type::MT_WIRE) {
+					iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\wire_offline.bmp");
+				} else {
+					iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\offline.bmp");
+				}
 			}
 		}
 	}

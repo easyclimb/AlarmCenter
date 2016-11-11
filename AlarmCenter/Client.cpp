@@ -920,6 +920,10 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 							ademco_event = EVENT_I_AM_LCD_MACHINE;
 							break;
 
+						case 6: // 网线主机
+							ademco_event = EVENT_I_AM_WIRE_MACHINE;
+							break;
+
 						default:
 							ademco_event = EVENT_INVALID_EVENT;
 							break;

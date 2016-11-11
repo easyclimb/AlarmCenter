@@ -21,8 +21,10 @@ typedef enum machine_type {
 	MT_NETMOD,							// 带网络模块的工程主机
 	MT_IMPRESSED_GPRS_MACHINE_2050,		// 改进型卧式主机2050型
 	MT_LCD,								// 液晶主机
+	MT_WIRE,							// 网线主机
 	MT_MAX,
 }machine_type;
+
 
 static machine_type Integer2MachineType(int type)
 {
@@ -31,6 +33,7 @@ static machine_type Integer2MachineType(int type)
 		case MT_NETMOD:	return MT_NETMOD;	break;
 		case MT_IMPRESSED_GPRS_MACHINE_2050: 	return MT_IMPRESSED_GPRS_MACHINE_2050;		break;
 		case MT_LCD:	return MT_LCD;		break;
+		case MT_WIRE:	return MT_WIRE;		break;
 		default:		return MT_UNKNOWN;	break;
 	}
 }
