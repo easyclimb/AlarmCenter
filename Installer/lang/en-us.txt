@@ -779,4 +779,5 @@
 "IDS_StopRecOK" = "Link %d stop recording success!"
 "IDS_STRING_INPUT_OLD_PSW" = "Please enter the old password"
 "IDS_STRING_INPUT_NEW_PSW" = "Please enter a new password"
+"IDS_STRING_PSWDS_NOT_SAME" = "The two passwords are not the same"
 "IDS_STRING_INPUT_NEW_PSW_AGAIN" = "Please enter the new password again"

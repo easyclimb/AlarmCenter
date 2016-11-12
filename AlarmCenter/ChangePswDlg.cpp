@@ -62,8 +62,25 @@ void CChangePswDlg::OnBnClickedOk()
 
 	CString txt;
 	m_old_psw.GetWindowTextW(txt);
-	if (txt.IsEmpty()) {
-		
+	if (txt.IsEmpty() || (user->get_passwd() != mgr->encrypt((LPCTSTR)txt))) {
+		m_old_psw.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_USER_PASSWD_WRONG), TTI_ERROR);
+		return;
+	}
+
+	CString t2;
+	m_new_psw.GetWindowTextW(txt);
+	m_new_psw_2.GetWindowTextW(t2);
+
+	if (txt != t2 || t2.IsEmpty()) {
+		m_new_psw_2.ShowBalloonTip(TR(IDS_STRING_ERROR), TR(IDS_STRING_PSWDS_NOT_SAME), TTI_ERROR);
+		return;
+	}
+
+	if (mgr->change_user_passwd(user, txt)) {
+		MessageBox(TR(IDS_STRING_SUCCESS), TR(IDS_STRING_IDC_BUTTON_CHANGE_PASSWD));
+	} else {
+		MessageBox(TR(IDS_STRING_FAILED), TR(IDS_STRING_IDC_BUTTON_CHANGE_PASSWD));
+		return;
 	}
 
 	CDialogEx::OnOK();

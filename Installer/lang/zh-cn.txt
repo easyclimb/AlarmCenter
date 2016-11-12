@@ -779,4 +779,5 @@
 "IDS_StopRecOK" = "连接%d结束录像成功！"
 "IDS_STRING_INPUT_OLD_PSW" = "请输入旧密码"
 "IDS_STRING_INPUT_NEW_PSW" = "请输入新密码"
+"IDS_STRING_PSWDS_NOT_SAME" = "两次输入的密码不一致"
 "IDS_STRING_INPUT_NEW_PSW_AGAIN" = "请再次输入新密码"
