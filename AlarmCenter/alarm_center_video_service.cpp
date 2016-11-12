@@ -54,7 +54,7 @@ public:
 				response->set_show("show");
 			}
 
-			response->set_user_level(core::user_manager::get_instance()->GetCurUserInfo()->get_user_priority());
+			response->set_user_level(core::user_manager::get_instance()->get_cur_user_priority());
 		}
 		service->sub_process_mgr_->feed_watch_dog();
 		return ::grpc::Status::OK;

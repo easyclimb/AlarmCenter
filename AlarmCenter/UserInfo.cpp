@@ -11,8 +11,6 @@ namespace core {
 //IMPLEMENT_SINGLETON(user_manager)
 
 user_info::user_info()
-	: /*_id(0), */_user_id(0), _user_priority(UP_OPERATOR)
-	, _user_name(), _user_passwd(), _user_phone()
 {
 }
 
@@ -25,8 +23,6 @@ user_info::~user_info()
 //IMPLEMENT_OBSERVER(user_manager)
 
 user_manager::user_manager()
-	: _curUser(nullptr)
-	, db_(nullptr)
 {
 	auto path = get_config_path() + "\\user.db3";
 	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
@@ -72,12 +68,12 @@ user_phone text)");
 		user_phone = query.getColumn(ndx++).getText();
 
 		user_info_ptr user = std::make_shared<user_info>();
-		user->set_user_id(user_id);
-		user->set_user_priority(user_priority);
-		user->set_user_name(utf8::a2w(user_name).c_str());
-		user->set_user_passwd(utf8::a2w(user_passwd).c_str());
-		user->set_user_phone(utf8::a2w(user_phone).c_str());
-		_userList.push_back(user);
+		user->set_id(user_id);
+		user->set_priority(user_priority);
+		user->set_name(utf8::a2w(user_name).c_str());
+		user->set_passwd(utf8::a2w(user_passwd).c_str());
+		user->set_phone(utf8::a2w(user_phone).c_str());
+		user_list_.push_back(user);
 	}
 }
 
@@ -88,109 +84,98 @@ user_manager::~user_manager()
 }
 
 
-BOOL user_manager::UserExists(int user_id, std::wstring& user_name)
+bool user_manager::user_exists(int user_id, std::wstring& user_name)
 {
-	for (auto user : _userList) {
-		if (user->get_user_id() == user_id) {
-			user_name = user->get_user_name();
-			return TRUE;
+	for (auto user : user_list_) {
+		if (user->get_id() == user_id) {
+			user_name = user->get_name();
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 
-BOOL user_manager::UserExists(const wchar_t* user_name, int& user_id)
+bool user_manager::user_exists(const wchar_t* user_name, int& user_id)
 {
-	for (auto user : _userList) {
-		if (user->get_user_name() == user_name) {
-			user_id = user->get_user_id();
-			return TRUE;
+	for (auto user : user_list_) {
+		if (user->get_name() == user_name) {
+			user_id = user->get_id();
+			return true;
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 
 
-BOOL user_manager::Login(int user_id, const wchar_t* user_passwd)
+bool user_manager::login(int user_id, const wchar_t* user_passwd)
 {
-	std::lock_guard<std::mutex> lock(_lock4CurUser);
-	for (auto user : _userList) {
-		if (user->get_user_id() == user_id) {
-			std::string passwdA = utf8::w2a(user_passwd);
-			util::MD5 md5;
-			md5.update(passwdA);
-			std::string smd5 = md5.toString();
-			std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
-			std::wstring passwdW = utf8::a2w(smd5);
-			if (user->get_user_passwd() == passwdW) {
-				_curUser = user;
-				notify_observers(_curUser);
-				return TRUE;
+	lock_guard_type lock(lock_for_cur_user_);
+	for (auto user : user_list_) {
+		if (user->get_id() == user_id) {
+			auto passwdW = encrypt(user_passwd);
+			if (user->get_passwd() == passwdW) {
+				cur_user_ = user;
+				notify_observers(cur_user_);
+				return true;
 			} else {
-				return FALSE;
+				return false;
 			}
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 
-
-BOOL user_manager::Login(const wchar_t* user_name, const wchar_t* user_passwd)
+bool user_manager::login(const wchar_t* user_name, const wchar_t* user_passwd)
 {
-	std::lock_guard<std::mutex> lock(_lock4CurUser);
-	for (auto user : _userList) {
-		if (user->get_user_name() == user_name) {
-			std::string passwdA = utf8::w2a(user_passwd);
-			util::MD5 md5;
-			md5.update(passwdA);
-			std::string smd5 = md5.toString();
-			std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
-			std::wstring passwdW = utf8::a2w(smd5);
-			if (user->get_user_passwd() == passwdW) {
-				_curUser = user;
-				notify_observers(_curUser);
-				return TRUE;
+	lock_guard_type lock(lock_for_cur_user_);
+	for (auto user : user_list_) {
+		if (user->get_name() == user_name) {
+			auto passwdW = encrypt(user_passwd);
+			if (user->get_passwd() == passwdW) {
+				cur_user_ = user;
+				notify_observers(cur_user_);
+				return true;
 			} else {
-				return FALSE;
+				return false;
 			}
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 
-user_info_ptr user_manager::GetFirstUserInfo()
+user_info_ptr user_manager::get_first_user_info()
 {
-	if (_userList.size() == 0)
+	if (user_list_.size() == 0)
 		return nullptr;
 
-	_curUserIter = _userList.begin();
-	if (_curUserIter != _userList.end()) {
-		return *_curUserIter++;
+	cur_user_iter_ = user_list_.begin();
+	if (cur_user_iter_ != user_list_.end()) {
+		return *cur_user_iter_++;
 	}
 	return nullptr;
 }
 
 
-user_info_ptr user_manager::GetNextUserInfo()
+user_info_ptr user_manager::get_next_user_info()
 {
-	if (_userList.size() == 0)
+	if (user_list_.size() == 0)
 		return nullptr;
 
-	if (_curUserIter != _userList.end()) {
-		return *_curUserIter++;
+	if (cur_user_iter_ != user_list_.end()) {
+		return *cur_user_iter_++;
 	}
 	return nullptr;
 }
 
 
-user_info_ptr user_manager::GetUserInfo(int user_id)
+user_info_ptr user_manager::get_user_info(int user_id)
 {
-	for (auto user : _userList) {
-		if (user_id == user->get_user_id()) {
+	for (auto user : user_list_) {
+		if (user_id == user->get_id()) {
 			return user;
 		}
 	}
@@ -198,7 +183,7 @@ user_info_ptr user_manager::GetUserInfo(int user_id)
 }
 
 
-int user_manager::DistributeUserID()
+int user_manager::distribute_user_id()
 {
 	Statement query(*db_, "select max(user_id) from table_user");
 	if (query.executeStep()) {
@@ -210,27 +195,27 @@ int user_manager::DistributeUserID()
 }
 
 
-BOOL user_manager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUserInfo)
+bool user_manager::update_user_info(int user_id, const core::user_info_ptr& newUserInfo)
 {
 	CString query;
 	query.Format(L"update table_user set user_priority=%d,user_name='%s',user_phone='%s' where user_id=%d",
-				 newUserInfo->get_user_priority(), newUserInfo->get_user_name().c_str(),
-				 newUserInfo->get_user_phone().c_str(), user_id);
-	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
+				 newUserInfo->get_priority(), newUserInfo->get_name().c_str(),
+				 newUserInfo->get_phone().c_str(), user_id);
+	bool ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
-		if (_curUser->get_user_id() == user_id) {
-			_curUser->set_user_name(newUserInfo->get_user_name());
-			_curUser->set_user_phone(newUserInfo->get_user_phone());
-			_curUser->set_user_priority(newUserInfo->get_user_priority());
-			notify_observers(_curUser);
+		if (cur_user_->get_id() == user_id) {
+			cur_user_->set_name(newUserInfo->get_name());
+			cur_user_->set_phone(newUserInfo->get_phone());
+			cur_user_->set_priority(newUserInfo->get_priority());
+			notify_observers(cur_user_);
 		} else {
-			_curUserIter = _userList.begin();
-			while (_curUserIter != _userList.end()) {
-				user_info_ptr user = *_curUserIter++;
-				if (user->get_user_id() == user_id) {
-					user->set_user_name(newUserInfo->get_user_name());
-					user->set_user_phone(newUserInfo->get_user_phone());
-					user->set_user_priority(newUserInfo->get_user_priority());
+			cur_user_iter_ = user_list_.begin();
+			while (cur_user_iter_ != user_list_.end()) {
+				user_info_ptr user = *cur_user_iter_++;
+				if (user->get_id() == user_id) {
+					user->set_name(newUserInfo->get_name());
+					user->set_phone(newUserInfo->get_phone());
+					user->set_priority(newUserInfo->get_priority());
 					break;
 				}
 			}
@@ -240,79 +225,80 @@ BOOL user_manager::UpdateUserInfo(int user_id, const core::user_info_ptr& newUse
 }
 
 
-BOOL user_manager::AddUser(const core::user_info_ptr& newUserInfo)
+bool user_manager::add_user(const core::user_info_ptr& newUserInfo)
 {
-	const char* passwdA = "123456";
-	util::MD5 md5;
-	md5.update(passwdA, strnlen_s(passwdA, 1024));
-	std::string smd5 = md5.toString();
-	std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
-	auto passwdW = utf8::a2w(smd5);
+	auto passwdW = encrypt(L"123456");
 
 	CString query;
 	query.Format(L"insert into table_user ([user_id],[user_priority],[user_name],[user_passwd],[user_phone]) values(%d,%d,'%s','%s','%s')",
-				 newUserInfo->get_user_id(), newUserInfo->get_user_priority(),
-				 newUserInfo->get_user_name().c_str(), passwdW.c_str(),
-				 newUserInfo->get_user_phone().c_str());
-	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
+				 newUserInfo->get_id(), newUserInfo->get_priority(),
+				 newUserInfo->get_name().c_str(), passwdW.c_str(),
+				 newUserInfo->get_phone().c_str());
+	bool ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
-		newUserInfo->set_user_passwd(passwdW);
-		_userList.push_back(newUserInfo);
+		newUserInfo->set_passwd(passwdW);
+		user_list_.push_back(newUserInfo);
 	}
 
 	return ok;
 }
 
 
-BOOL user_manager::DeleteUser(const core::user_info_ptr& user)
+bool user_manager::delete_user(const core::user_info_ptr& user)
 {
 	assert(user);
 	CString query;
-	query.Format(L"delete from table_user where user_id=%d", user->get_user_id());
-	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
+	query.Format(L"delete from table_user where user_id=%d", user->get_id());
+	bool ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
 	if (ok) {
-		_curUserIter = _userList.begin();
-		while (_curUserIter != _userList.end()) {
-			user_info_ptr tmp_user = *_curUserIter;
+		cur_user_iter_ = user_list_.begin();
+		while (cur_user_iter_ != user_list_.end()) {
+			user_info_ptr tmp_user = *cur_user_iter_;
 			if (user == tmp_user) {
-				_userList.erase(_curUserIter);
+				user_list_.erase(cur_user_iter_);
 				break;
 			}
-			_curUserIter++;
+			cur_user_iter_++;
 		}
-		_curUserIter = _userList.begin();
+		cur_user_iter_ = user_list_.begin();
 	}
 	return ok;
 }
 
 
-BOOL user_manager::ChangeUserPasswd(const core::user_info_ptr& user, const wchar_t* passwd)
+bool user_manager::change_user_passwd(const core::user_info_ptr& user, const wchar_t* passwd)
 {
 	assert(user);
 
-	auto passwdA = utf8::w2a(passwd);
+	auto passwdW = encrypt(passwd);
+
+	CString query;
+	query.Format(L"update table_user set user_passwd='%s' where user_id=%d",
+				 passwdW.c_str(), user->get_id());
+	bool ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
+	if (ok) {
+		cur_user_iter_ = user_list_.begin();
+		while (cur_user_iter_ != user_list_.end()) {
+			user_info_ptr tmp_user = *cur_user_iter_++;
+			if (user == tmp_user) {
+				tmp_user->set_passwd(passwdW);
+				break;
+			}
+		}
+		cur_user_iter_ = user_list_.begin();
+	}
+	return ok;
+}
+
+std::wstring user_manager::encrypt(const std::wstring & plain_text)
+{
+	auto passwdA = utf8::w2a(plain_text);
 	util::MD5 md5;
 	md5.update(passwdA);
 	std::string smd5 = md5.toString();
 	std::transform(smd5.begin(), smd5.end(), smd5.begin(), ::tolower);
 	auto passwdW = utf8::a2w(smd5);
-
-	CString query;
-	query.Format(L"update table_user set user_passwd='%s' where user_id=%d",
-				 passwdW.c_str(), user->get_user_id());
-	BOOL ok = db_->exec(utf8::w2a((LPCTSTR)query)) > 0;
-	if (ok) {
-		_curUserIter = _userList.begin();
-		while (_curUserIter != _userList.end()) {
-			user_info_ptr tmp_user = *_curUserIter++;
-			if (user == tmp_user) {
-				tmp_user->set_user_passwd(passwdW);
-				break;
-			}
-		}
-		_curUserIter = _userList.begin();
-	}
-	return ok;
+	return passwdW;
 }
 
 };

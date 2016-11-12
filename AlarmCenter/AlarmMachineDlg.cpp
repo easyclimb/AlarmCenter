@@ -185,7 +185,7 @@ void CAlarmMachineDlg::SetMachineInfo(const core::alarm_machine_ptr& machine)
 
 void CAlarmMachineDlg::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
-	if (user->get_user_priority() == core::UP_OPERATOR) {
+	if (user->get_priority() == core::UP_OPERATOR) {
 		m_btnManageExpire.EnableWindow(0);
 		m_btnEditZone.EnableWindow(0);
 		m_btnEditMap.EnableWindow(0);
@@ -323,7 +323,7 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
+	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->get_cur_user_info());
 
 	// 3. load map info
 	LoadMaps();
@@ -432,7 +432,7 @@ void CAlarmMachineDlg::UpdateBtn123()
 
 		btnText = TR(IDS_STRING_IDD_DIALOG_RESTORE_MACHINE);
 		m_btn2.SetWindowTextW(btnText);
-		if (core::user_manager::get_instance()->GetCurUserInfo()->get_user_priority() != UP_OPERATOR)
+		if (core::user_manager::get_instance()->get_cur_user_priority() != UP_OPERATOR)
 			m_btn2.EnableWindow();
 
 		btnText = TR(IDS_STRING_BK_BTN);

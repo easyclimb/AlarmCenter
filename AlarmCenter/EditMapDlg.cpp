@@ -80,8 +80,8 @@ BOOL CEditMapDlg::OnInitDialog()
 	m_tree.Expand(m_rootItem, TVE_EXPAND);
 
 	auto userMgr = user_manager::get_instance();
-	user_info_ptr user = userMgr->GetCurUserInfo();
-	core::user_priority user_priority = user->get_user_priority();
+	user_info_ptr user = userMgr->get_cur_user_info();
+	core::user_priority user_priority = user->get_priority();
 	switch (user_priority) {
 		case core::UP_SUPER:
 		case core::UP_ADMIN:

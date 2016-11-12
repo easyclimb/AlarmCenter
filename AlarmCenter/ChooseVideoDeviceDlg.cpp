@@ -69,7 +69,7 @@ BOOL CChooseVideoDeviceDlg::OnInitDialog()
 	video::user_list list;
 	video::video_manager::get_instance()->GetVideoUserList(list);
 	for (auto usr : list) {
-		txt.Format(L"%d--%s--%s", usr->get_id(), usr->get_user_name().c_str(), 
+		txt.Format(L"%d--%s--%s", usr->get_id(), usr->get_user_name().c_str(),
 				   usr->get_productor().get_formatted_name().c_str());
 		int ndx = m_userList.AddString(txt);
 		m_userList.SetItemData(ndx, usr->get_id());

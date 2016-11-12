@@ -204,10 +204,10 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 		m_handle_time.SetWindowTextW(time_point_to_wstring(handle_->get_assigned_time_point() + std::chrono::minutes(handle_->get_predict_minutes_to_handle())).c_str());
 	}
 
-	auto user = user_manager::get_instance()->GetCurUserInfo();
+	auto user = user_manager::get_instance()->get_cur_user_info();
 	m_user.SetWindowTextW(user->get_formmated_name().c_str());
-	if (user->get_user_id() != cur_handling_alarm_info_->get_user_id()) {
-		cur_handling_alarm_info_ = mgr->execute_update_alarm_user(cur_handling_alarm_info_->get_user_id(), user->get_user_id());
+	if (user->get_id() != cur_handling_alarm_info_->get_id()) {
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_user(cur_handling_alarm_info_->get_id(), user->get_id());
 	}
 
 	int reason_ndx = -1;
@@ -293,7 +293,7 @@ void CAlarmHandleStep4Dlg::OnBnClickedButtonSwitchUser()
 	CLoginDlg dlg;
 	dlg.DoModal();
 
-	auto user = user_manager::get_instance()->GetCurUserInfo();
+	auto user = user_manager::get_instance()->get_cur_user_info();
 	m_user.SetWindowTextW(user->get_formmated_name().c_str());
 }
 

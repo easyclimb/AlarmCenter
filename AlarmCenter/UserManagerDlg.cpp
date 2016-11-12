@@ -58,7 +58,7 @@ END_MESSAGE_MAP()
 void CUserManagerDlg::OnBnClickedButtonClear()
 {
 	auto mgr = user_manager::get_instance();
-	int id = mgr->DistributeUserID();
+	int id = mgr->distribute_user_id();
 	CString sid;
 	if (id == -1)
 		sid.Empty();
@@ -94,14 +94,14 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 	CString sid, name, phone;
 	m_id.GetWindowText(sid);
 	int id = _wtoi(sid);
-	if (id != m_curUser->get_user_id())
+	if (id != m_curUser->get_id())
 		return;
 	m_name.GetWindowTextW(name);
 	m_phone.GetWindowTextW(phone);
 
 	user_priority priority = UP_OPERATOR;
 
-	if (m_curUser->get_user_priority() == UP_SUPER) {
+	if (m_curUser->get_priority() == UP_SUPER) {
 		priority = UP_SUPER;
 	} else {
 		int ndx = m_priority.GetCurSel();
@@ -115,11 +115,11 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 
 	BOOL bUpdated = TRUE;
 	do {
-		if (wcscmp(name, m_curUser->get_user_name().c_str()) != 0)
+		if (wcscmp(name, m_curUser->get_name().c_str()) != 0)
 			break;
-		if (wcscmp(phone, m_curUser->get_user_phone().c_str()) != 0)
+		if (wcscmp(phone, m_curUser->get_phone().c_str()) != 0)
 			break;
-		if (priority != m_curUser->get_user_priority())
+		if (priority != m_curUser->get_priority())
 			break;
 
 		bUpdated = FALSE;
@@ -129,12 +129,12 @@ void CUserManagerDlg::OnBnClickedButtonUpdate()
 		return;
 
 	user_info_ptr user = std::make_shared<user_info>();
-	user->set_user_name((LPCTSTR)name);
-	user->set_user_phone((LPCTSTR)phone);
-	user->set_user_priority(priority);
+	user->set_name((LPCTSTR)name);
+	user->set_phone((LPCTSTR)phone);
+	user->set_priority(priority);
 
 	auto mgr = user_manager::get_instance();
-	BOOL ok = mgr->UpdateUserInfo(id, user);
+	auto ok = mgr->update_user_info(id, user);
 	if (ok) {
 		CString txt;
 		txt = TR(IDS_STRING_SUCCESS);
@@ -155,7 +155,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 	CString sid, name, phone;
 	m_id.GetWindowText(sid);
 	int id = _wtoi(sid);
-	if (m_curUser && id == m_curUser->get_user_id()) {
+	if (m_curUser && id == m_curUser->get_id()) {
 		CString txt;
 		txt = TR(IDS_STRING_CLK_CLR_FST);
 		MessageBox(txt, L"", MB_ICONINFORMATION);
@@ -165,7 +165,7 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 
 	m_name.GetWindowTextW(name);
 	auto mgr = user_manager::get_instance();
-	if (mgr->UserExists(name, id)) {
+	if (mgr->user_exists(name, id)) {
 		CString txt;
 		txt = TR(IDS_STRING_USERNAME_EXISTS);
 		MessageBox(txt, L"", MB_ICONERROR);
@@ -187,13 +187,13 @@ void CUserManagerDlg::OnBnClickedButtonAdd()
 		priority = UP_OPERATOR;
 
 	user_info_ptr user = std::make_shared<user_info>();
-	user->set_user_id(id);
-	user->set_user_name((LPCTSTR)name);
-	user->set_user_passwd(L"123456");
-	user->set_user_phone((LPCTSTR)phone);
-	user->set_user_priority(priority);
+	user->set_id(id);
+	user->set_name((LPCTSTR)name);
+	user->set_passwd(L"123456");
+	user->set_phone((LPCTSTR)phone);
+	user->set_priority(priority);
 
-	BOOL ok = mgr->AddUser(user);
+	BOOL ok = mgr->add_user(user);
 	if (ok) {
 		CString txt;
 		txt = TR(IDS_STRING_SUCCESS);
@@ -216,7 +216,7 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 		return;
 	}
 
-	if (m_curUser->get_user_id() == 0) {
+	if (m_curUser->get_id() == 0) {
 		CString txt;
 		txt = TR(IDS_STRING_CANT_DEL_SUPER);
 		MessageBox(txt, L"", MB_ICONERROR);
@@ -224,7 +224,7 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 	}
 
 	auto mgr = user_manager::get_instance();
-	BOOL ok = mgr->DeleteUser(m_curUser);
+	BOOL ok = mgr->delete_user(m_curUser);
 	if (ok) {
 		CString txt;
 		txt = TR(IDS_STRING_SUCCESS);
@@ -242,17 +242,17 @@ void CUserManagerDlg::OnBnClickedButtonDelete()
 void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	user_info_ptr user = core::user_manager::get_instance()->GetUserInfo(pNMLV->lParam);
+	user_info_ptr user = core::user_manager::get_instance()->get_user_info(pNMLV->lParam);
 	assert(user);
 	m_curUser = user;
 	CString id;
-	id.Format(L"%d", user->get_user_id());
+	id.Format(L"%d", user->get_id());
 	m_id.SetWindowTextW(id);
-	m_name.SetWindowTextW(user->get_user_name().c_str());
-	m_phone.SetWindowTextW(user->get_user_phone().c_str());
+	m_name.SetWindowTextW(user->get_name().c_str());
+	m_phone.SetWindowTextW(user->get_phone().c_str());
 	CString super;
 	super = TR(IDS_STRING_USER_SUPER);
-	switch (user->get_user_priority()) {
+	switch (user->get_priority()) {
 		case UP_SUPER:
 			m_priority.SetCurSel(-1);
 			m_priority.SetWindowTextW(super);
@@ -265,7 +265,7 @@ void CUserManagerDlg::OnLvnItemchangedList1(NMHDR *pNMHDR, LRESULT *pResult)
 			break;
 	}
 
-	BOOL canEdit = m_curUser->get_user_id() != 0;
+	BOOL canEdit = m_curUser->get_id() != 0;
 	m_name.EnableWindow();
 	m_phone.EnableWindow();
 	m_priority.EnableWindow(canEdit);
@@ -332,13 +332,13 @@ void CUserManagerDlg::Insert2List(const core::user_info_ptr& user)
 	LV_ITEM lvitem = { 0 };
 	CString tmp = _T("");
 
-	lvitem.lParam = user->get_user_id();
+	lvitem.lParam = user->get_id();
 	lvitem.mask = LVIF_TEXT;
-	lvitem.iItem = user->get_user_id();
+	lvitem.iItem = user->get_id();
 	lvitem.iSubItem = 0;
 
 	// ID
-	tmp.Format(_T("%d"), user->get_user_id());
+	tmp.Format(_T("%d"), user->get_id());
 	lvitem.pszText = tmp.LockBuffer();
 	nResult = m_list.InsertItem(&lvitem);
 	tmp.UnlockBuffer();
@@ -347,20 +347,20 @@ void CUserManagerDlg::Insert2List(const core::user_info_ptr& user)
 		// 用户名
 		lvitem.iItem = nResult;
 		lvitem.iSubItem++;
-		tmp = user->get_user_name().c_str();
+		tmp = user->get_name().c_str();
 		lvitem.pszText = tmp.LockBuffer();
 		m_list.SetItem(&lvitem); 
 		tmp.UnlockBuffer();
 
 		// 手机
 		lvitem.iSubItem++;
-		tmp = user->get_user_phone().c_str();
+		tmp = user->get_phone().c_str();
 		lvitem.pszText = tmp.LockBuffer();
 		m_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
 		// 权限
-		switch (user->get_user_priority()) {
+		switch (user->get_priority()) {
 			case UP_SUPER:
 				tmp = TR(IDS_STRING_USER_SUPER);
 				break;
@@ -377,7 +377,7 @@ void CUserManagerDlg::Insert2List(const core::user_info_ptr& user)
 		m_list.SetItem(&lvitem);
 		tmp.UnlockBuffer();
 
-		m_list.SetItemData(nResult, (DWORD_PTR)user->get_user_id());
+		m_list.SetItemData(nResult, (DWORD_PTR)user->get_id());
 	}
 }
 
@@ -387,10 +387,10 @@ void CUserManagerDlg::LoadAllUserInfo()
 	m_list.DeleteAllItems();
 	m_curUser = nullptr;
 	auto mgr = user_manager::get_instance();
-	user_info_ptr user = mgr->GetFirstUserInfo();
+	user_info_ptr user = mgr->get_first_user_info();
 	while (user) {
 		Insert2List(user);
-		user = mgr->GetNextUserInfo();
+		user = mgr->get_next_user_info();
 	}
 	OnBnClickedButtonClear();
 }
@@ -407,7 +407,7 @@ void CUserManagerDlg::OnBnClickedButtonChangePasswd()
 		return;
 
 	auto mgr = user_manager::get_instance();
-	BOOL ok = mgr->ChangeUserPasswd(m_curUser, passwd);
+	BOOL ok = mgr->change_user_passwd(m_curUser, passwd);
 	if (ok) {
 		CString txt;
 		txt = TR(IDS_STRING_SUCCESS);

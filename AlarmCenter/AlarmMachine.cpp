@@ -395,9 +395,9 @@ void alarm_machine::clear_ademco_event_list()
 	suser = TR(IDS_STRING_USER);
 	sfm = TR(IDS_STRING_LOCAL_OP);
 	sop = TR(IDS_STRING_CLR_ALM_MSG);
-	auto user = user_manager::get_instance()->GetCurUserInfo();
+	auto user = user_manager::get_instance()->get_cur_user_info();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
-				   user->get_user_id(), user->get_user_name().c_str(),
+				   user->get_id(), user->get_name().c_str(),
 				   sfm, sop);
 	if (_is_submachine) {
 		auto mgr = alarm_machine_manager::get_instance();

@@ -13,9 +13,23 @@
 using namespace SQLite;
 
 
+
+
 namespace core {
 
-//IMPLEMENT_SINGLETON(history_record_manager)
+class history_record_manager::CurUserChangedObserver : public dp::observer<core::user_info_ptr>
+{
+public:
+	explicit CurUserChangedObserver(history_record_manager* hr) : _hr(hr) {}
+	virtual void on_update(const user_info_ptr& ptr) {
+		if (_hr) {
+			_hr->OnCurUserChangedResult(ptr);
+		}
+	}
+private:
+	history_record_manager* _hr;
+};
+
 
 void history_record_manager::OnCurUserChangedResult(const core::user_info_ptr& user)
 {
@@ -30,16 +44,16 @@ void history_record_manager::OnCurUserChangedResult(const core::user_info_ptr& u
 
 	if (m_curUserInfo) {
 		srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogout,
-					   m_curUserInfo->get_user_id(),
-					   m_curUserInfo->get_user_name().c_str());
+					   m_curUserInfo->get_id(),
+					   m_curUserInfo->get_name().c_str());
 		InsertRecord(-1, -1, srecord, time(nullptr), RECORD_LEVEL_USERLOG);
 	}
 
 	m_curUserInfo = user;
 	if (m_curUserInfo) {
 		srecord.Format(L"%s%s:(ID:%d, %s)", suser, slogin,
-					   m_curUserInfo->get_user_id(),
-					   m_curUserInfo->get_user_name().c_str());
+					   m_curUserInfo->get_id(),
+					   m_curUserInfo->get_name().c_str());
 		InsertRecord(-1, -1, srecord, time(nullptr), RECORD_LEVEL_USERLOG);
 	}
 }
@@ -93,7 +107,7 @@ time text)");
 	m_nTotalRecord = GetRecordCountPro();
 
 	auto mgr = user_manager::get_instance();
-	auto user = mgr->GetCurUserInfo();
+	auto user = mgr->get_cur_user_info();
 	OnCurUserChangedResult(user);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	mgr->register_observer(m_cur_user_changed_observer);
@@ -129,7 +143,7 @@ void history_record_manager::InsertRecord(int ademco_id, int zone_value, const w
 	wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
 	//history_record_ptr HistoryRecord = std::make_shared<HistoryRecord>(-1, ademco_id, zone_value, user_manager::get_instance()->GetCurUserID(), level, record, wtime);
 	//m_bufferedRecordList.push_back(HistoryRecord);
-	m_bufferedRecordList.push_back(std::make_shared<history_record>(-1, ademco_id, zone_value, user_manager::get_instance()->GetCurUserID(), level, record, wtime));
+	m_bufferedRecordList.push_back(std::make_shared<history_record>(-1, ademco_id, zone_value, user_manager::get_instance()->get_cur_user_id(), level, record, wtime));
 }
 
 
@@ -143,7 +157,7 @@ void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 	//auto mgr = user_manager::get_instance();
 	CString sql = _T("");
 	sql.Format(_T("insert into [table_history_record] ([ademco_id],[zone_value],[user_id],[level],[record],[time]) values(%d,%d,%d,%d,'%s','%s')"),
-			   hr->ademco_id, hr->zone_value, m_curUserInfo->get_user_id(), hr->level, double_quotes(hr->record).c_str(), hr->record_time);
+			   hr->ademco_id, hr->zone_value, m_curUserInfo->get_id(), hr->level, double_quotes(hr->record).c_str(), hr->record_time);
 	JLOG(L"%s\n", sql);
 	db_->exec(utf8::w2a((LPCTSTR)sql));
 	int id = static_cast<int>(db_->getLastInsertRowid());
@@ -304,7 +318,7 @@ BOOL history_record_manager::DeleteHalfRecored()
 		m_nTotalRecord -= num;
 		m_recordMap.clear();
 		JLOG(L"m_csLock.UnLock()\n");
-		auto record = std::make_shared<history_record>(-1, -1, -1, m_curUserInfo->get_user_id(), RECORD_LEVEL_CLEARHR, L"", L"");
+		auto record = std::make_shared<history_record>(-1, -1, -1, m_curUserInfo->get_id(), RECORD_LEVEL_CLEARHR, L"", L"");
 		notify_observers(record);
 		//InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 		return TRUE;

@@ -105,18 +105,7 @@ public:
 
 class history_record_manager  : public dp::observable<history_record_ptr>, public dp::singleton<history_record_manager>
 {
-	class CurUserChangedObserver : public dp::observer<user_info_ptr>
-	{
-	public:
-		explicit CurUserChangedObserver(history_record_manager* hr) : _hr(hr) {}
-		virtual void on_update(const user_info_ptr& ptr) {
-			if (_hr) {
-				_hr->OnCurUserChangedResult(ptr);
-			}
-		}
-	private:
-		history_record_manager* _hr;
-	};
+	class CurUserChangedObserver;
 
 	std::shared_ptr<CurUserChangedObserver> m_cur_user_changed_observer;
 

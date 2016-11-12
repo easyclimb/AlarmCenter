@@ -74,7 +74,7 @@ public:
 	explicit CurUserChangedObserver(CHistoryRecordDlg* dlg) : _dlg(dlg) {}
 	virtual void on_update(const core::user_info_ptr& ptr) {
 		if (_dlg) {
-			if (ptr->get_user_priority() == core::UP_OPERATOR) {
+			if (ptr->get_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnExport.EnableWindow(0);
 			} else {
 				_dlg->m_btnExport.EnableWindow(1);
@@ -365,7 +365,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	show_alarm_obs_ = std::make_shared<ShowAlarmObserver>(this);
 
 	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
+	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->get_cur_user_info());
 
 	m_startTime = CTime::GetCurrentTime();
 	m_currentTime = CTime::GetCurrentTime();
@@ -1074,8 +1074,8 @@ void CHistoryRecordDlg::OnButtonExport()
 
 	CString s, fm;
 	fm = TR(IDS_STRING_FM_USER_EXPORT_HR);
-	auto user = user_manager::get_instance()->GetCurUserInfo();
-	s.Format(fm, user->get_user_id(), user->get_user_name().c_str());
+	auto user = user_manager::get_instance()->get_cur_user_info();
+	s.Format(fm, user->get_id(), user->get_name().c_str());
 	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 
 	Sleep(1000);
@@ -1496,9 +1496,9 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
 	auto mgr = user_manager::get_instance();
-	auto curUser = mgr->GetCurUserInfo();
-	auto user = mgr->GetFirstUserInfo();
-	bool bDisabled = curUser->get_user_priority() == UP_OPERATOR;
+	auto curUser = mgr->get_cur_user_info();
+	auto user = mgr->get_first_user_info();
+	bool bDisabled = curUser->get_priority() == UP_OPERATOR;
 	CMenu menu;
 	menu.CreatePopupMenu();
 	int ndx = 1;
@@ -1506,13 +1506,13 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	std::vector<int> userIdList;
 	userIdList.push_back(0);
 	while (user) {
-		txt.Format(L"ID:%d(%s)", user->get_user_id(), user->get_user_name().c_str());
+		txt.Format(L"ID:%d(%s)", user->get_id(), user->get_name().c_str());
 		menu.AppendMenuW(MF_STRING, ndx, txt);
 		if (bDisabled && user != curUser) {
 			menu.EnableMenuItem(ndx, MF_DISABLED | MF_GRAYED);
 		}
-		userIdList.push_back(user->get_user_id());
-		user = mgr->GetNextUserInfo();
+		userIdList.push_back(user->get_id());
+		user = mgr->get_next_user_info();
 		ndx++;
 	}
 

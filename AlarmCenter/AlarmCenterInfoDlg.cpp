@@ -32,14 +32,14 @@ public:
 	explicit CurUserChangedObserver(CAlarmCenterInfoDlg* dlg) : _dlg(dlg) {}
 	virtual void on_update(const core::user_info_ptr& ptr) {
 		if (_dlg) {
-			if (ptr->get_user_priority() == core::UP_OPERATOR) {
+			if (ptr->get_priority() == core::UP_OPERATOR) {
 				_dlg->m_btnSavePrivateCloud.EnableWindow(0);
 				_dlg->m_btnSaveNetworkInfo.EnableWindow(0);
 			} else {
 				_dlg->m_btnSavePrivateCloud.EnableWindow(1); 
 				_dlg->m_btnSaveNetworkInfo.EnableWindow(util::CConfigHelper::get_instance()->get_network_mode() & util::NETWORK_MODE_TRANSMIT);
 			}
-			_dlg->InitAcct(ptr->get_user_priority());
+			_dlg->InitAcct(ptr->get_priority());
 		}
 	}
 private:
@@ -192,7 +192,7 @@ BOOL CAlarmCenterInfoDlg::OnInitDialog()
 
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
-	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
+	m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->get_cur_user_info());
 
 	m_cmb_switch_language.ResetContent();
 	m_cmb_switch_language.AddString(L"简体中文");
@@ -372,7 +372,7 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 			core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
 		}
-		m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->GetCurUserInfo());
+		m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->get_cur_user_info());
 	}
 }
 
@@ -712,8 +712,8 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonSaveServerInfo()
 		auto csr_acct = cfg->get_csr_acct();
 		if (phoneA.compare(csr_acct) != 0) {
 			cfg->set_csr_acct(phoneA);
-			core::user_info_ptr user = core::user_manager::get_instance()->GetCurUserInfo();
-			InitAcct(user->get_user_priority());
+			core::user_info_ptr user = core::user_manager::get_instance()->get_cur_user_info();
+			InitAcct(user->get_priority());
 			updated1 = updated2 = true;
 		}
 	}

@@ -78,11 +78,11 @@ void CLoginDlg::OnBnClickedOk()
 		CString suser_id;
 		m_user_id.GetWindowTextW(suser_id);
 		int user_id = _wtoi(suser_id);
-		ok = mgr->Login(user_id, passwd);
+		ok = mgr->login(user_id, passwd);
 	} else {
 		CString user_name;
 		m_user_name.GetWindowTextW(user_name);
-		ok = mgr->Login(user_name, passwd);
+		ok = mgr->login(user_name, passwd);
 	}
 
 	if (!ok) {
@@ -112,7 +112,7 @@ void CLoginDlg::OnEnChangeEditUserid()
 	m_prev_user_id = user_id;
 	auto mgr = core::user_manager::get_instance();
 	std::wstring user_name;
-	if (!mgr->UserExists(user_id, user_name)) {
+	if (!mgr->user_exists(user_id, user_name)) {
 		CString note;
 		note = TR(IDS_STRING_USERID_NOT_EXISTS);
 		m_note_id.SetWindowTextW(note);
@@ -136,7 +136,7 @@ void CLoginDlg::OnEnChangeEditUserName()
 
 	m_prev_user_name = user_name;
 	auto mgr = core::user_manager::get_instance();
-	if (!mgr->UserExists(user_name, user_id)) {
+	if (!mgr->user_exists(user_name, user_id)) {
 		CString note;
 		note = TR(IDS_STRING_USER_NAME_NOT_EXISTS);
 		m_note_name.SetWindowTextW(note);

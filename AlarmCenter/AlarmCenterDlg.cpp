@@ -39,6 +39,7 @@
 #include "alarm_center_video_service.h"
 #include "VideoManager.h"
 #include "AlarmHandleStep1Dlg.h"
+#include "ChangePswDlg.h"
 
 #include <algorithm>
 #include <iterator>
@@ -97,7 +98,7 @@ public:
 	explicit CurUserChangedObserver(CAlarmCenterDlg* dlg) : _dlg(dlg) {}
 	virtual void on_update(const core::user_info_ptr& ptr) {
 		if (_dlg) {
-			_dlg->PostMessage(WM_CURUSERCHANGED, (WPARAM)(ptr->get_user_id()));
+			_dlg->PostMessage(WM_CURUSERCHANGED, (WPARAM)(ptr->get_id()));
 		}
 	}
 private:
@@ -308,8 +309,8 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	
 	JLOG(L"REGISTER USERINFO\n");
 	auto userMgr = core::user_manager::get_instance();
-	core::user_info_ptr user = userMgr->GetCurUserInfo();
-	OnMsgCuruserchangedResult((WPARAM)user->get_user_id(), 0);
+	core::user_info_ptr user = userMgr->get_cur_user_info();
+	OnMsgCuruserchangedResult((WPARAM)user->get_id(), 0);
 	m_cur_user_changed_observer = std::make_shared<CurUserChangedObserver>(this);
 	userMgr->register_observer(m_cur_user_changed_observer);
 	JLOG(L"REGISTER USERINFO ok\n");
@@ -856,10 +857,10 @@ void CAlarmCenterDlg::HandleMachineDisarmPasswdWrong(int ademco_id)
 	sop = TR(IDS_STRING_DISARM);
 	snull = TR(IDS_STRING_NULL);
 	
-	user_info_ptr user = user_manager::get_instance()->GetCurUserInfo();
+	user_info_ptr user = user_manager::get_instance()->get_cur_user_info();
 	
 	srecord.Format(L"%s(ID:%d,%s)%s:%s%s", suser,
-				   user->get_user_id(), user->get_user_name().c_str(),
+				   user->get_id(), user->get_name().c_str(),
 				   sfm, sop, machine->get_formatted_name());
 	history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(), 0,
 												srecord, time(nullptr),
@@ -921,30 +922,35 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgCuruserchangedResult(WPARAM wParam, LPARAM
 	if (m_bExiting) {
 		return 0;
 	}
-	auto user = core::user_manager::get_instance()->GetUserInfo(wParam); assert(user);
+	auto user = core::user_manager::get_instance()->get_user_info(wParam); assert(user);
 
 	CString user_id;
-	user_id.Format(L"%d", user->get_user_id());
+	user_id.Format(L"%d", user->get_id());
 	m_cur_user_id.SetWindowTextW(user_id);
-	m_cur_user_name.SetWindowTextW(user->get_user_name().c_str());
-	m_cur_user_phone.SetWindowTextW(user->get_user_phone().c_str());
-	core::user_priority user_priority = user->get_user_priority();
+	m_cur_user_name.SetWindowTextW(user->get_name().c_str());
+	m_cur_user_phone.SetWindowTextW(user->get_phone().c_str());
+	core::user_priority user_priority = user->get_priority();
 	CString sPriority;
-	m_btnUserMgr.EnableWindow(0);
-	m_btnMachineMgr.EnableWindow(0);
+	
 	switch (user_priority) {
 		case core::UP_SUPER:
 			sPriority = TR(IDS_STRING_USER_SUPER);
 			m_btnUserMgr.EnableWindow(1);
+			m_btnUserMgr.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_USERMGR));
 			m_btnMachineMgr.EnableWindow(1);
 			break;
 		case core::UP_ADMIN:
 			sPriority = TR(IDS_STRING_USER_ADMIN);
 			m_btnMachineMgr.EnableWindow(1);
+			m_btnUserMgr.EnableWindow(1);
+			m_btnUserMgr.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_CHANGE_PASSWD));
 			break;
 		case core::UP_OPERATOR:
 		default:
 			sPriority = TR(IDS_STRING_USER_OPERATOR);
+			m_btnUserMgr.EnableWindow(1);
+			m_btnUserMgr.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_CHANGE_PASSWD));
+			m_btnMachineMgr.EnableWindow(0);
 			break;
 	}
 	m_cur_user_priority.SetWindowTextW(sPriority);
@@ -961,8 +967,13 @@ void CAlarmCenterDlg::OnBnClickedButtonSwitchUser()
 
 void CAlarmCenterDlg::OnBnClickedButtonUsermgr()
 {
-	CUserManagerDlg dlg(this);
-	dlg.DoModal();
+	if (core::UP_SUPER == core::user_manager::get_instance()->get_cur_user_priority()) {
+		CUserManagerDlg dlg(this);
+		dlg.DoModal();
+	} else {
+		CChangePswDlg dlg(this);
+		dlg.DoModal();
+	}
 }
 
 
@@ -1465,9 +1476,9 @@ void CAlarmCenterDlg::OnBnClickedButtonMute()
 	fmMachine = TR(IDS_STRING_MACHINE);
 	fmSubmachine = TR(IDS_STRING_SUBMACHINE);
 	sop = TR(IDS_STRING_IDC_BUTTON_MUTE);
-	user_info_ptr user = user_manager::get_instance()->GetCurUserInfo();
+	user_info_ptr user = user_manager::get_instance()->get_cur_user_info();
 	srecord.Format(L"%s(ID:%d,%s)%s:%s", suser,
-				   user->get_user_id(), user->get_user_name().c_str(),
+				   user->get_id(), user->get_name().c_str(),
 				   sfm, sop);
 
 	history_record_manager::get_instance()->InsertRecord(-1, -1, srecord, time(nullptr),

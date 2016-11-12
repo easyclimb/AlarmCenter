@@ -201,8 +201,8 @@ BOOL CEditZoneDlg::OnInitDialog()
 	Init();
 
 	auto userMgr = user_manager::get_instance();
-	user_info_ptr user = userMgr->GetCurUserInfo();
-	core::user_priority user_priority = user->get_user_priority();
+	user_info_ptr user = userMgr->get_cur_user_info();
+	core::user_priority user_priority = user->get_priority();
 	switch (user_priority) {
 		case core::UP_SUPER:
 		case core::UP_ADMIN:
@@ -349,7 +349,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 			m_editDevInfo.SetWindowTextW(L"");
 		}
 
-		if (user_manager::get_instance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
+		if (user_manager::get_instance()->get_cur_user_priority() == UP_OPERATOR) {
 			m_btnBindOrUnbindVideoDevice.EnableWindow(0);
 			m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
 		} else {
@@ -418,7 +418,7 @@ void CEditZoneDlg::OnTvnSelchangedTreeZone(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 				m_editDevInfo.SetWindowTextW(L"");
 			}
 
-			if (user_manager::get_instance()->GetCurUserInfo()->get_user_priority() == UP_OPERATOR) {
+			if (user_manager::get_instance()->get_cur_user_priority() == UP_OPERATOR) {
 				m_btnBindOrUnbindVideoDevice.EnableWindow(0);
 				m_chkAutoPlayVideoOnAlarm.EnableWindow(0);
 			} else {

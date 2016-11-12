@@ -13,41 +13,47 @@ namespace core {
 class user_info
 {
 private:
-	//int _id;
-	int _user_id;
-	user_priority _user_priority;
-	std::wstring _user_name;
-	std::wstring _user_passwd;
-	std::wstring _user_phone;
+	int id_ = 0;
+	user_priority priority_ = UP_OPERATOR;
+	std::wstring name_ = {};
+	std::wstring passwd_ = {};
+	std::wstring phone_ = {};
 public:
 	user_info();
 	~user_info();
-	user_info(const user_info& rhs) { CopyFrom(rhs); }
-	user_info& operator=(const user_info& rhs) { CopyFrom(rhs); }
+	user_info(const user_info& rhs) { copy_from(rhs); }
+	user_info& operator=(const user_info& rhs) { copy_from(rhs); }
 
-	user_priority get_user_priority() const { return _user_priority; }
-	void set_user_priority(int priority) { _user_priority = IntegerToUserPriority(priority); }
-	void set_user_priority(user_priority priority) { _user_priority = priority; }
+	user_priority get_priority() const { return priority_; }
+	void set_priority(int priority) { priority_ = IntegerToUserPriority(priority); }
+	void set_priority(user_priority priority) { priority_ = priority; }
 
-	DECLARE_GETTER_SETTER_INT(_user_id);
-	DECLARE_GETTER_SETTER(std::wstring, _user_name);
-	DECLARE_GETTER_SETTER(std::wstring, _user_passwd);
-	DECLARE_GETTER_SETTER(std::wstring, _user_phone);
+	int get_id() const { return id_; }
+	void set_id(int id) { id_ = id; }
+
+	auto get_name() const { return name_; }
+	void set_name(const std::wstring& name) { name_ = name; }
+
+	auto get_passwd() const { return passwd_; }
+	void set_passwd(const std::wstring& psw) { passwd_ = psw; }
+
+	auto get_phone() const { return phone_; }
+	void set_phone(const std::wstring& phone) { phone_ = phone; }
 
 	std::wstring get_formmated_name() const {
 		std::wstringstream ss;
-		ss << _user_id << L" " << _user_name << L" " << _user_phone;
+		ss << id_ << L" " << name_ << L" " << phone_;
 		return ss.str();
 	}
 
 protected:
 
-	void CopyFrom(const user_info& rhs) {
-		set_user_id(rhs.get_user_id());
-		set_user_priority(rhs.get_user_priority());
-		set_user_name(rhs.get_user_name());
-		set_user_phone(rhs.get_user_phone());
-		set_user_passwd(rhs.get_user_passwd());
+	void copy_from(const user_info& rhs) {
+		set_id(rhs.get_id());
+		set_priority(rhs.get_priority());
+		set_name(rhs.get_name());
+		set_phone(rhs.get_phone());
+		set_passwd(rhs.get_passwd());
 	}
 
 	static user_priority IntegerToUserPriority(int priority) {
@@ -63,31 +69,42 @@ protected:
 class user_manager : public dp::observable<user_info_ptr>, public dp::singleton<user_manager>
 {
 private:
-	std::list<user_info_ptr> _userList;
-	user_info_ptr _curUser;
-	std::mutex _lock4CurUser;
-	std::shared_ptr<SQLite::Database> db_;
-	std::list<user_info_ptr>::iterator _curUserIter;
+	std::list<user_info_ptr> user_list_ = {};
+	user_info_ptr cur_user_ = nullptr;
+	std::recursive_mutex lock_for_cur_user_ = {};
+	std::shared_ptr<SQLite::Database> db_ = nullptr;
+	std::list<user_info_ptr>::iterator cur_user_iter_ = {};
+
+	typedef std::lock_guard<std::recursive_mutex> lock_guard_type;
+
 public:
 	
 	~user_manager();
-	BOOL UserExists(int user_id, std::wstring& user_name);
-	BOOL UserExists(const wchar_t* user_name, int& user_id);
-	BOOL Login(int user_id, const wchar_t* user_passwd);
-	BOOL Login(const wchar_t* user_name, const wchar_t* user_passwd);
-	user_info_ptr GetCurUserInfo() { std::lock_guard<std::mutex> lock(_lock4CurUser); return _curUser; }
-	user_info_ptr GetFirstUserInfo();
-	user_info_ptr GetNextUserInfo();
-	user_info_ptr GetUserInfo(int user_id);
-	int DistributeUserID();
-	BOOL UpdateUserInfo(int user_id, const core::user_info_ptr& newUserInfo);
-	BOOL AddUser(const core::user_info_ptr& newUserInfo);
-	BOOL DeleteUser(const core::user_info_ptr& user);
-	BOOL ChangeUserPasswd(const core::user_info_ptr& user, const wchar_t* passwd);
-	int GetCurUserID() { return _curUser->get_user_id(); }
 
+	bool user_exists(int user_id, std::wstring& user_name);
+	bool user_exists(const wchar_t* user_name, int& user_id);
+
+	bool login(int user_id, const wchar_t* user_passwd);
+	bool login(const wchar_t* user_name, const wchar_t* user_passwd);
+
+	user_info_ptr get_cur_user_info() { lock_guard_type lock(lock_for_cur_user_); return cur_user_; }
+	int get_cur_user_id() { lock_guard_type lock(lock_for_cur_user_); return cur_user_->get_id(); }
+	auto get_cur_user_priority() { lock_guard_type lock(lock_for_cur_user_); return cur_user_->get_priority(); }
+
+	user_info_ptr get_first_user_info();
+	user_info_ptr get_next_user_info();
+	user_info_ptr get_user_info(int user_id);
+
+	int distribute_user_id();
+
+	bool update_user_info(int user_id, const core::user_info_ptr& newUserInfo);
+	bool add_user(const core::user_info_ptr& newUserInfo);
+	bool delete_user(const core::user_info_ptr& user);
+	bool change_user_passwd(const core::user_info_ptr& user, const wchar_t* passwd);
+
+	std::wstring encrypt(const std::wstring& plain_text);
+	
 protected:
-	//DECLARE_SINGLETON(user_manager)
 	user_manager();
 };
 };

@@ -632,7 +632,7 @@ alarm_ptr alarm_handle_mgr::execute_add_alarm(int ademco_id, int zone, int gg,
 	ss << "insert into table_alarm "
 		<< "(aid,zone,gg,alarm_text,alarm_date,user_id,judgement_id,handle_id,reason_id,status) "
 		<< "values (" << ademco_id << "," << zone << "," << gg << ",\"" << utf8::w2a(double_quotes(alarm_text))
-		<< "\",\"" << time_point_to_string(alarm_time) << "\"," << user_manager::get_instance()->GetCurUserID() << "," << judgement_id << "," << handle_id
+		<< "\",\"" << time_point_to_string(alarm_time) << "\"," << user_manager::get_instance()->get_cur_user_id() << "," << judgement_id << "," << handle_id
 		<< "," << reason_id << "," << alarm_status::alarm_status_not_judged << ")";
 
 	auto sql = ss.str();

@@ -229,6 +229,7 @@
     <ClInclude Include="ButtonEx.h" />
     <ClInclude Include="CameraBindWizard.h" />
     <ClInclude Include="CameraInfo.h" />
+    <ClInclude Include="ChangePswDlg.h" />
     <ClInclude Include="ChooseDetDlg.h" />
     <ClInclude Include="ChooseMachineDlg.h" />
     <ClInclude Include="ChooseVideoDeviceDlg.h" />
@@ -362,6 +363,7 @@
     <ClCompile Include="ButtonEx.cpp" />
     <ClCompile Include="CameraBindWizard.cpp" />
     <ClCompile Include="CameraInfo.cpp" />
+    <ClCompile Include="ChangePswDlg.cpp" />
     <ClCompile Include="ChooseDetDlg.cpp" />
     <ClCompile Include="ChooseMachineDlg.cpp" />
     <ClCompile Include="ChooseVideoDeviceDlg.cpp" />

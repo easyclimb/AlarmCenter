@@ -33,7 +33,7 @@ public:
 			if (service->show_csr_map_) {
 				service->show_csr_map_ = false;
 			}
-			response->set_user_level(core::user_manager::get_instance()->GetCurUserInfo()->get_user_priority());
+			response->set_user_level(core::user_manager::get_instance()->get_cur_user_priority());
 
 			alarm_center_map_service::get_instance()->sub_process_mgr_->feed_watch_dog();
 		}

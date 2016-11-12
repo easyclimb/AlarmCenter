@@ -360,6 +360,7 @@
     <ClCompile Include="congwin_fe100_mgr.cpp">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="ChangePswDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -721,6 +722,7 @@
     <ClInclude Include="congwin_fe100_mgr.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="ChangePswDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
