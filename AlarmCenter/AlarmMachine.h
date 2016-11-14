@@ -148,6 +148,9 @@ private:
 
 	// 2016-5-4 23:09:00 for service expire management
 	consumer_ptr consumer_;
+
+	//2016-11-14 15:31:50 for alarm handle
+	int alarm_id_ = 0;
 	
 protected:
 	void HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent);
@@ -311,6 +314,13 @@ public:
 	signal_strangth get_signal_strength() const { return signal_strength_; }
 	void set_signal_strength(signal_strangth strength) { signal_strength_ = strength; }
 
+
+	// 2016-11-14 15:32:27 for alarm handle. 
+	// alarm_id == 0 means this machine is not handled or hanlded over, no matter its alarming or not.
+	// other values means it is alarming and is handling.
+	// after is handled, alarm_id needs to be reset to 0.
+	int get_alarm_id() const { return alarm_id_; }
+	void set_alarm_id(int id);
 };
 
 

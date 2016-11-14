@@ -26,6 +26,7 @@
 #include "EditCameraDlg.h"
 #include "alarm_center_map_service.h"
 #include "AlarmHandleStep1Dlg.h"
+#include "AlarmHandleStep4Dlg.h"
 
 using namespace gui;
 using namespace ademco;
@@ -387,11 +388,28 @@ void CAlarmMachineDlg::UpdateCaption()
 void CAlarmMachineDlg::AlarmHandle()
 {
 	if (m_machine->get_alarming()) {
-		CAlarmHandleStep1Dlg dlg;
-		dlg.machine_ = m_machine;
-		if (IDOK == dlg.DoModal()) {
 
-			
+		int alarm_id = m_machine->get_alarm_id();
+
+		if (alarm_id == 0) {
+			CAlarmHandleStep1Dlg dlg;
+			dlg.machine_ = m_machine;
+			if (IDOK == dlg.DoModal()) {
+
+
+			}
+		} else { // handle outstanding alarm
+			auto mgr = alarm_handle_mgr::get_instance();
+			auto alarm = mgr->get_alarm_info(alarm_id);
+			if (alarm) {
+				CAlarmHandleStep4Dlg dlg;
+				dlg.cur_handling_alarm_info_ = alarm;
+				dlg.judgment_ = mgr->get_alarm_judgement(alarm->get_judgement_id());
+				dlg.handle_ = mgr->get_alarm_handle(alarm->get_handle_id());
+				dlg.reason_ = mgr->get_alarm_reason(alarm->get_reason_id());
+				dlg.machine_ = m_machine;
+				dlg.DoModal();
+			}
 		}
 	}
 }
@@ -921,6 +939,8 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 		break;
 	case EVENT_I_AM_NET_MODULE:
 	case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:
+	case EVENT_I_AM_LCD_MACHINE:
+	case EVENT_I_AM_WIRE_MACHINE:
 		UpdateBtn123();
 		break;
 	case EVENT_MACHINE_ALIAS:

@@ -25,6 +25,7 @@
 #include "ConfigHelper.h"
 #include "alarm_center_video_service.h"
 #include "consumer.h"
+#include "alarm_handle_mgr.h"
 
 using namespace ademco;
 namespace core {
@@ -1630,6 +1631,18 @@ bool alarm_machine::execute_set_sms_cfg(const sms_config& cfg)
 	return false;
 }
 
+void alarm_machine::set_alarm_id(int id)
+{
+	//if (alarm_id_ != id) {
+		alarm_id_ = id;
+		auto t = time(nullptr);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 
+														 _is_submachine ? _submachine_zone : 0, 
+														 _is_submachine ? INDEX_SUB_MACHINE : 0,
+														 t, t);
+		notify_observers(ademcoEvent);
+	//}
+}
 
 };
 

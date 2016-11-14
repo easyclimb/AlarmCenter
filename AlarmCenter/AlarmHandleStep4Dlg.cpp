@@ -407,11 +407,11 @@ void CAlarmHandleStep4Dlg::OnBnClickedOk()
 
 	// update reason
 	ndx = m_cmb_alarm_reason.GetCurSel();
-	if (ndx == 0) {
+	int reason = m_cmb_alarm_reason.GetItemData(ndx);
+	/*if (reason == 0) {
 		reason_ = nullptr;
 		cur_handling_alarm_info_ = mgr->execute_update_alarm_reason(cur_handling_alarm_info_->get_id(), reason_);
-	} else {
-		int reason = m_cmb_alarm_reason.GetItemData(ndx);
+	} else */{
 		m_reason_detail.GetWindowTextW(txt);
 		std::wstring detail = (LPCTSTR)txt;
 		m_reason_attach.GetWindowTextW(txt);
@@ -450,6 +450,9 @@ void CAlarmHandleStep4Dlg::OnBnClickedOk()
 
 	if (alarm_status::alarm_status_cleared == status) {
 		machine_->clear_ademco_event_list();
+		machine_->set_alarm_id(0);
+	} else {
+		machine_->set_alarm_id(cur_handling_alarm_info_->get_id());
 	}
 
 	CDialogEx::OnOK();

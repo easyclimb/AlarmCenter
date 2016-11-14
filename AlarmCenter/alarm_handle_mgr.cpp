@@ -791,7 +791,7 @@ alarm_ptr alarm_handle_mgr::execute_update_alarm_reason(int alarm_id, alarm_reas
 	if (alarm) {
 		std::stringstream ss;
 		if (reason) {
-			if (alarm->reason_id_ == 0 || reason->get_id() == 0) {
+			if (alarm->reason_id_ == 0 && reason->get_id() == 0) {
 				reason = execute_add_alarm_reason(reason->get_reason(), reason->get_detail(), reason->get_attach());
 				ss << "update table_alarm set reason_id=" << reason->get_id() << " where id=" << alarm_id;
 				impl_->db_->exec(ss.str());

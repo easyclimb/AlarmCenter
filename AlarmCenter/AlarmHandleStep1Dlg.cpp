@@ -118,8 +118,12 @@ void CAlarmHandleStep1Dlg::show_one()
 
 		cur_handling_alarm_info_ = mgr->execute_add_alarm_texts(cur_handling_alarm_info_->get_id(), alarm_texts_);
 
+		machine_->set_alarm_id(cur_handling_alarm_info_->get_id());
+
 		m_alarm_text.SetWindowTextW(cur_handling_alarm_info_->get_text().c_str());
 
+	} else {
+		OnOK();
 	}
 }
 

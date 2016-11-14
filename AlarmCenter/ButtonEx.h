@@ -80,5 +80,6 @@ protected:
 	void UpdateIconAndColor(bool online, core::machine_status status);
 	void UpdateToolTipText();
 };
-};
+
+};
 

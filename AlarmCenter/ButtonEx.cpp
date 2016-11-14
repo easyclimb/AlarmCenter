@@ -14,6 +14,7 @@
 #include "HistoryRecord.h"
 #include "StaticBmp.h"
 #include "StaticColorText.h"
+#include "alarm_handle_mgr.h"
 
 using namespace ademco;
 
@@ -28,6 +29,7 @@ namespace detail {
 	const COLORREF cColorBlack = RGB(0, 0, 0);
 	const COLORREF cColorWhite = RGB(255, 255, 255);
 	//const COLORREF cColorWhite = RGB(0, 187, 94);
+	const COLORREF cColorBlue = RGB(60, 160, 255);
 
 	//IMPLEMENT_ADEMCO_EVENT_CALL_BACK(CButtonEx, OnAdemcoEvent);
 
@@ -133,7 +135,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	_button->SetFaceColor(cColorWhite);
 	color_text_->SetFaceColor(cColorWhite);
 	UpdateButtonText();
-	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
+	
 	UpdateToolTipText();
 
 	_button->SetButtonClkCallback(on_btnclick, this);
@@ -148,6 +150,7 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	if (IsValidButton()) {
 		_button->SetTimerEx(cTimerIdAdemco, this, on_timer);
 	}
+	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 }
 
 
@@ -295,6 +298,8 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			break;
 		case EVENT_I_AM_NET_MODULE:
 		case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:
+		case EVENT_I_AM_LCD_MACHINE:
+		case EVENT_I_AM_WIRE_MACHINE:
 			if (bmybusinese) {
 				UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 			}
@@ -333,7 +338,17 @@ void CButtonEx::UpdateIconAndColor(bool online, core::machine_status status)
 	//CString bmppath;
 
 	color_text_->SetTextColor(!online ? cColorRed : cColorBlack);
-
+	
+	int alarm_id = _machine->get_alarm_id();
+	if (alarm_id != 0) {
+		auto mgr = core::alarm_handle_mgr::get_instance();
+		auto alarm = mgr->get_alarm_info(alarm_id);
+		if (alarm->get_status() == core::alarm_status::alarm_status_not_cleared) {
+			StopTimer();
+			_button->SetFaceColor(cColorBlue);
+			color_text_->SetFaceColor(cColorBlue);
+		}
+	}
 
 	if (_machine->get_banned()) {
 		iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\warning.bmp");
