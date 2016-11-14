@@ -237,6 +237,7 @@
     <ClInclude Include="ConfigBase.h" />
     <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="congwin_fe100_mgr.h" />
+    <ClInclude Include="consumer.h" />
     <ClInclude Include="ConsumerTypeMgrDlg.h" />
     <ClInclude Include="Coordinate.h" />
     <ClInclude Include="core.h" />
@@ -371,6 +372,7 @@
     <ClCompile Include="ConfigBase.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="congwin_fe100_mgr.cpp" />
+    <ClCompile Include="consumer.cpp" />
     <ClCompile Include="ConsumerTypeMgrDlg.cpp" />
     <ClCompile Include="Coordinate.cpp" />
     <ClCompile Include="CsrInfo.cpp" />

@@ -40,6 +40,7 @@
 #include "VideoManager.h"
 #include "AlarmHandleStep1Dlg.h"
 #include "ChangePswDlg.h"
+#include "consumer.h"
 
 #include <algorithm>
 #include <iterator>

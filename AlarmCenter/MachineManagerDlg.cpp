@@ -17,6 +17,7 @@
 #include "SubMachineExpireManagerDlg.h"
 #include "ZoneInfo.h"
 #include "ConsumerTypeMgrDlg.h"
+#include "consumer.h"
 
 using namespace core;
 

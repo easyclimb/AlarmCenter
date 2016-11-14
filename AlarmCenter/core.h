@@ -316,4 +316,19 @@ typedef enum user_priority {
 class user_info;
 typedef std::shared_ptr<user_info> user_info_ptr;
 
+
+struct consumer_type {
+	int id;
+	CString name;
+
+	consumer_type(int id, const CString& name) : id(id), name(name) {}
+};
+
+typedef std::shared_ptr<consumer_type> consumer_type_ptr;
+typedef std::map<int, consumer_type_ptr> consumer_type_map;
+
+struct consumer;
+typedef std::shared_ptr<consumer> consumer_ptr;
+typedef std::list<consumer_ptr> consumer_list;
+
 };

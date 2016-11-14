@@ -24,6 +24,7 @@
 #include "alarm_center_video_service.h"
 #include "VideoManager.h"
 #include "ConfigHelper.h"
+#include "consumer.h"
 
 namespace core {
 using namespace SQLite;

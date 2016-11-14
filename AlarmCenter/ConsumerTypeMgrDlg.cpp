@@ -7,6 +7,7 @@
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "InputGroupNameDlg.h"
+#include "consumer.h"
 
 // CConsumerTypeMgrDlg dialog
 

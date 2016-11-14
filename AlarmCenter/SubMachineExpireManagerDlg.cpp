@@ -18,6 +18,7 @@
 #include <comdef.h>
 #include <set>
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
+#include "consumer.h"
 
 
 using namespace core;

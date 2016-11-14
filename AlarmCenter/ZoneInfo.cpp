@@ -8,6 +8,7 @@
 #include "HistoryRecord.h"
 #include "AlarmCenter.h"
 #include "alarm_center_video_service.h"
+#include "consumer.h"
 
 namespace core
 {

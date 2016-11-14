@@ -12,7 +12,7 @@
 #include "AlarmCenter.h"
 #include "InputGroupNameDlg.h"
 #include "ExtendExpireTimeDlg.h"
-
+#include "consumer.h"
 
 
 namespace detail {

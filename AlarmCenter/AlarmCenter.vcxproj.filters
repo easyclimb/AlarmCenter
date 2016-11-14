@@ -361,6 +361,9 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="ChangePswDlg.cpp" />
+    <ClCompile Include="consumer.cpp">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -723,6 +726,9 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="ChangePswDlg.h" />
+    <ClInclude Include="consumer.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
