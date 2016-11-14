@@ -441,7 +441,7 @@ void CHistoryRecordDlg::InitListCtrlHeader()
 void CHistoryRecordDlg::init_grid()
 {
 	// init alarm report 2016-9-30 16:47:01
-	const int col_count = 4;
+	const int col_count = 3;
 	const int row_count = 1;
 
 	m_grid.DeleteAllItems();
@@ -471,14 +471,14 @@ void CHistoryRecordDlg::init_grid()
 			m_grid.SetColumnWidth(col, 100);
 			break;
 		case 1:
-			item.strText = TR(IDS_STRING_TIME);
+			/*item.strText = TR(IDS_STRING_TIME);
 			m_grid.SetColumnWidth(col, 180);
 			break;
-		case 2:
+		case 2:*/
 			item.strText = TR(IDS_STRING_MACHINE_STATUS);
 			m_grid.SetColumnWidth(col, 150);
 			break;
-		case 3:
+		case 2:
 			item.strText = TR(IDS_STRING_HISTORY_RECORD);
 			m_grid.SetColumnWidth(col, 1000);
 			break;
@@ -565,9 +565,9 @@ void CHistoryRecordDlg::insert_grid_content(const core::alarm_ptr & alarm)
 
 	
 
-	item.col = col++;
-	item.strText = alarm->get_date().c_str();
-	m_grid.SetItem(&item);
+	//item.col = col++;
+	//item.strText = alarm->get_text().c_str();
+	//m_grid.SetItem(&item);
 
 	item.col = col++;
 	alarm_status status = alarm->get_status();
@@ -1733,7 +1733,7 @@ void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * /*pResul
 			dlg.judgment_ = mgr->get_alarm_judgement(alarm->get_judgement_id());
 			dlg.handle_ = mgr->get_alarm_handle(alarm->get_handle_id());
 			dlg.reason_ = mgr->get_alarm_reason(alarm->get_reason_id());
-			dlg.machine_ = alarm_machine_manager::get_instance()->GetMachineByUuid(machine_uuid(alarm->get_aid(), alarm->get_gg() == 0 ? 0 : alarm->get_zone()));
+			dlg.machine_ = alarm_machine_manager::get_instance()->GetMachineByUuid(machine_uuid(alarm->get_aid(), alarm->get_is_sub_machine() ? 0 : alarm->get_zone()));
 			dlg.DoModal();
 
 			// update this record
@@ -1741,7 +1741,7 @@ void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * /*pResul
 			item.mask = GVIF_TEXT | GVIF_FORMAT;
 			item.nFormat = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
 			item.row = pItem->iRow;
-			item.col = 2;
+			item.col = 1;
 			alarm_status status = alarm->get_status();
 			item.strText = alarm_info::get_alarm_status_text(status).c_str();
 			item.mask |= (GVIF_IMAGE);

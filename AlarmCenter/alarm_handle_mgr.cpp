@@ -89,6 +89,15 @@ alarm_reason::by alarm_reason::integer_to_by_what(int reason)
 }
 
 
+std::wstring alarm_info::get_text() const
+{
+	std::wstring all;
+	for (auto txt : alarm_texts_) {
+		all += txt->_txt + L"\r\n";
+	}
+	return all;
+}
+
 std::wstring alarm_info::get_alarm_status_text(int status)
 {
 	switch (status) {
@@ -138,7 +147,7 @@ public:
 	// return true for init ok, false for already exists and need not to init
 	bool init_db() {
 		using namespace SQLite;
-		auto path = get_config_path() + "\\alarm_v1.1.db3";
+		auto path = get_config_path() + "\\alarm_v1.2.db3";
 		db_ = std::make_unique<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 		assert(db_);
 
@@ -193,14 +202,28 @@ attach text)");
 (id integer primary key AUTOINCREMENT, \
 aid integer, \
 zone integer, \
-gg integer, \
-alarm_text text, \
-alarm_date text, \
+is_sub_machine integer, \
 user_id integer, \
 judgement_id integer, \
 handle_id integer, \
 reason_id integer, \
 status integer)");
+
+/*
+gg integer, \
+alarm_text text, \
+alarm_date text, \
+
+*/
+
+					db_->exec("create table table_alarm_text \
+(id integer primary key AUTOINCREMENT, \
+alarm_id integer, \
+zone integer, \
+gg integer, \
+ademco_event integer, \
+alarm_text text, \
+alarm_date text)");
 
 					
 
@@ -298,6 +321,30 @@ status integer)");
 			return query.getColumn(0).getInt();
 		}
 		return 0;
+	}
+
+	void load_alarm_texts(const core::alarm_ptr& alarm) {
+		std::stringstream ss;
+		ss << "select * from table_alarm_text where alarm_id=" << alarm->get_id();
+		Statement query(*db_, ss.str());
+		while (query.executeStep()) {
+			int ndx = 0;
+			int id = query.getColumn(ndx++).getInt();
+			int alarm_id = query.getColumn(ndx++).getInt();
+			int zone = query.getColumn(ndx++);
+			int gg = query.getColumn(ndx++);
+			int adm_evnt = query.getColumn(ndx++);
+			std::string txt = query.getColumn(ndx++).getText();
+			std::string tim = query.getColumn(ndx++).getText();
+
+			auto at = std::make_shared<core::alarm_text>();
+			at->_zone = zone;
+			at->_subzone = gg;
+			at->_event = adm_evnt;
+			at->_txt = utf8::a2w(txt).c_str();
+			at->_time = std::chrono::system_clock::to_time_t(string_to_time_point(tim));
+			alarm->alarm_texts_.push_back(at);
+		}
 	}
 };
 
@@ -519,9 +566,11 @@ bool alarm_handle_mgr::get_alarms_by_sql(const std::string & sql, const observer
 		record->id_ = query.getColumn(index++).getInt();
 		record->aid_ = query.getColumn(index++);
 		record->zone_ = query.getColumn(index++);
-		record->gg_ = query.getColumn(index++);
-		record->text_ = utf8::a2w(query.getColumn(index++).getText());
-		record->date_ = utf8::a2w(query.getColumn(index++).getText());
+		record->is_sub_machine_ = query.getColumn(index++).getInt() != 0;
+		//record->gg_ = query.getColumn(index++);
+		//record->text_ = utf8::a2w(query.getColumn(index++).getText());
+		//record->date_ = utf8::a2w(query.getColumn(index++).getText());
+		impl_->load_alarm_texts(record);
 		record->user_id_ = query.getColumn(index++);
 		record->judgement_id_ = query.getColumn(index++);
 		record->handle_id_ = query.getColumn(index++);
@@ -608,9 +657,8 @@ alarm_ptr alarm_handle_mgr::get_alarm_info(int id)
 			id = 1;
 			alarm->aid_ = query.getColumn(id++);
 			alarm->zone_ = query.getColumn(id++);
-			alarm->gg_ = query.getColumn(id++);
-			alarm->text_ = utf8::a2w(query.getColumn(id++).getText());
-			alarm->date_ = utf8::a2w(query.getColumn(id++).getText());
+			alarm->is_sub_machine_ = query.getColumn(id++).getInt() != 0;
+			impl_->load_alarm_texts(alarm);
 			alarm->judgement_id_ = query.getColumn(id++);
 			alarm->handle_id_ = query.getColumn(id++);
 			alarm->reason_id_ = query.getColumn(id++);
@@ -623,16 +671,21 @@ alarm_ptr alarm_handle_mgr::get_alarm_info(int id)
 	return alarm_ptr();
 }
 
-alarm_ptr alarm_handle_mgr::execute_add_alarm(int ademco_id, int zone, int gg, 
+alarm_ptr alarm_handle_mgr::execute_add_alarm(int ademco_id, int zone, /*int gg, 
 											  const std::wstring & alarm_text, 
-											  const std::chrono::system_clock::time_point & alarm_time, 
+											  const std::chrono::system_clock::time_point & alarm_time, */
+											  bool is_sub_machine,
 											  int judgement_id, int handle_id, int reason_id)
 {
-	std::stringstream ss;
+	std::stringstream ss; // gg,alarm_text,alarm_date,
 	ss << "insert into table_alarm "
-		<< "(aid,zone,gg,alarm_text,alarm_date,user_id,judgement_id,handle_id,reason_id,status) "
-		<< "values (" << ademco_id << "," << zone << "," << gg << ",\"" << utf8::w2a(double_quotes(alarm_text))
-		<< "\",\"" << time_point_to_string(alarm_time) << "\"," << user_manager::get_instance()->get_cur_user_id() << "," << judgement_id << "," << handle_id
+		<< "(aid,zone,user_id,is_sub_machine,judgement_id,handle_id,reason_id,status) "
+		<< "values (" << ademco_id << "," << zone << "," 
+
+		/*<< gg << ",\"" << utf8::w2a(double_quotes(alarm_text))
+		<< "\",\"" << time_point_to_string(alarm_time) << "\","*/ 
+
+		<< user_manager::get_instance()->get_cur_user_id() << "," << is_sub_machine << "," << judgement_id << "," << handle_id
 		<< "," << reason_id << "," << alarm_status::alarm_status_not_judged << ")";
 
 	auto sql = ss.str();
@@ -643,9 +696,10 @@ alarm_ptr alarm_handle_mgr::execute_add_alarm(int ademco_id, int zone, int gg,
 	alarm->id_ = id;
 	alarm->aid_ = ademco_id;
 	alarm->zone_ = zone;
-	alarm->gg_ = gg;
-	alarm->text_ = alarm_text;
-	alarm->date_ = time_point_to_wstring(alarm_time);
+	alarm->is_sub_machine_ = is_sub_machine;
+	//alarm->gg_ = gg;
+	//alarm->text_ = alarm_text;
+	//alarm->date_ = time_point_to_wstring(alarm_time);
 	alarm->judgement_id_ = judgement_id;
 	alarm->handle_id_ = handle_id;
 	alarm->reason_id_ = reason_id;
@@ -653,6 +707,53 @@ alarm_ptr alarm_handle_mgr::execute_add_alarm(int ademco_id, int zone, int gg,
 
 	buffered_alarms_[id] = alarm;
 
+	return alarm;
+}
+
+alarm_ptr alarm_handle_mgr::execute_add_alarm_text(int alarm_id, const alarm_text_ptr & txt)
+{
+	auto alarm = get_alarm_info(alarm_id);
+	if (alarm) {
+		std::stringstream ss;
+		ss << "insert into table_alarm_text "
+			<< "(alarm_id, zone, gg, ademco_event, alarm_text, alarm_date) "
+			<< "value(" << alarm_id
+			<< ", " << txt->_zone << ", " << txt->_subzone << ", " << txt->_event
+			<< ", \"" << utf8::w2a(double_quotes(txt->_txt))
+			<< "\", \"" << time_point_to_string(std::chrono::system_clock::from_time_t(txt->_time)) << "\")";
+
+		auto sql = ss.str();
+		impl_->db_->exec(sql);
+		//int id = impl_->db_->getLastInsertRowid() & 0xFFFFFFFF;
+		alarm->alarm_texts_.push_back(txt);
+	}
+	return alarm;
+}
+
+alarm_ptr alarm_handle_mgr::execute_add_alarm_texts(int alarm_id, std::list<alarm_text_ptr> txts)
+{
+	auto alarm = get_alarm_info(alarm_id);
+	if (alarm) {
+		std::stringstream ss;
+		for (auto txt : txts) {
+			ss << "insert into table_alarm_text "
+				<< "(alarm_id, zone, gg, ademco_event, alarm_text, alarm_date) "
+				<< "values(" << alarm_id
+				<< ", " << txt->_zone << ", " << txt->_subzone << ", " << txt->_event
+				<< ", \"" << utf8::w2a(double_quotes(txt->_txt))
+				<< "\", \"" << time_point_to_string(std::chrono::system_clock::from_time_t(txt->_time)) << "\")";
+
+			auto sql = ss.str();
+			try {
+				impl_->db_->exec(sql);
+			} catch (SQLite::Exception e) {
+				JLOGA(e.what());
+			}
+			//int id = impl_->db_->getLastInsertRowid() & 0xFFFFFFFF;
+			alarm->alarm_texts_.push_back(txt);
+			ss.str(""); ss.clear();
+		}
+	}
 	return alarm;
 }
 

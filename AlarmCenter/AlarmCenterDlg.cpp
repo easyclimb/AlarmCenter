@@ -281,7 +281,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	// Uncomment theese lines if you don't want to minimize to tray, and
 	// have the tray icon displayed all the time
 
-	//TraySetMinimizeToTray(FALSE);
+	TraySetMinimizeToTray(FALSE);
 	TrayShow();
 
 	SetWindowText(TR(IDS_STRING_ALARM_CENTER));

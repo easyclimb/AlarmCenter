@@ -173,9 +173,11 @@ private:
 	int id_ = 0;
 	int aid_ = 0;
 	int zone_ = 0;
-	int gg_ = 0;
-	std::wstring text_ = {};
-	std::wstring date_ = {};
+	bool is_sub_machine_ = false;
+	//int gg_ = 0;
+	//std::wstring text_ = {};
+	//std::wstring date_ = {};
+	std::list<alarm_text_ptr> alarm_texts_ = {};
 	int user_id_ = 0;
 	int judgement_id_ = 0;
 	int handle_id_ = 0;
@@ -186,9 +188,14 @@ public:
 	auto get_id() const { return id_; }
 	auto get_aid() const { return aid_; }
 	auto get_zone() const { return zone_; }
-	auto get_gg() const { return gg_; }
-	auto get_text() const { return text_; }
-	auto get_date() const { return date_; }
+	auto get_is_sub_machine() const { return is_sub_machine_; }
+	//auto get_gg() const { return gg_; }
+	//auto get_text() const { return text_; }
+	//auto get_date() const { return date_; }
+	auto get_assign_time() const { return time_point_to_wstring(std::chrono::system_clock::from_time_t(alarm_texts_.front()->_time)); }
+	auto get_update_time() const { return time_point_to_wstring(std::chrono::system_clock::from_time_t(alarm_texts_.back()->_time)); } 
+	std::wstring get_text() const;
+	//auto get_alarm_texts() const { return alarm_texts_; }
 	auto get_user_id() const { return user_id_; }
 	auto get_judgement_id() const { return judgement_id_; }
 	auto get_handle_id() const { return handle_id_; }
@@ -290,10 +297,9 @@ public:
 
 	int get_alarm_count() const { return alarm_count_; }
 	alarm_ptr get_alarm_info(int id);
-	alarm_ptr execute_add_alarm(int ademco_id, int zone, int gg,
-								const std::wstring& alarm_text,
-								const std::chrono::system_clock::time_point& alarm_time,
-								int judgement_id, int handle_id, int reason_id);
+	alarm_ptr execute_add_alarm(int ademco_id, int zone, bool is_sub_machine, int judgement_id, int handle_id, int reason_id);
+	alarm_ptr execute_add_alarm_text(int alarm_id, const alarm_text_ptr& txt);
+	alarm_ptr execute_add_alarm_texts(int alarm_id, std::list<alarm_text_ptr> txts);
 	alarm_ptr execute_update_alarm_judgment(int alarm_id, alarm_judgement_ptr& judgment);
 	alarm_ptr execute_update_alarm_reason(int alarm_id, alarm_reason_ptr& reason);
 	alarm_ptr execute_update_alarm_handle(int alarm_id, alarm_handle_ptr& handle);

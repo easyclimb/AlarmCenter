@@ -359,7 +359,7 @@ void CAlarmHandleStep4Dlg::OnCbnSelchangeComboGuard()
 	m_predict_minutes.EnableWindow(enable_guard);
 
 	if (enable_guard) {
-		m_assign_time.SetWindowTextW(cur_handling_alarm_info_->get_date().c_str());
+		m_assign_time.SetWindowTextW(cur_handling_alarm_info_->get_assign_time().c_str());
 		CString txt;
 		int minutes = alarm_handle::handle_time_default;
 		if (handle_) {
@@ -400,7 +400,7 @@ void CAlarmHandleStep4Dlg::OnBnClickedOk()
 		int guard_id = m_cmb_guard.GetItemData(ndx);
 		auto guard = mgr->get_security_guard(guard_id);
 
-		handle_ = create_alarm_handle(guard_id, wstring_to_time_point(cur_handling_alarm_info_->get_date()),
+		handle_ = create_alarm_handle(guard_id, wstring_to_time_point(cur_handling_alarm_info_->get_assign_time()),
 									  std::chrono::minutes(min), handle_ ? handle_->get_note() : std::wstring());
 		cur_handling_alarm_info_ = mgr->execute_update_alarm_handle(cur_handling_alarm_info_->get_id(), handle_);
 	}

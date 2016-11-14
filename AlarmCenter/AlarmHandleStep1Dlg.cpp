@@ -61,12 +61,19 @@ core::alarm_type CAlarmHandleStep1Dlg::get_alarm_type()
 
 void CAlarmHandleStep1Dlg::add_alarm_text(const core::alarm_text_ptr & at)
 {
-	alarm_texts_.push_back(at);
+	if (!machine_->get_is_submachine()) {
+		if (at->_subzone == 0) {
+			alarm_texts_.push_back(at);
+		}
+	} else {
+		alarm_texts_.push_back(at);
+	}
+	
 }
 
 void CAlarmHandleStep1Dlg::prepair()
 {
-	cur_handling_alarm_text_ = nullptr;
+	//cur_handling_alarm_text_ = nullptr;
 	alarm_texts_.clear();
 
 	auto no_zone_map = machine_->GetUnbindZoneMap();
@@ -93,20 +100,25 @@ void CAlarmHandleStep1Dlg::prepair()
 void CAlarmHandleStep1Dlg::show_one()
 {
 	if (!alarm_texts_.empty()) {
-		auto iter = alarm_texts_.begin();
-		cur_handling_alarm_text_ = *iter;
-		alarm_texts_.erase(iter);
+		//auto iter = alarm_texts_.begin();
+		//cur_handling_alarm_text_ = *iter;
+		//alarm_texts_.erase(iter);
 
-		m_alarm_text.SetWindowTextW(cur_handling_alarm_text_->_txt);
+
+
+		//m_alarm_text.SetWindowTextW(cur_handling_alarm_text_->_txt);
 
 		auto mgr = alarm_handle_mgr::get_instance();
 		cur_handling_alarm_info_ = mgr->execute_add_alarm(machine_->get_ademco_id(),
-														  cur_handling_alarm_text_->_zone,
-														  cur_handling_alarm_text_->_subzone,
-														  (LPCTSTR)(cur_handling_alarm_text_->_txt),
-														  std::chrono::system_clock::from_time_t(cur_handling_alarm_text_->_time),
+														  machine_->get_is_submachine() ? machine_->get_submachine_zone() : 0,
+														  machine_->get_is_submachine(),
+														  /*(LPCTSTR)(cur_handling_alarm_text_->_txt),
+														  std::chrono::system_clock::from_time_t(cur_handling_alarm_text_->_time),*/
 														  0, 0, 0);
 
+		cur_handling_alarm_info_ = mgr->execute_add_alarm_texts(cur_handling_alarm_info_->get_id(), alarm_texts_);
+
+		m_alarm_text.SetWindowTextW(cur_handling_alarm_info_->get_text().c_str());
 
 	}
 }
@@ -171,7 +183,7 @@ void CAlarmHandleStep1Dlg::handle_one()
 		CAlarmHandleStep3Dlg dlg;
 		if (IDOK == dlg.DoModal()) {
 			handle = create_alarm_handle(dlg.cur_editting_guard_id_,
-										 std::chrono::system_clock::from_time_t(cur_handling_alarm_text_->_time),
+										 wstring_to_time_point(cur_handling_alarm_info_->get_assign_time()),
 										 std::chrono::minutes(dlg.cur_editting_handle_time_),
 										 dlg.cur_editting_note_);
 
@@ -197,7 +209,7 @@ void CAlarmHandleStep1Dlg::handle_one()
 		}
 
 		if (handled && !alarm_texts_.empty()) {
-			show_one();
+			//show_one();
 		}
 	}
 }
