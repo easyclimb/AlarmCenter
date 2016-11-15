@@ -714,6 +714,20 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 					video_service->play_video(std::make_shared<video::zone_uuid>(_ademco_id, ademcoEvent->_zone, ZONE_VALUE_FOR_MACHINE_SELF), at);
 				} 
 			}
+
+			// 2016-11-15 14:35:09 处理正在处警、未消警时又来了报警
+			auto alarm_mgr = alarm_handle_mgr::get_instance();
+			int alarm_id = 0;
+			if (subMachine) {
+				alarm_id = subMachine->get_alarm_id();
+			} else {
+				alarm_id = alarm_id_;
+			}
+
+			if (alarm_id != 0) {
+				alarm_mgr->execute_add_alarm_text(alarm_id, at);
+			}
+
 #pragma endregion
 
 			EventLevel eventLevel = GetEventLevel(ademcoEvent->_event);

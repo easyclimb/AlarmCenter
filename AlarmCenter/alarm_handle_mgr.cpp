@@ -717,7 +717,7 @@ alarm_ptr alarm_handle_mgr::execute_add_alarm_text(int alarm_id, const alarm_tex
 		std::stringstream ss;
 		ss << "insert into table_alarm_text "
 			<< "(alarm_id, zone, gg, ademco_event, alarm_text, alarm_date) "
-			<< "value(" << alarm_id
+			<< "values(" << alarm_id
 			<< ", " << txt->_zone << ", " << txt->_subzone << ", " << txt->_event
 			<< ", \"" << utf8::w2a(double_quotes(txt->_txt))
 			<< "\", \"" << time_point_to_string(std::chrono::system_clock::from_time_t(txt->_time)) << "\")";
