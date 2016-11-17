@@ -55,4 +55,6 @@ public:
 	CButton m_radio_test_device;
 	CButton m_radio_man_made_false_posotive;
 	CButton m_radio_cannot_determine;
+	CButton m_btn_print;
+	afx_msg void OnBnClickedButtonPrint();
 };

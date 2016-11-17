@@ -194,7 +194,7 @@ public:
 	//auto get_date() const { return date_; }
 	auto get_assign_time() const { return time_point_to_wstring(std::chrono::system_clock::from_time_t(alarm_texts_.front()->_time)); }
 	auto get_update_time() const { return time_point_to_wstring(std::chrono::system_clock::from_time_t(alarm_texts_.back()->_time)); } 
-	std::wstring get_text() const;
+	std::wstring get_text(bool with_new_line = true) const;
 	//auto get_alarm_texts() const { return alarm_texts_; }
 	auto get_user_id() const { return user_id_; }
 	auto get_judgement_id() const { return judgement_id_; }
@@ -307,7 +307,14 @@ public:
 	alarm_ptr execute_update_alarm_user(int alarm_id, int user_id);
 
 	int get_min_alarm_id() const;
+	bool delete_half_record();
+	bool travers_alarm_record(const observer_ptr& ptr);
 	bool get_top_num_records_based_on_id(const int baseID, const int nums, const observer_ptr& ptr);
+	bool get_top_num_records(int nums, int ademco_id, int zone, const observer_ptr& ptr);
+	bool get_records_by_date(int ademco_id, int zone, const CString & beg, const CString & end, const observer_ptr& ptr);
+	bool get_records_by_date_and_status(int ademco_id, int zone, const CString & beg, const CString & end, alarm_status status, const observer_ptr& ptr);
+	bool get_records_by_date_and_user(int ademco_id, int zone, const CString & beg, const CString & end, int user_id, const observer_ptr& ptr);
+	bool get_records_by_date_and_guard(int ademco_id, int zone, const CString & beg, const CString & end, int guard_id, const observer_ptr& ptr);
 };
 
 

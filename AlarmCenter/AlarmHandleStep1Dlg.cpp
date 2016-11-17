@@ -239,11 +239,13 @@ void CAlarmHandleStep1Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RADIO3, m_radio_test_device);
 	DDX_Control(pDX, IDC_RADIO4, m_radio_man_made_false_posotive);
 	DDX_Control(pDX, IDC_RADIO5, m_radio_cannot_determine);
+	DDX_Control(pDX, IDC_BUTTON_PRINT, m_btn_print);
 }
 
 
 BEGIN_MESSAGE_MAP(CAlarmHandleStep1Dlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CAlarmHandleStep1Dlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_BUTTON_PRINT, &CAlarmHandleStep1Dlg::OnBnClickedButtonPrint)
 END_MESSAGE_MAP()
 
 
@@ -270,6 +272,7 @@ BOOL CAlarmHandleStep1Dlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_RADIO4, IDS_STRING_ALARM_TYPE_MAN_MADE_FALSE_POSITIVE);
 	SET_WINDOW_TEXT(IDC_RADIO5, IDS_STRING_ALARM_TYPE_UNABLE_TO_DETERMINE);
 
+	SET_WINDOW_TEXT(IDC_BUTTON_PRINT, IDS_STRING_PRINT);
 	SET_WINDOW_TEXT(IDOK, IDS_OK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
 
@@ -298,4 +301,175 @@ void CAlarmHandleStep1Dlg::OnBnClickedOk()
 	
 
 	CDialogEx::OnOK();
+}
+
+
+void CAlarmHandleStep1Dlg::OnBnClickedButtonPrint()
+{
+	//auto window = m_hWnd;
+
+	//// get screen rectangle
+	//RECT windowRect;
+	//GetWindowRect(&windowRect);
+
+	//// bitmap dimensions
+	//int bitmap_dx = windowRect.right - windowRect.left;
+	//int bitmap_dy = windowRect.bottom - windowRect.top;
+
+	//if (false) {
+	//	CRect rc;
+	//	m_btn_print.GetWindowRect(rc);
+	//	bitmap_dy -= rc.Height() + 25;
+	//}
+
+	//// create file
+	//std::wstringstream ss;
+	//ss << get_exe_path() << L"\\tmp.bmp";
+	//auto filename = ss.str();
+	//std::ofstream file(filename, std::ios::binary);
+	//if (!file) return;
+
+	//// save bitmap file headers
+	//BITMAPFILEHEADER fileHeader;
+	//BITMAPINFOHEADER infoHeader;
+
+	//fileHeader.bfType = 0x4d42;
+	//fileHeader.bfSize = 0;
+	//fileHeader.bfReserved1 = 0;
+	//fileHeader.bfReserved2 = 0;
+	//fileHeader.bfOffBits = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER);
+
+	//infoHeader.biSize = sizeof(infoHeader);
+	//infoHeader.biWidth = bitmap_dx;
+	//infoHeader.biHeight = bitmap_dy;
+	//infoHeader.biPlanes = 1;
+	//infoHeader.biBitCount = 24;
+	//infoHeader.biCompression = BI_RGB;
+	//infoHeader.biSizeImage = 0;
+	//infoHeader.biXPelsPerMeter = 0;
+	//infoHeader.biYPelsPerMeter = 0;
+	//infoHeader.biClrUsed = 0;
+	//infoHeader.biClrImportant = 0;
+
+	//file.write((char*)&fileHeader, sizeof(fileHeader));
+	//file.write((char*)&infoHeader, sizeof(infoHeader));
+
+	//// dibsection information
+	//BITMAPINFO info;
+	//info.bmiHeader = infoHeader;
+
+	//// ------------------
+	//// THE IMPORTANT CODE
+	//// ------------------
+	//// create a dibsection and blit the window contents to the bitmap
+	//HDC winDC = ::GetWindowDC(window);
+	//HDC memDC = CreateCompatibleDC(winDC);
+	//BYTE* memory = 0;
+	//HBITMAP bitmap = CreateDIBSection(winDC, &info, DIB_RGB_COLORS, (void**)&memory, 0, 0);
+	//SelectObject(memDC, bitmap);
+	//BitBlt(memDC, 0, 0, bitmap_dx, bitmap_dy, winDC, 0, 0, SRCCOPY);
+	//DeleteDC(memDC);
+	//::ReleaseDC(window, winDC);
+
+	//// save dibsection data
+	//int bytes = (((24 * bitmap_dx + 31) & (~31)) / 8)*bitmap_dy;
+	//file.write((const char*)memory, bytes);
+
+	//// HA HA, forgot paste in the DeleteObject lol, happy now ;)?
+	//DeleteObject(bitmap);
+
+	
+	/*ss.str(L""); ss.clear();
+	ss << L"print " << filename;
+	std::system(utf8::w2a(ss.str()).c_str());*/
+
+
+
+	CPrintDialog dlg(FALSE);
+	//dlg.GetDefaults();
+	int ret = dlg.DoModal();
+	if (ret != IDOK) {
+		return;
+	}
+
+	//DEVMODE devmode = { 0 };
+	//devmode.dmOrientation = DMORIENT_PORTRAIT;
+
+	//PRINTDLG   pd;
+	//pd.lStructSize = sizeof(PRINTDLG);
+	//pd.Flags = PD_RETURNDC;
+	//pd.hDC = nullptr;
+	//pd.hwndOwner = nullptr;
+	//pd.hInstance = nullptr;
+	//pd.nMaxPage = 2;
+	//pd.nMinPage = 1;
+	//pd.nFromPage = 1;
+	//pd.nToPage = 1;
+	//pd.nCopies = 1;
+	//pd.hDevMode = nullptr;
+	//pd.hDevNames = nullptr;
+
+	///////////////////////////////////////////////////////////
+	////显示打印对话框，由用户来设定纸张大小等.
+	//if (!PrintDlg(&pd))   return;
+	//ASSERT(pd.hDC != nullptr);/*断言获取的句柄不为空.*/
+
+
+
+	//auto pDevMode = dlg.GetDevMode();
+	//GlobalLock(pDevMode);
+	//pDevMode->dmOrientation = DMORIENT_PORTRAIT;
+	//GlobalUnlock(pDevMode);
+
+
+	auto winDC = GetDC();
+	CRect rc;
+	GetClientRect(rc);
+
+	if (0) {
+		CRect rc_btn;
+		m_btn_print.GetWindowRect(rc_btn);
+		rc.bottom += rc_btn.Height() + 25;
+	}
+
+	// is a default printer set up?
+	HDC hdcPrinter = dlg.GetPrinterDC();
+	//HDC hdcPrinter = pd.hDC;
+	if (hdcPrinter == NULL) {
+		MessageBox(_T("Buy a printer!"));
+	} else {
+		// create a CDC and attach it to the default printer
+		CDC dcPrinter;
+		dcPrinter.Attach(hdcPrinter);
+
+		// call StartDoc() to begin printing
+		DOCINFO docinfo;
+		memset(&docinfo, 0, sizeof(docinfo));
+		docinfo.cbSize = sizeof(docinfo);
+		docinfo.lpszDocName = _T("CDC::StartDoc() Code Fragment");
+
+		// if it fails, complain and exit gracefully
+		if (dcPrinter.StartDoc(&docinfo) < 0) {
+			MessageBox(_T("Printer wouldn't initalize"));
+		} else {
+			// start a page
+			if (dcPrinter.StartPage() < 0) {
+				//MessageBox(_T("Could not start page"));
+				dcPrinter.AbortDoc();
+			} else {
+				int   nHorRes = dcPrinter.GetDeviceCaps(HORZRES);
+				int   nVerRes = dcPrinter.GetDeviceCaps(VERTRES);
+				int   nXMargin = 20;//页边的空白   
+				int   nYMargin = 5;
+
+				dcPrinter.StretchBlt(nXMargin, nYMargin, nHorRes - 2 * nXMargin, nVerRes - 2 * nYMargin, winDC, 
+									 0, 0, rc.Width(), rc.Height(), SRCCOPY);
+
+				dcPrinter.EndPage();
+				dcPrinter.EndDoc();
+			}
+		}
+	}
+
+	//winDC->DeleteDC();
 }

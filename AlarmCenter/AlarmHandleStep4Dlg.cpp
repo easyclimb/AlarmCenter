@@ -60,6 +60,9 @@ void CAlarmHandleStep4Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_ADD_JUDGMENT_ATTACH1, m_btn_add_judgment_attach_1);
 	DDX_Control(pDX, IDC_BUTTON_ADD_JUDGEMENT_ATTACH2, m_btn_add_judgment_attach_2);
 	DDX_Control(pDX, IDC_EDIT_USER_DEFINE_JUDGE, m_judgment_user_define);
+	DDX_Control(pDX, IDC_BUTTON_PRINT, m_btn_print);
+	DDX_Control(pDX, IDC_BUTTON_SWITCH_USER, m_btn_switch_user);
+	DDX_Control(pDX, IDC_BUTTON_ADD_REASON_ATTACH, m_btn_add_reason_attach);
 }
 
 
@@ -76,6 +79,7 @@ BEGIN_MESSAGE_MAP(CAlarmHandleStep4Dlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO_GUARD, &CAlarmHandleStep4Dlg::OnCbnSelchangeComboGuard)
 	ON_EN_CHANGE(IDC_EDIT11, &CAlarmHandleStep4Dlg::OnEnChangeEditPredictMinutes)
 	ON_CBN_SELCHANGE(IDC_COMBO_JUDGEMENT, &CAlarmHandleStep4Dlg::OnCbnSelchangeComboJudgement)
+	ON_BN_CLICKED(IDC_BUTTON_PRINT, &CAlarmHandleStep4Dlg::OnBnClickedButtonPrint)
 END_MESSAGE_MAP()
 
 
@@ -164,6 +168,7 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_BUTTON_ADD_JUDGMENT_ATTACH1, IDS_STRING_ADD_ATTACHMENT);
 	SET_WINDOW_TEXT(IDC_BUTTON_ADD_JUDGEMENT_ATTACH2, IDS_STRING_ADD_ATTACHMENT);
 
+	SET_WINDOW_TEXT(IDC_BUTTON_PRINT, IDS_STRING_PRINT);
 	SET_WINDOW_TEXT(IDOK, IDS_OK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
 
@@ -206,7 +211,7 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 
 	auto user = user_manager::get_instance()->get_cur_user_info();
 	m_user.SetWindowTextW(user->get_formmated_name().c_str());
-	if (user->get_id() != cur_handling_alarm_info_->get_id()) {
+	if (!read_only_ && user->get_id() != cur_handling_alarm_info_->get_user_id()) {
 		cur_handling_alarm_info_ = mgr->execute_update_alarm_user(cur_handling_alarm_info_->get_id(), user->get_id());
 	}
 
@@ -262,6 +267,23 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 		m_judgement_attach2.SetWindowTextW(judgment_->get_note2().c_str());
 	}	
 
+	if (read_only_) {
+		m_cmb_status.EnableWindow(0);
+		m_cmb_guard.EnableWindow(0);
+		m_predict_minutes.EnableWindow(0);
+
+		m_btn_switch_user.EnableWindow(0);
+		m_cmb_alarm_reason.EnableWindow(0);
+		m_reason_detail.EnableWindow(0);
+		m_reason_attach.EnableWindow(0);
+		m_btn_add_reason_attach.EnableWindow(0);
+		m_cmb_judgement.EnableWindow(0);
+		m_judgment_user_define.EnableWindow(0);
+		m_judgement_detail.EnableWindow(0);
+		m_btn_add_judgment_attach_1.EnableWindow(0);
+		m_btn_add_judgment_attach_2.EnableWindow(0);
+	}
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -269,7 +291,7 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 
 void CAlarmHandleStep4Dlg::OnTimer(UINT_PTR nIDEvent)
 {
-	if (m_cmb_guard.GetCurSel() != 0) {
+	if (!read_only_ && m_cmb_guard.GetCurSel() != 0) {
 		//KillTimer(c_timer_id_update_date);
 		m_assign_time.SetWindowTextW(now_to_wstring().c_str());
 		OnEnKillfocusEditPredictMinutes();
@@ -356,7 +378,7 @@ void CAlarmHandleStep4Dlg::OnCbnSelchangeComboGuard()
 	int ndx = m_cmb_guard.GetCurSel();
 	int data = m_cmb_guard.GetItemData(ndx);
 	bool enable_guard = (ndx != -1 && data != 0);
-	m_predict_minutes.EnableWindow(enable_guard);
+	m_predict_minutes.EnableWindow(!read_only_ && enable_guard);
 
 	if (enable_guard) {
 		m_assign_time.SetWindowTextW(cur_handling_alarm_info_->get_assign_time().c_str());
@@ -381,6 +403,11 @@ void CAlarmHandleStep4Dlg::OnBnClickedOk()
 {
 	KillTimer(c_timer_id_update_date);
 
+	if (read_only_) {
+		CDialogEx::OnOK();
+		return;
+	}
+	
 	CString txt;
 	auto mgr = alarm_handle_mgr::get_instance();
 
@@ -469,4 +496,94 @@ void CAlarmHandleStep4Dlg::OnCbnSelchangeComboJudgement()
 	m_btn_add_judgment_attach_2.EnableWindow(able);
 	able = (judgment == 0); // 0 for user define
 	m_judgment_user_define.EnableWindow(able);
+}
+
+
+void CAlarmHandleStep4Dlg::OnBnClickedButtonPrint()
+{
+	CPrintDialog dlg(FALSE);
+	//dlg.GetDefaults();
+	int ret = dlg.DoModal();
+	if (ret != IDOK) {
+		return;
+	}
+
+	//DEVMODE devmode = { 0 };
+	//devmode.dmOrientation = DMORIENT_PORTRAIT;
+
+	//PRINTDLG   pd;
+	//pd.lStructSize = sizeof(PRINTDLG);
+	//pd.Flags = PD_RETURNDC;
+	//pd.hDC = nullptr;
+	//pd.hwndOwner = nullptr;
+	//pd.hInstance = nullptr;
+	//pd.nMaxPage = 2;
+	//pd.nMinPage = 1;
+	//pd.nFromPage = 1;
+	//pd.nToPage = 1;
+	//pd.nCopies = 1;
+	//pd.hDevMode = nullptr;
+	//pd.hDevNames = nullptr;
+
+	///////////////////////////////////////////////////////////
+	////显示打印对话框，由用户来设定纸张大小等.
+	//if (!PrintDlg(&pd))   return;
+	//ASSERT(pd.hDC != nullptr);/*断言获取的句柄不为空.*/
+
+
+
+	//auto pDevMode = dlg.GetDevMode();
+	//GlobalLock(pDevMode);
+	//pDevMode->dmOrientation = DMORIENT_PORTRAIT;
+	//GlobalUnlock(pDevMode);
+
+
+	auto winDC = GetDC();
+	CRect rc;
+	GetClientRect(rc);
+
+	if (0) {
+		CRect rc_btn;
+		m_btn_print.GetWindowRect(rc_btn);
+		rc.bottom += rc_btn.Height() + 25;
+	}
+
+	// is a default printer set up?
+	HDC hdcPrinter = dlg.GetPrinterDC();
+	//HDC hdcPrinter = pd.hDC;
+	if (hdcPrinter == NULL) {
+		MessageBox(_T("Buy a printer!"));
+	} else {
+		// create a CDC and attach it to the default printer
+		CDC dcPrinter;
+		dcPrinter.Attach(hdcPrinter);
+
+		// call StartDoc() to begin printing
+		DOCINFO docinfo;
+		memset(&docinfo, 0, sizeof(docinfo));
+		docinfo.cbSize = sizeof(docinfo);
+		docinfo.lpszDocName = _T("CDC::StartDoc() Code Fragment");
+
+		// if it fails, complain and exit gracefully
+		if (dcPrinter.StartDoc(&docinfo) < 0) {
+			MessageBox(_T("Printer wouldn't initalize"));
+		} else {
+			// start a page
+			if (dcPrinter.StartPage() < 0) {
+				//MessageBox(_T("Could not start page"));
+				dcPrinter.AbortDoc();
+			} else {
+				int   nHorRes = dcPrinter.GetDeviceCaps(HORZRES);
+				int   nVerRes = dcPrinter.GetDeviceCaps(VERTRES);
+				int   nXMargin = 20;//页边的空白   
+				int   nYMargin = 5;
+
+				dcPrinter.StretchBlt(nXMargin, nYMargin, nHorRes - 2 * nXMargin, nVerRes - 2 * nYMargin, winDC,
+									 0, 0, rc.Width(), rc.Height(), SRCCOPY);
+
+				dcPrinter.EndPage();
+				dcPrinter.EndDoc();
+			}
+		}
+	}
 }

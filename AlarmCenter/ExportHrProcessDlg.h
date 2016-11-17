@@ -13,6 +13,9 @@ class CExportHrProcessDlg : public CDialogEx
 	class TraverseRecordObserver;
 	std::shared_ptr<TraverseRecordObserver> m_traverse_record_observer;
 
+	class travers_alarm_observer;
+	std::shared_ptr<travers_alarm_observer> m_traverse_alarm_observer;
+
 	DECLARE_DYNAMIC(CExportHrProcessDlg)
 
 public:
@@ -40,6 +43,8 @@ public:
 	int m_nTotalCount;
 	CString m_excelPath;
 	BOOL m_bOpenAfterExport;
+
+	bool export_history_ = true;
 
 public:
 	afx_msg void OnBnClickedOk();

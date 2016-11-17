@@ -4,6 +4,8 @@
 #include "AppResource.h"
 #include "UserInfo.h"
 
+#include <set>
+
 using namespace SQLite;
 
 namespace core {
@@ -89,11 +91,16 @@ alarm_reason::by alarm_reason::integer_to_by_what(int reason)
 }
 
 
-std::wstring alarm_info::get_text() const
+std::wstring alarm_info::get_text(bool with_new_line) const
 {
 	std::wstring all;
 	for (auto txt : alarm_texts_) {
-		all += txt->_txt + L"\r\n";
+		all += txt->get_text_with_formatted_date();
+		if (with_new_line) {
+			all += L"\r\n";
+		} else {
+			all += L"    ";
+		}
 	}
 	return all;
 }
@@ -553,12 +560,15 @@ alarm_handle_ptr alarm_handle_mgr::execute_add_alarm_handle(int guard_id, const 
 
 bool alarm_handle_mgr::get_alarms_by_sql(const std::string & sql, const observer_ptr & ptr, bool asc)
 {
+	AUTO_LOG_FUNCTION;
+	JLOGA(sql.c_str());
 	std::shared_ptr<observer_type> obs(ptr.lock());
 	if (!obs) return false;
 
 	Statement query(*impl_->db_, sql);
 
-	std::list<alarm_ptr> tmp_list;
+	//std::list<alarm_ptr> tmp_list;
+	std::list<int> tmp_list;
 
 	while (query.executeStep()) {
 		int index = 0;
@@ -578,18 +588,20 @@ bool alarm_handle_mgr::get_alarms_by_sql(const std::string & sql, const observer
 		record->status_ = alarm_info::integer_to_alarm_status(query.getColumn(index++));
 
 		buffered_alarms_[record->id_] = record;
-		tmp_list.push_back(record);
-
+		//tmp_list.push_back(record);
+		tmp_list.push_back(record->id_);
 	}
+
+	tmp_list.unique();
 
 	if (!asc) {
 		tmp_list.reverse();
 	}
 
 	for (auto hr : tmp_list) {
-		obs->on_update(hr);
+		obs->on_update(buffered_alarms_[hr]);
 	}
-	return false;
+	return true;
 }
 
 alarm_reason_ptr alarm_handle_mgr::get_alarm_reason(int id)
@@ -689,7 +701,14 @@ alarm_ptr alarm_handle_mgr::execute_add_alarm(int ademco_id, int zone, /*int gg,
 		<< "," << reason_id << "," << alarm_status::alarm_status_not_judged << ")";
 
 	auto sql = ss.str();
-	impl_->db_->exec(sql);
+	JLOGA(sql.c_str());
+	try {
+		impl_->db_->exec(sql);
+	} catch (SQLite::Exception e) {
+		JLOGA(e.what());
+	}
+	
+	
 	int id = impl_->db_->getLastInsertRowid() & 0xFFFFFFFF;
 
 	auto alarm = create_alarm_info();
@@ -902,11 +921,108 @@ int alarm_handle_mgr::get_min_alarm_id() const
 	return 0;
 }
 
+bool alarm_handle_mgr::delete_half_record()
+{
+
+	return false;
+}
+
+bool alarm_handle_mgr::travers_alarm_record(const observer_ptr & ptr)
+{
+	return get_alarms_by_sql("select * from table_alarm", ptr, true);
+}
+
 bool alarm_handle_mgr::get_top_num_records_based_on_id(const int baseID, const int nums, const observer_ptr& ptr)
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
 	query.Format(_T("select * from table_alarm where id >= %d order by id limit %d"), baseID, nums);
+	return get_alarms_by_sql(utf8::w2a((LPCTSTR)query), ptr, false);
+}
+
+bool alarm_handle_mgr::get_top_num_records(int nums, int ademco_id, int zone, const observer_ptr & ptr)
+{
+	AUTO_LOG_FUNCTION;
+	CString query = _T("");
+	query.Format(_T("select * from table_alarm"));
+
+	if (ademco_id != -1) {
+		query.AppendFormat(L" where table_alarm.aid=%d ", ademco_id);
+		if (zone != -1) {
+			query.AppendFormat(L"and table_alarm.zone=%d ", zone);
+		}
+	}	
+	
+	query.AppendFormat(L"order by id limit %d", nums);
+	return get_alarms_by_sql(utf8::w2a((LPCTSTR)query), ptr, false);
+}
+
+bool alarm_handle_mgr::get_records_by_date(int ademco_id, int zone, const CString & beg, const CString & end, const observer_ptr & ptr)
+{
+	AUTO_LOG_FUNCTION;
+	CString query =  L"";
+	query.Format(_T("select table_alarm.* from table_alarm left outer join table_alarm_text on table_alarm.id==table_alarm_text.alarm_id and table_alarm_text.alarm_date between \"%s\" and \"%s\""), beg, end);
+
+	if (ademco_id != -1) {
+		query.AppendFormat(L" where table_alarm.aid=%d", ademco_id);
+		if (zone != -1) {
+			query.AppendFormat(L" and table_alarm.zone=%d", zone);
+		}
+	}	
+	
+	return get_alarms_by_sql(utf8::w2a((LPCTSTR)query), ptr, false);
+}
+
+bool alarm_handle_mgr::get_records_by_date_and_status(int ademco_id, int zone, const CString & beg, const CString & end, alarm_status status, const observer_ptr & ptr)
+{
+	AUTO_LOG_FUNCTION;
+	CString query = _T("");
+	query.Format(_T("select table_alarm.* from table_alarm left outer join table_alarm_text on table_alarm.id==table_alarm_text.alarm_id and table_alarm_text.alarm_date between \"%s\" and \"%s\" where"), beg, end);
+
+	if (ademco_id != -1) {
+		query.AppendFormat(L"table_alarm.aid=%d ", ademco_id);
+		if (zone != -1) {
+			query.AppendFormat(L"and table_alarm.zone=%d and ", zone);
+		}
+	}
+
+	query.AppendFormat(L" status=%d", status);
+	return get_alarms_by_sql(utf8::w2a((LPCTSTR)query), ptr, false);
+}
+
+bool alarm_handle_mgr::get_records_by_date_and_user(int ademco_id, int zone, const CString & beg, const CString & end, int user_id, const observer_ptr & ptr)
+{
+	AUTO_LOG_FUNCTION;
+	CString query = _T("");
+	query.Format(_T("select table_alarm.* from table_alarm left outer join table_alarm_text on table_alarm.id==table_alarm_text.alarm_id and table_alarm_text.alarm_date between \"%s\" and \"%s\" where"), beg, end);
+
+	if (ademco_id != -1) {
+		query.AppendFormat(L"table_alarm.aid=%d ", ademco_id);
+		if (zone != -1) {
+			query.AppendFormat(L"and table_alarm.zone=%d and ", zone);
+		}
+	}
+
+	query.AppendFormat(L" table_alarm.user_id=%d", user_id);
+	return get_alarms_by_sql(utf8::w2a((LPCTSTR)query), ptr, false);
+}
+
+bool alarm_handle_mgr::get_records_by_date_and_guard(int ademco_id, int zone, const CString & beg, const CString & end, int guard_id, const observer_ptr & ptr)
+{
+	AUTO_LOG_FUNCTION;
+	CString query = _T("");
+	query.Format(L"select table_alarm.* from table_alarm \
+left outer join table_alarm_text on table_alarm.id == table_alarm_text.alarm_id \
+left outer join table_handle on table_alarm.handle_id == table_handle.id \
+where table_alarm.handle_id != 0 and table_alarm_text.alarm_date between \"%s\" and \"%s\" and table_handle.guard_id == %d ", beg, end, guard_id);
+
+	if (ademco_id != -1) {
+		query.AppendFormat(L" and table_alarm.aid=%d", ademco_id);
+		if (zone != -1) {
+			query.AppendFormat(L" and table_alarm.zone=%d", zone);
+		}
+	}
+
 	return get_alarms_by_sql(utf8::w2a((LPCTSTR)query), ptr, false);
 }
 

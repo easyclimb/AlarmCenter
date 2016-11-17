@@ -193,6 +193,7 @@ void CHistoryRecordDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_SEL_NONE, m_btnSelNone);
 	DDX_Control(pDX, IDC_CUSTOM1, m_grid);
 	DDX_Control(pDX, IDC_TAB1, m_tab);
+	DDX_Control(pDX, IDC_BUTTON_SEL_BY_GUARD, m_btnSelByGuard);
 }
 
 BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
@@ -224,6 +225,7 @@ BEGIN_MESSAGE_MAP(CHistoryRecordDlg, CDialogEx)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST_RECORD, &CHistoryRecordDlg::OnNMDblclkListRecord)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CHistoryRecordDlg::OnTcnSelchangeTab)
 	ON_NOTIFY(NM_DBLCLK, IDC_CUSTOM1, OnGridDblClick)
+	ON_BN_CLICKED(IDC_BUTTON_SEL_BY_GUARD, &CHistoryRecordDlg::OnBnClickedButtonSelByGuard)
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -252,19 +254,17 @@ void CHistoryRecordDlg::InitData()
 			m_cmbPerPage.EnableWindow(0);
 			if (m_zone_value == -1) {
 				//total = hr->GetRecordConntByMachine(m_ademco_id);
-				CString txt, newtxt, smachine;
+				CString newtxt, smachine;
 				smachine = TR(IDS_STRING_MACHINE);
-				GetWindowText(txt);
-				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
+				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID), TR(IDS_STRING_HISTORY_RECORD), smachine, m_ademco_id);
 				SetWindowText(newtxt);
 			} else {
 				//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
-				CString txt, newtxt, smachine, ssubmachine;
+				CString newtxt, smachine, ssubmachine;
 				smachine = TR(IDS_STRING_MACHINE);
 				ssubmachine = TR(IDS_STRING_SUBMACHINE);
-				GetWindowText(txt);
 				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d",
-							  txt, smachine, m_ademco_id,
+							  TR(IDS_STRING_HISTORY_RECORD), smachine, m_ademco_id,
 							  ssubmachine, m_zone_value);
 				SetWindowText(newtxt);
 			}
@@ -283,19 +283,17 @@ void CHistoryRecordDlg::InitData()
 			m_cmbPerPage.EnableWindow(0);
 			if (m_zone_value == -1) {
 				//total = hr->GetRecordConntByMachine(m_ademco_id);
-				CString txt, newtxt, smachine;
+				CString newtxt, smachine;
 				smachine = TR(IDS_STRING_MACHINE);
-				GetWindowText(txt);
-				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID), txt, smachine, m_ademco_id);
+				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID), TR(IDS_STRING_HISTORY_RECORD), smachine, m_ademco_id);
 				SetWindowText(newtxt);
 			} else {
 				//total = hr->GetRecordConntByMachineAndZone(m_ademco_id, m_zone_value);
-				CString txt, newtxt, smachine, ssubmachine;
+				CString newtxt, smachine, ssubmachine;
 				smachine = TR(IDS_STRING_MACHINE);
 				ssubmachine = TR(IDS_STRING_SUBMACHINE);
-				GetWindowText(txt);
 				newtxt.Format(L"%s %s" + TR(IDS_STRING_FM_ADEMCO_ID) + L"%s%03d",
-							  txt, smachine, m_ademco_id,
+							  TR(IDS_STRING_HISTORY_RECORD), smachine, m_ademco_id,
 							  ssubmachine, m_zone_value);
 				SetWindowText(newtxt);
 			}
@@ -348,7 +346,9 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_BUTTON_SEL_ALARM, IDS_STRING_IDC_BUTTON_SEL_ALARM);
 	SET_WINDOW_TEXT(IDC_BUTTON_SEL_BY_USER, IDS_STRING_IDC_BUTTON_SEL_BY_USER);
 	SET_WINDOW_TEXT(IDC_BUTTON_SEL_BY_MACHINE, IDS_STRING_IDC_BUTTON_SEL_BY_MACHINE);
+	SET_WINDOW_TEXT(IDC_BUTTON_SEL_BY_GUARD, IDS_STRING_QUERY_BY_GUARD);
 	SET_WINDOW_TEXT(IDC_STATIC_PER_PAGE_PAGE, IDS_STRING_IDC_ROWS_PER_PAGE);
+
 
 	m_img_list.Create(MAKEINTRESOURCE(IDB_BITMAP_FLAGS), 32, 1, RGB(0xFF, 0xFF, 0xFF));
 	m_grid.SetImageList(&m_img_list);
@@ -441,7 +441,7 @@ void CHistoryRecordDlg::InitListCtrlHeader()
 void CHistoryRecordDlg::init_grid()
 {
 	// init alarm report 2016-9-30 16:47:01
-	const int col_count = 3;
+	const int col_count = 5;
 	const int row_count = 1;
 
 	m_grid.DeleteAllItems();
@@ -471,14 +471,18 @@ void CHistoryRecordDlg::init_grid()
 			m_grid.SetColumnWidth(col, 100);
 			break;
 		case 1:
-			/*item.strText = TR(IDS_STRING_TIME);
-			m_grid.SetColumnWidth(col, 180);
-			break;
-		case 2:*/
 			item.strText = TR(IDS_STRING_MACHINE_STATUS);
 			m_grid.SetColumnWidth(col, 150);
 			break;
 		case 2:
+			item.strText = TR(IDS_STRING_SHEET_MAKER);
+			m_grid.SetColumnWidth(col, 100);
+			break;
+		case 3:
+			item.strText = TR(IDS_STRING_SECURITY_GUARD);
+			m_grid.SetColumnWidth(col, 100);
+			break;
+		case 4:
 			item.strText = TR(IDS_STRING_HISTORY_RECORD);
 			m_grid.SetColumnWidth(col, 1000);
 			break;
@@ -549,7 +553,9 @@ void CHistoryRecordDlg::insert_grid_content(const core::alarm_ptr & alarm)
 	
 	item.col = col++;
 	item.strText.Format(L"%d", alarm->get_id());
+	item.lParam = alarm->get_id();
 	m_grid.SetItem(&item);
+	m_grid.SetItemData(item.row, item.col, alarm->get_id());
 
 	/*item.col = col++;
 	item.strText.Format(L"%d", alarm->get_aid());
@@ -588,9 +594,23 @@ void CHistoryRecordDlg::insert_grid_content(const core::alarm_ptr & alarm)
 
 	item.col = col++;
 	item.mask &= (~GVIF_IMAGE);
-	item.strText = alarm->get_text().c_str();
+	item.strText = user_manager::get_instance()->get_user_info(alarm->get_user_id())->get_name().c_str();
 	m_grid.SetItem(&item);
 
+	item.col = col++;
+	item.strText = L"";
+	auto alarm_mgr = alarm_handle_mgr::get_instance();
+	auto handle = alarm_mgr->get_alarm_handle(alarm->get_handle_id());
+	if (handle) {
+		auto guard = alarm_mgr->get_security_guard(handle->get_guard_id());
+		if (guard) {
+			item.strText = guard->get_name().c_str();
+		}
+	}
+	m_grid.SetItem(&item);
+
+	item.col = col++;
+	item.strText = alarm->get_text(false).c_str();
 	m_grid.SetItem(&item);
 	
 }
@@ -609,32 +629,66 @@ void CHistoryRecordDlg::OnButtonDeleteAllRecord()
 
 void CHistoryRecordDlg::OnButtonPageFirst()
 {
-	if (m_nPageCur == 1)
-		return;
+	if (show_what_ == show_history) {
+		if (m_nPageCur == 1) {
+			return;
+		}
+	} else {
+		if (page_cur_ == 1) {
+			return;
+		}
+	}
 	LoadRecordsBasedOnPage(1);
 }
 
 void CHistoryRecordDlg::OnButtonPageLast()
 {
-	if (m_nPageTotal == m_nPageCur)
-		return;
-	LoadRecordsBasedOnPage(m_nPageTotal);
+	if (show_what_ == show_history) {
+		if (m_nPageTotal == m_nPageCur)
+			return;
+		LoadRecordsBasedOnPage(m_nPageTotal);
+	} else {
+		if (page_total_ == page_cur_) {
+			return;
+		}
+		LoadRecordsBasedOnPage(page_total_);
+	}
+	
 }
 
 void CHistoryRecordDlg::OnButtonPageNext()
 {
-	if (m_nPageTotal == m_nPageCur)
-		return;
-	LoadRecordsBasedOnPage(m_nPageCur + 1);
+	if (show_what_ == show_history) {
+		if (m_nPageTotal == m_nPageCur)
+			return;
+		LoadRecordsBasedOnPage(m_nPageCur + 1);
+	} else {
+		if (page_total_ == page_cur_) {
+			return;
+		}
+		LoadRecordsBasedOnPage(page_cur_ + 1);
+	}
+	
 }
 
 void CHistoryRecordDlg::OnButtonPagePrev()
 {
-	if (m_nPageCur == 1)
-		return;
-	if (m_nPageCur == 0)
-		m_nPageCur = 1;
-	LoadRecordsBasedOnPage(m_nPageCur - 1);
+	if (show_what_ == show_history) {
+		if (m_nPageCur == 1)
+			return;
+		if (m_nPageCur == 0)
+			m_nPageCur = 1;
+		LoadRecordsBasedOnPage(m_nPageCur - 1);
+	} else {
+		if (page_cur_ == 1) {
+			return;
+		}
+		if (page_cur_ == 0) {
+			page_cur_ = 1;
+		}
+		LoadRecordsBasedOnPage(page_cur_ - 1);
+	}
+	
 }
 
 void CHistoryRecordDlg::OnUpdateButtonSeperator(CCmdUI* pCmdUI)
@@ -668,12 +722,12 @@ void CHistoryRecordDlg::LoadRecordsBasedOnPage(const int nPage)
 			int baseID = mgr->get_min_alarm_id();
 			mgr->get_top_num_records_based_on_id((page_total_ - nPage)*per_page_ + baseID, per_page_, show_alarm_obs_);
 		} else {
-			assert(0);
 			/*if (m_zone_value == -1) {
 				mgr->GetTopNumRecordByAdemcoID(MAX_HISTORY_RECORD, m_ademco_id, m_show_record_observer, FALSE);
 			} else {
 				mgr->GetTopNumRecordByAdemcoIDAndZone(MAX_HISTORY_RECORD, m_ademco_id, m_zone_value, m_show_record_observer, FALSE);
 			}*/
+			mgr->get_top_num_records(MAX_HISTORY_RECORD, m_ademco_id, m_zone_value, show_alarm_obs_);
 		}
 
 		page_cur_ = nPage;
@@ -850,6 +904,14 @@ void CHistoryRecordDlg::RepositionItems()
 		rcItem.right = rcItem.left + int(cBtnWidth * 2);
 		m_btnSelByMachine.MoveWindow(rcItem);
 
+		// 按保安查询
+		if (m_btnSelByGuard.m_hWnd == nullptr) {
+			break;
+		}
+		rcItem.left = rcItem.right + 5;
+		rcItem.right = rcItem.left + int(cBtnWidth * 2);
+		m_btnSelByGuard.MoveWindow(rcItem);
+
 		//// 换行
 		//rcItem.left = rcToolBar.left + cBtnGaps;
 		//rcItem.top = rcItem.bottom + cBtnGaps;
@@ -947,22 +1009,71 @@ void CHistoryRecordDlg::OnExportTraverseHistoryRecord(const core::history_record
 	m_pDatabase->ExecuteSQL(sSql);
 }
 
+void CHistoryRecordDlg::OnExportTraverseAlarmRecord(const core::alarm_ptr & record)
+{
+	static CString sSql;
+	std::wstring suser, sguard;
+	auto user = core::user_manager::get_instance()->get_user_info(record->get_user_id());
+	if (user) {
+		suser = user->get_name();
+	}
+	if (record->get_handle_id() != 0) {
+		auto mgr = core::alarm_handle_mgr::get_instance();
+		auto handle = mgr->get_alarm_handle(record->get_handle_id());
+		if (handle) {
+			auto guard = mgr->get_security_guard(handle->get_guard_id());
+			if (guard) {
+				sguard = guard->get_name();
+			}
+		}
+	}
+
+	sSql.Format(_T("INSERT INTO ALARM_RECORD (Id,Status,SheetMaker,Guard,Record) VALUES('%d','%s','%s','%s','%s')"),
+				record->get_id(), record->get_alarm_status_text(record->get_status()).c_str(), SQLite::double_quotes(suser).c_str(),
+				SQLite::double_quotes(sguard).c_str(), SQLite::double_quotes(record->get_text(false)).c_str());
+
+	m_pDatabase->ExecuteSQL(sSql);
+}
+
 
 void __stdcall CHistoryRecordDlg::ExportTraverseSeledHistoryRecord(void* udata)
 {
 	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
 	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
 	//for (int i = 0; i < dlg->m_listCtrlRecord.GetItemCount(); i++) {
-	int nItem = -1;
-	auto hr = core::history_record_manager::get_instance();
-	for (UINT i = 0; i < dlg->m_listCtrlRecord.GetSelectedCount(); i++) {
-		nItem = dlg->m_listCtrlRecord.GetNextItem(nItem, LVNI_SELECTED);
-		if (nItem == -1) break;
-		DWORD data = dlg->m_listCtrlRecord.GetItemData(nItem);
-		history_record_ptr record = hr->GetHisrotyRecordById(data);
-		if (record)
-			dlg->OnExportHistoryRecordCB(dlg, record);
+	
+	if (dlg->show_what_ == show_history) {
+		int nItem = -1;
+		auto hr = core::history_record_manager::get_instance();
+		for (UINT i = 0; i < dlg->m_listCtrlRecord.GetSelectedCount(); i++) {
+			nItem = dlg->m_listCtrlRecord.GetNextItem(nItem, LVNI_SELECTED);
+			if (nItem == -1) break;
+			DWORD data = dlg->m_listCtrlRecord.GetItemData(nItem);
+			history_record_ptr record = hr->GetHisrotyRecordById(data);
+			if (record)
+				dlg->OnExportHistoryRecordCB(dlg, record);
+		}
+	} else {
+		auto mgr = core::alarm_handle_mgr::get_instance();
+		auto set = dlg->m_grid.GetSelectedRows();
+		for (auto r : set) {
+			auto cell = dlg->m_grid.GetCell(r, 0);
+			if (cell) {
+				auto id = cell->GetData();
+				auto alarm = mgr->get_alarm_info(id);
+				if (alarm) {
+					dlg->OnExportAlarmRecordCB(dlg, alarm);
+				}
+			}
+		}
 	}
+}
+
+void CHistoryRecordDlg::OnExportAlarmRecordCB(void * udata, const core::alarm_ptr & record)
+{
+	CHistoryRecordDlg* dlg = reinterpret_cast<CHistoryRecordDlg*>(udata); ASSERT(dlg);
+	ASSERT(dlg->IsKindOf(RUNTIME_CLASS(CHistoryRecordDlg)));
+	dlg->OnExportTraverseAlarmRecord(record);
 }
 
 
@@ -994,8 +1105,13 @@ BOOL CHistoryRecordDlg::Export(const CString& excelPath, TraverseHistoryRecordCB
 		MessageBox(e, L"", MB_ICONERROR);
 		return FALSE;
 	}
+	if (show_what_ == show_history) {
+		sSql.Format(_T("CREATE TABLE HISTORY_RECORD(Id TEXT,RecordTime TEXT,Record TEXT)"));
+	} else {
+		sSql.Format(L"CREATE TABLE ALARM_RECORD(Id TEXT,Status TEXT,SheetMaker TEXT,Guard TEXT,Record TEXT)");
+	}
+	//sSql.Format(_T("CREATE TABLE HISTORY_RECORD(Id TEXT,RecordTime TEXT,Record TEXT)"));
 
-	sSql.Format(_T("CREATE TABLE HISTORY_RECORD(Id TEXT,RecordTime TEXT,Record TEXT)"));
 	database.ExecuteSQL(sSql);
 	m_pDatabase = &database;
 	if (cb) { cb(this); }
@@ -1065,28 +1181,48 @@ void CHistoryRecordDlg::OnButtonExport()
 	if (!GetSaveAsFilePath(path))
 		return;
 
-	auto hr = history_record_manager::get_instance();
-	CExportHrProcessDlg dlg(this);
-	dlg.m_nTotalCount = hr->GetRecordCount();
-	dlg.m_excelPath = path;
-	dlg.m_bOpenAfterExport = TRUE;
-	dlg.DoModal();
+	if (show_what_ == show_history) {
+		auto hr = history_record_manager::get_instance();
+		CExportHrProcessDlg dlg(this);
+		dlg.m_nTotalCount = hr->GetRecordCount();
+		dlg.m_excelPath = path;
+		dlg.m_bOpenAfterExport = TRUE;
+		dlg.DoModal();
 
-	CString s, fm;
-	fm = TR(IDS_STRING_FM_USER_EXPORT_HR);
-	auto user = user_manager::get_instance()->get_cur_user_info();
-	s.Format(fm, user->get_id(), user->get_name().c_str());
-	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
+		CString s, fm;
+		fm = TR(IDS_STRING_FM_USER_EXPORT_HR);
+		auto user = user_manager::get_instance()->get_cur_user_info();
+		s.Format(fm, user->get_id(), user->get_name().c_str());
+		hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 
-	Sleep(1000);
-	InitData();
-	LoadRecordsBasedOnPage(1);
+		Sleep(1000);
+		InitData();
+		LoadRecordsBasedOnPage(1);
+	} else {
+		auto mgr = alarm_handle_mgr::get_instance();
+		CExportHrProcessDlg dlg(this);
+		dlg.m_nTotalCount = mgr->get_alarm_count();
+		dlg.m_excelPath = path;
+		dlg.m_bOpenAfterExport = TRUE;
+		dlg.export_history_ = false;
+		dlg.DoModal();
+
+		CString s, fm;
+		fm = TR(IDS_STRING_FM_USER_EXPORT_ALARM);
+		auto user = user_manager::get_instance()->get_cur_user_info();
+		s.Format(fm, user->get_id(), user->get_name().c_str());
+		history_record_manager::get_instance()->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
+
+		Sleep(1000);
+		init_grid();
+		LoadRecordsBasedOnPage(1);
+	}
 }
 
 void CHistoryRecordDlg::OnBnClickedButtonExportSel()
 {
-	POSITION pos = m_listCtrlRecord.GetFirstSelectedItemPosition();
-	if (pos == nullptr) {
+	bool empty = (show_what_ == show_history) ? (nullptr == m_listCtrlRecord.GetFirstSelectedItemPosition()) : m_grid.GetSelectedRows().empty();
+	if (empty) {
 		JLOG(_T("No items were selected!\n"));
 		CString e; e = TR(IDS_STRING_NO_SELD_CONTENT);
 		MessageBox(e, L"", MB_ICONERROR);
@@ -1106,19 +1242,38 @@ void CHistoryRecordDlg::OnSelchangeComboPerpage()
 	if (ndx < 0)
 		return;
 	int nPerPage = m_cmbPerPage.GetItemData(ndx);
-	if (nPerPage == m_nPerPage)
-		return;
-	m_nPerPage = nPerPage;
-	auto hr = history_record_manager::get_instance();
-	int total = hr->GetRecordCount();
-	int pageTotal = total / nPerPage;
-	if (total % nPerPage != 0)
-		pageTotal++;
-	if (m_nPageTotal != pageTotal) {
-		m_nPageTotal = pageTotal;
-		m_nPageCur = 1;
+	
+	if (show_what_ == show_history) {
+		if (nPerPage == m_nPerPage)
+			return;
+		m_nPerPage = nPerPage;
+		auto hr = history_record_manager::get_instance();
+		int total = hr->GetRecordCount();
+		int pageTotal = total / nPerPage;
+		if (total % nPerPage != 0)
+			pageTotal++;
+		if (m_nPageTotal != pageTotal) {
+			m_nPageTotal = pageTotal;
+			m_nPageCur = 1;
+		}
+		LoadRecordsBasedOnPage(m_nPageCur);
+	} else {
+		if (nPerPage == per_page_) {
+			return;
+		}
+
+		per_page_ = nPerPage;
+		auto mgr = alarm_handle_mgr::get_instance();
+		auto total = mgr->get_alarm_count();
+		int pageTotal = total / nPerPage;
+		if (total % nPerPage != 0)
+			pageTotal++;
+		if (page_total_ != pageTotal) {
+			page_total_ = pageTotal;
+			page_cur_ = 1;
+		}
+		LoadRecordsBasedOnPage(page_cur_);
 	}
-	LoadRecordsBasedOnPage(m_nPageCur);
 }
 
 BOOL CHistoryRecordDlg::PrintRecord(CListCtrl &list)
@@ -1337,13 +1492,24 @@ void CHistoryRecordDlg::OnButtonSelByDate()
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
 
-	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::get_instance()->GetHistoryRecordByDate(m_ademco_id, m_zone_value, strBeg, strEnd, m_show_record_observer);
-	m_nPageCur = m_nPageTotal = 1;
-	CString page = _T("");
-	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
-	m_page.SetWindowText(page);
-	m_cmbPerPage.SetCurSel(-1);
+	if (show_what_ == show_history) {
+		ClearListCtrlAndFreeData(); 
+		CAutoRedrawListCtrl noname(m_listCtrlRecord);
+		history_record_manager::get_instance()->GetHistoryRecordByDate(m_ademco_id, m_zone_value, strBeg, strEnd, m_show_record_observer);
+		m_nPageCur = m_nPageTotal = 1;
+		CString page = _T("");
+		page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+		m_page.SetWindowText(page);
+		m_cmbPerPage.SetCurSel(-1);
+	} else {
+		init_grid();
+		alarm_handle_mgr::get_instance()->get_records_by_date(m_ademco_id, m_zone_value, strBeg, strEnd, show_alarm_obs_);
+		page_cur_ = page_total_ = 1;
+		CString page = _T("");
+		page.Format(_T("%d/%d"), page_cur_, page_total_);
+		m_page.SetWindowText(page);
+		m_cmbPerPage.SetCurSel(-1);
+	}
 }
 
 BOOL CHistoryRecordDlg::GetDateTimeValue(CDateTimeCtrl &ctrl, CTime &value)
@@ -1410,72 +1576,102 @@ void CHistoryRecordDlg::OnButtonSelByLevelAndDate()
 	if (!GetBegEndDateTime(strBeg, strEnd))
 		return;
 
-	CString lvOnoffLine, lvUserLog, lvUserEdit, lvUserControl, lvAlarm, lvException, lvVideo, lvSystem;
-	lvOnoffLine = TR(IDS_STRING_HRLV_STATUS);
-	lvUserLog = TR(IDS_STRING_HRLV_USER_LOG);
-	lvUserEdit = TR(IDS_STRING_HRLV_USER_EDIT);
-	lvUserControl = TR(IDS_STRING_HRLV_USER_CONTROL);
-	lvAlarm = TR(IDS_STRING_HRLV_ALARM);
-	lvException = TR(IDS_STRING_HRLV_EXCEPTION);
-	lvVideo = TR(IDS_STRING_HRLV_VIDEO);
-	lvSystem = TR(IDS_STRING_HRLV_SYSTEM);
+	if (show_what_ == show_history) {
+		CString lvOnoffLine, lvUserLog, lvUserEdit, lvUserControl, lvAlarm, lvException, lvVideo, lvSystem;
+		lvOnoffLine = TR(IDS_STRING_HRLV_STATUS);
+		lvUserLog = TR(IDS_STRING_HRLV_USER_LOG);
+		lvUserEdit = TR(IDS_STRING_HRLV_USER_EDIT);
+		lvUserControl = TR(IDS_STRING_HRLV_USER_CONTROL);
+		lvAlarm = TR(IDS_STRING_HRLV_ALARM);
+		lvException = TR(IDS_STRING_HRLV_EXCEPTION);
+		lvVideo = TR(IDS_STRING_HRLV_VIDEO);
+		lvSystem = TR(IDS_STRING_HRLV_SYSTEM);
 
-	CMenu menu;
-	menu.CreatePopupMenu();
-	int ndx = 1;
-	menu.AppendMenuW(MF_STRING, ndx++, lvOnoffLine);
-	menu.AppendMenuW(MF_STRING, ndx++, lvUserLog);
-	menu.AppendMenuW(MF_STRING, ndx++, lvUserEdit);
-	menu.AppendMenuW(MF_STRING, ndx++, lvUserControl);
-	menu.AppendMenuW(MF_STRING, ndx++, lvAlarm);
-	menu.AppendMenuW(MF_STRING, ndx++, lvException);
-	menu.AppendMenuW(MF_STRING, ndx++, lvVideo);
-	menu.AppendMenuW(MF_STRING, ndx++, lvSystem);
+		CMenu menu;
+		menu.CreatePopupMenu();
+		int ndx = 1;
+		menu.AppendMenuW(MF_STRING, ndx++, lvOnoffLine);
+		menu.AppendMenuW(MF_STRING, ndx++, lvUserLog);
+		menu.AppendMenuW(MF_STRING, ndx++, lvUserEdit);
+		menu.AppendMenuW(MF_STRING, ndx++, lvUserControl);
+		menu.AppendMenuW(MF_STRING, ndx++, lvAlarm);
+		menu.AppendMenuW(MF_STRING, ndx++, lvException);
+		menu.AppendMenuW(MF_STRING, ndx++, lvVideo);
+		menu.AppendMenuW(MF_STRING, ndx++, lvSystem);
 
-	CRect rc;
-	m_btnSelAlarmByDate.GetWindowRect(rc);
-	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
-									rc.left, rc.bottom, this);
-	JLOG(L"TrackPopupMenu ret %d\n", ret);
+		CRect rc;
+		m_btnSelAlarmByDate.GetWindowRect(rc);
+		DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+										rc.left, rc.bottom, this);
+		JLOG(L"TrackPopupMenu ret %d\n", ret);
 
-	record_level recordLevel = RECORD_LEVEL_CLEARHR;
-	switch (ret) {
-	case 1:
-		recordLevel = RECORD_LEVEL_STATUS;
-		break;
-	case 2:
-		recordLevel = RECORD_LEVEL_USERLOG;
-		break;
-	case 3:
-		recordLevel = RECORD_LEVEL_USEREDIT;
-		break;
-	case 4:
-		recordLevel = RECORD_LEVEL_USERCONTROL;
-		break;
-	case 5:
-		recordLevel = RECORD_LEVEL_ALARM;
-		break;
-	case 6:
-		recordLevel = RECORD_LEVEL_EXCEPTION;
-		break;
-	case 7:
-		recordLevel = RECORD_LEVEL_VIDEO;
-		break;
-	case 8:
-		recordLevel = RECORD_LEVEL_SYSTEM;
-		break;
-	default:
-		return;
-		break;
+		record_level recordLevel = RECORD_LEVEL_CLEARHR;
+		switch (ret) {
+			case 1:
+				recordLevel = RECORD_LEVEL_STATUS;
+				break;
+			case 2:
+				recordLevel = RECORD_LEVEL_USERLOG;
+				break;
+			case 3:
+				recordLevel = RECORD_LEVEL_USEREDIT;
+				break;
+			case 4:
+				recordLevel = RECORD_LEVEL_USERCONTROL;
+				break;
+			case 5:
+				recordLevel = RECORD_LEVEL_ALARM;
+				break;
+			case 6:
+				recordLevel = RECORD_LEVEL_EXCEPTION;
+				break;
+			case 7:
+				recordLevel = RECORD_LEVEL_VIDEO;
+				break;
+			case 8:
+				recordLevel = RECORD_LEVEL_SYSTEM;
+				break;
+			default:
+				return;
+				break;
+		}
+
+		ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
+		history_record_manager::get_instance()->GetHistoryRecordByDateByRecordLevel(m_ademco_id, m_zone_value, strBeg, strEnd, recordLevel, m_show_record_observer);
+		m_nPageCur = m_nPageTotal = 1;
+		CString page = _T("");
+		page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+		m_page.SetWindowText(page);
+		m_cmbPerPage.SetCurSel(-1);
+	} else {
+		CMenu menu;
+		menu.CreatePopupMenu();
+		int ndx = 1;
+		std::map<int, int> v;
+		
+		for (int status = alarm_status::alarm_status_not_judged; status <= alarm_status::alarm_status_cleared; status++) {
+			v[ndx] = status;
+			menu.AppendMenuW(MF_STRING, ndx++, core::alarm_info::get_alarm_status_text(status).c_str());
+		}
+
+		CRect rc;
+		m_btnSelAlarmByDate.GetWindowRect(rc);
+		DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+										rc.left, rc.bottom, this);
+		JLOG(L"TrackPopupMenu ret %d\n", ret);
+
+		auto iter = v.find(ret);
+		if (iter != v.end()) {
+			init_grid();
+			auto status = alarm_info::integer_to_alarm_status(iter->second);
+			alarm_handle_mgr::get_instance()->get_records_by_date_and_status(m_ademco_id, m_zone_value, strBeg, strEnd, status, show_alarm_obs_);
+			page_cur_ = page_total_= 1;
+			CString page = _T("");
+			page.Format(_T("%d/%d"), page_cur_, page_total_);
+			m_page.SetWindowText(page);
+			m_cmbPerPage.SetCurSel(-1);
+		}
 	}
-
-	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::get_instance()->GetHistoryRecordByDateByRecordLevel(m_ademco_id, m_zone_value, strBeg, strEnd, recordLevel, m_show_record_observer);
-	m_nPageCur = m_nPageTotal = 1;
-	CString page = _T("");
-	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
-	m_page.SetWindowText(page);
-	m_cmbPerPage.SetCurSel(-1);
 }
 
 void CHistoryRecordDlg::OnDestroy()
@@ -1502,12 +1698,10 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 	CMenu menu;
 	menu.CreatePopupMenu();
 	int ndx = 1;
-	CString txt;
 	std::vector<int> userIdList;
 	userIdList.push_back(0);
 	while (user) {
-		txt.Format(L"ID:%d(%s)", user->get_id(), user->get_name().c_str());
-		menu.AppendMenuW(MF_STRING, ndx, txt);
+		menu.AppendMenuW(MF_STRING, ndx, user->get_formmated_name().c_str());
 		if (bDisabled && user != curUser) {
 			menu.EnableMenuItem(ndx, MF_DISABLED | MF_GRAYED);
 		}
@@ -1526,11 +1720,71 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByUser()
 		user_id = userIdList[ret];
 	} else { return; }
 
-	ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::get_instance()->GetHistoryRecordByDateByUser(m_ademco_id, m_zone_value, strBeg, strEnd, user_id, m_show_record_observer);
-	m_nPageCur = m_nPageTotal = 1;
+	if (show_what_ == show_history) {
+		ClearListCtrlAndFreeData(); CAutoRedrawListCtrl noname(m_listCtrlRecord);
+		history_record_manager::get_instance()->GetHistoryRecordByDateByUser(m_ademco_id, m_zone_value, strBeg, strEnd, user_id, m_show_record_observer);
+		m_nPageCur = m_nPageTotal = 1;
+		CString page = _T("");
+		page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+		m_page.SetWindowText(page);
+		m_cmbPerPage.SetCurSel(-1);
+	} else {
+		init_grid();
+		alarm_handle_mgr::get_instance()->get_records_by_date_and_user(m_ademco_id, m_zone_value, strBeg, strEnd, user_id, show_alarm_obs_);
+		page_cur_ = page_total_ = 1;
+		CString page = _T("");
+		page.Format(_T("%d/%d"), page_cur_, page_total_);
+		m_page.SetWindowText(page);
+		m_cmbPerPage.SetCurSel(-1);
+	}
+}
+
+
+void CHistoryRecordDlg::OnBnClickedButtonSelByGuard()
+{
+	CString strBeg, strEnd;
+	if (!GetBegEndDateTime(strBeg, strEnd))
+		return;
+
+	CMenu menu;
+	menu.CreatePopupMenu();
+	int ndx = 1;
+	CString txt;
+
+	auto mgr = alarm_handle_mgr::get_instance();
+	auto ids = mgr->get_security_guard_ids();
+
+	std::vector<int> v;
+	v.push_back(0);
+	for (auto id : ids) {
+		auto guard = mgr->get_security_guard(id);
+		if (guard) {
+			menu.AppendMenuW(MF_STRING, ndx++, guard->get_formatted_name().c_str());
+			v.push_back(guard->get_id());
+		}
+	}
+
+	int guard_id = -1;
+	CRect rc;
+	m_btnSelByGuard.GetWindowRect(rc);
+	DWORD ret = menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
+									rc.left, rc.bottom, this);
+	JLOG(L"TrackPopupMenu ret %d\n", ret);
+	if (ret >= 1 && ret < v.size()) {
+		guard_id = v[ret];
+	} else { return; }
+
+	auto guard = mgr->get_security_guard(guard_id);
+	if (!guard) {
+		assert(0);
+		return;
+	}
+
+	init_grid();
+	alarm_handle_mgr::get_instance()->get_records_by_date_and_guard(m_ademco_id, m_zone_value, strBeg, strEnd, guard_id, show_alarm_obs_);
+	page_cur_ = page_total_ = 1;
 	CString page = _T("");
-	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+	page.Format(_T("%d/%d"), page_cur_, page_total_);
 	m_page.SetWindowText(page);
 	m_cmbPerPage.SetCurSel(-1);
 }
@@ -1550,14 +1804,24 @@ void CHistoryRecordDlg::OnBnClickedButtonSelByMachine()
 	if (IDOK != dlg.DoModal())
 		return;
 
-	ClearListCtrlAndFreeData();
-	CAutoRedrawListCtrl noname(m_listCtrlRecord);
-	history_record_manager::get_instance()->GetHistoryRecordByDate(dlg.m_ademco_id, dlg.m_zone_value, strBeg, strEnd, m_show_record_observer);
-	m_nPageCur = m_nPageTotal = 1;
-	CString page = _T("");
-	page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
-	m_page.SetWindowText(page);
-	m_cmbPerPage.SetCurSel(-1);
+	if (show_what_ == show_history) {
+		ClearListCtrlAndFreeData();
+		CAutoRedrawListCtrl noname(m_listCtrlRecord);
+		history_record_manager::get_instance()->GetHistoryRecordByDate(dlg.m_ademco_id, dlg.m_zone_value, strBeg, strEnd, m_show_record_observer);
+		m_nPageCur = m_nPageTotal = 1;
+		CString page = _T("");
+		page.Format(_T("%d/%d"), m_nPageCur, m_nPageTotal);
+		m_page.SetWindowText(page);
+		m_cmbPerPage.SetCurSel(-1);
+	} else {
+		init_grid();
+		alarm_handle_mgr::get_instance()->get_records_by_date(dlg.m_ademco_id, dlg.m_zone_value, strBeg, strEnd, show_alarm_obs_);
+		page_cur_ = page_total_ = 1;
+		CString page = _T("");
+		page.Format(_T("%d/%d"), page_cur_, page_total_);
+		m_page.SetWindowText(page);
+		m_cmbPerPage.SetCurSel(-1);
+	}
 }
 
 
@@ -1699,19 +1963,25 @@ void CHistoryRecordDlg::OnTcnSelchangeTab(NMHDR * /*pNMHDR*/, LRESULT * pResult)
 	if (detail::tab_ndx_all == ndx) {
 		m_listCtrlRecord.ShowWindow(SW_SHOW);
 		m_grid.ShowWindow(SW_HIDE);
+		m_btnSelByGuard.ShowWindow(SW_HIDE);
 		show_what_ = show_history;
 	} else if (detail::tab_ndx_alarm == ndx) {
 		m_listCtrlRecord.ShowWindow(SW_HIDE);
 		m_grid.ShowWindow(SW_SHOW);
+		m_btnSelByGuard.ShowWindow(SW_SHOW);
 		show_what_ = show_alarm;
 
-		if (page_cur_ == 0) {
-			LoadRecordsBasedOnPage(1);
-		}
+		
 	}
 
 	InitData();
 	refresh_pages();
+
+	if (show_what_ == show_alarm) {
+		if (page_cur_ == 0) {
+			LoadRecordsBasedOnPage(1);
+		}
+	}
 }
 
 void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * /*pResult*/)
@@ -1734,30 +2004,58 @@ void CHistoryRecordDlg::OnGridDblClick(NMHDR * pNotifyStruct, LRESULT * /*pResul
 			dlg.handle_ = mgr->get_alarm_handle(alarm->get_handle_id());
 			dlg.reason_ = mgr->get_alarm_reason(alarm->get_reason_id());
 			dlg.machine_ = alarm_machine_manager::get_instance()->GetMachineByUuid(machine_uuid(alarm->get_aid(), alarm->get_is_sub_machine() ? 0 : alarm->get_zone()));
+			if (alarm->get_status() == alarm_status::alarm_status_cleared) {
+				dlg.read_only_ = true;
+			}
 			dlg.DoModal();
 
-			// update this record
-			GV_ITEM item;
-			item.mask = GVIF_TEXT | GVIF_FORMAT;
-			item.nFormat = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
-			item.row = pItem->iRow;
-			item.col = 1;
-			alarm_status status = alarm->get_status();
-			item.strText = alarm_info::get_alarm_status_text(status).c_str();
-			item.mask |= (GVIF_IMAGE);
-			switch (status) {
-			case core::alarm_status_not_cleared:
-				item.iImage = 1;
-				break;
-			case core::alarm_status_cleared:
-				item.iImage = 2;
-				break;
-			default:
-				item.iImage = 0;
-				break;
-			}
-			m_grid.SetItem(&item);
-			m_grid.Refresh();
+			//if (alarm->get_status() != alarm_status::alarm_status_cleared) {
+				// update this record
+			int col = 1;
+				GV_ITEM item;
+				item.mask = GVIF_TEXT | GVIF_FORMAT;
+				item.nFormat = DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS;
+				item.row = pItem->iRow;
+				item.col = col++;
+				alarm_status status = alarm->get_status();
+				item.strText = alarm_info::get_alarm_status_text(status).c_str();
+				item.mask |= (GVIF_IMAGE);
+				switch (status) {
+					case core::alarm_status_not_cleared:
+						item.iImage = 1;
+						break;
+					case core::alarm_status_cleared:
+						item.iImage = 2;
+						break;
+					default:
+						item.iImage = 0;
+						break;
+				}
+				m_grid.SetItem(&item);
+
+				item.col = col++;
+				item.mask &= (~GVIF_IMAGE);
+				item.strText = user_manager::get_instance()->get_user_info(alarm->get_user_id())->get_name().c_str();
+				m_grid.SetItem(&item);
+
+				item.col = col++;
+				item.strText = L"";
+				auto handle = mgr->get_alarm_handle(alarm->get_handle_id());
+				if (handle) {
+					auto guard = mgr->get_security_guard(handle->get_guard_id());
+					if (guard) {
+						item.strText = guard->get_name().c_str();
+					}
+				}
+				m_grid.SetItem(&item);
+
+				item.col = col++;
+				item.strText = alarm->get_text().c_str();
+				m_grid.SetItem(&item);
+
+				m_grid.Refresh();
+			//}
 		}
 	}
 }
+

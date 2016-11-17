@@ -100,6 +100,7 @@ protected:
 	CString GetExcelDriver();
 	BOOL GetSaveAsFilePath(CString& path);
 	void OnExportTraverseHistoryRecord(const core::history_record_ptr& record);
+	void OnExportTraverseAlarmRecord(const core::alarm_ptr& record);
 	BOOL Export(const CString& excelPath, TraverseHistoryRecordCB cb);
 	BOOL GetBegEndDateTime(CString& strBeg, CString& strEnd);
 	CString GetRecordLevelString(core::record_level level);
@@ -107,6 +108,8 @@ protected:
 public:
 	static void __stdcall OnExportHistoryRecordCB(void* udata, const core::history_record_ptr& record);
 	static void __stdcall ExportTraverseSeledHistoryRecord(void* udata);
+
+	static void __stdcall OnExportAlarmRecordCB(void* udata, const core::alarm_ptr& record);
 
 private:
 	enum {
@@ -163,5 +166,8 @@ protected:
 	afx_msg void OnTcnSelchangeTab(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnGridDblClick(NMHDR *pNotifyStruct, LRESULT* pResult);
 	//}}AFX_MSG
+public:
+	CButton m_btnSelByGuard;
+	afx_msg void OnBnClickedButtonSelByGuard();
 };
 

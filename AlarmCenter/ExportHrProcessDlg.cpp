@@ -7,6 +7,8 @@
 #include "afxdialogex.h"
 #include "HistoryRecord.h"
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
+#include "alarm_handle_mgr.h"
+#include "UserInfo.h"
 
 #include <afxdb.h>
 #include <odbcinst.h>
@@ -28,6 +30,43 @@ public:
 private:
 	CExportHrProcessDlg* _dlg;
 };
+
+class CExportHrProcessDlg::travers_alarm_observer : public dp::observer<core::alarm_ptr>
+{
+public:
+	explicit CExportHrProcessDlg::travers_alarm_observer(CExportHrProcessDlg* dlg) : _dlg(dlg) {}
+	virtual void on_update(const core::alarm_ptr& ptr) {
+		if (_dlg) {
+			CString sSql;
+			std::wstring suser, sguard;
+			auto user = core::user_manager::get_instance()->get_user_info(ptr->get_user_id());
+			if (user) {
+				suser = user->get_name();
+			}
+			if (ptr->get_handle_id() != 0) {
+				auto mgr = core::alarm_handle_mgr::get_instance();
+				auto handle = mgr->get_alarm_handle(ptr->get_handle_id());
+				if (handle) {
+					auto guard = mgr->get_security_guard(handle->get_guard_id());
+					if (guard) {
+						sguard = guard->get_name();
+					}
+				}
+			}
+
+			sSql.Format(_T("INSERT INTO ALARM_RECORD (Id,Status,SheetMaker,Guard,Record) VALUES('%d','%s','%s','%s','%s')"),
+						ptr->get_id(), ptr->get_alarm_status_text(ptr->get_status()).c_str(), SQLite::double_quotes(suser).c_str(),
+						SQLite::double_quotes(sguard).c_str(), SQLite::double_quotes(ptr->get_text(false)).c_str());
+			_dlg->m_pDatabase->ExecuteSQL(sSql);
+			_dlg->m_nCurProgress++;
+		}
+	}
+private:
+	CExportHrProcessDlg* _dlg;
+};
+
+
+
 // CExportHrProcessDlg dialog
 
 IMPLEMENT_DYNAMIC(CExportHrProcessDlg, CDialogEx)
@@ -110,7 +149,13 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	m_traverse_record_observer = std::make_shared<TraverseRecordObserver>(this);
+	SetWindowTextW(TR(export_history_ ? IDS_STRING_IDD_DIALOG_EXPORT_HR_PROGRESS : IDS_STRING_IDD_DIALOG_EXPORT_ALARM_PROGRESS));
+
+	if (export_history_) {
+		m_traverse_record_observer = std::make_shared<TraverseRecordObserver>(this);
+	} else {
+		m_traverse_alarm_observer = std::make_shared<travers_alarm_observer>(this);
+	}
 
 	m_progress.SetRange32(0, m_nTotalCount);
 	CString txt(L"");
@@ -137,8 +182,8 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 		SYSTEMTIME st = { 0 };
 		GetLocalTime(&st);
 		CString filen(L"");
-		filen.Format(L"\\%04d-%02d-%02d_%02d-%02d-%02d.xls", st.wYear, st.wMonth, st.wDay,
-					 st.wHour, st.wMinute, st.wSecond);
+		filen.Format(L"\\%04d-%02d-%02d_%02d-%02d-%02d--%s.xls", st.wYear, st.wMonth, st.wDay,
+					 st.wHour, st.wMinute, st.wSecond, export_history_ ? TR(IDS_STRING_HISTORY_RECORD) : TR(IDS_STRING_IDC_STATIC_123));
 		m_excelPath += filen;
 	}
 	sSql.Format(_T("DRIVER={%s};DSN='';FIRSTROWHASNAMES=1;READONLY=FALSE;CREATE_DB=\")%s\";DBQ=%s"),
@@ -153,7 +198,12 @@ BOOL CExportHrProcessDlg::OnInitDialog()
 		return FALSE;
 	}
 
-	sSql.Format(_T("CREATE TABLE HISTORY_RECORD(Id TEXT,RecordTime TEXT,Record TEXT)"));
+	if (export_history_) {
+		sSql.Format(_T("CREATE TABLE HISTORY_RECORD(Id TEXT,RecordTime TEXT,Record TEXT)"));
+	} else {
+		sSql.Format(L"CREATE TABLE ALARM_RECORD(Id TEXT,Status TEXT,SheetMaker TEXT,Guard TEXT,Record TEXT)");
+	}
+	
 	m_pDatabase->ExecuteSQL(sSql);
 
 	m_dwStartTime = GetTickCount();
@@ -188,8 +238,12 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 		running_ = false;
 		thread_.join();
 
-		auto hr = core::history_record_manager::get_instance();
-		hr->DeleteHalfRecored();
+		if (export_history_) {
+			auto hr = core::history_record_manager::get_instance();
+			hr->DeleteHalfRecored();
+		} else {
+			core::alarm_handle_mgr::get_instance()->delete_half_record();
+		}
 
 		if (m_bOpenAfterExport) {
 			CString fm;
@@ -206,7 +260,12 @@ void CExportHrProcessDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CExportHrProcessDlg::ThreadWorker()
 {
-	auto hr = core::history_record_manager::get_instance();
-	hr->TraverseHistoryRecord(m_traverse_record_observer);
+	if (export_history_) {
+		auto hr = core::history_record_manager::get_instance();
+		hr->TraverseHistoryRecord(m_traverse_record_observer);
+	} else {
+		core::alarm_handle_mgr::get_instance()->travers_alarm_record(m_traverse_alarm_observer);
+	}
+	
 	m_bOver = TRUE;
 }

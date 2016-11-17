@@ -29,6 +29,7 @@ public:
 	core::alarm_handle_ptr handle_ = nullptr;
 	core::alarm_reason_ptr reason_ = nullptr;
 	core::alarm_machine_ptr machine_ = nullptr;
+	bool read_only_ = false;
 protected:
 	void update_guard();
 	int get_predict_min();
@@ -71,4 +72,8 @@ public:
 	CButton m_btn_add_judgment_attach_2;
 	afx_msg void OnCbnSelchangeComboJudgement();
 	CEdit m_judgment_user_define;
+	afx_msg void OnBnClickedButtonPrint();
+	CButton m_btn_print;
+	CButton m_btn_switch_user;
+	CButton m_btn_add_reason_attach;
 };

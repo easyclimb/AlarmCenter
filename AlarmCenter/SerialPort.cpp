@@ -82,7 +82,7 @@ BOOL CSerialPort::InitPort(CWnd* pPortOwner,	// the owner (CWnd) of the port (re
 						   DWORD dwCommEvents,	// EV_RXCHAR, EV_CTS etc
 						   UINT  writebuffersize)	// size to the writebuffer
 {
-	assert(portnr > 0 && portnr < 5);
+	//assert(portnr > 0 && portnr < 5);
 
 	
 

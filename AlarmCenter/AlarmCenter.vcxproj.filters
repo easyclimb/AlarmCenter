@@ -222,9 +222,6 @@
     <ClCompile Include="ExtendExpireTimeDlg.cpp">
       <Filter>ui\dlg</Filter>
     </ClCompile>
-    <ClCompile Include="HistoryRecordDlg.cpp">
-      <Filter>ui\dlg</Filter>
-    </ClCompile>
     <ClCompile Include="InputDlg.cpp">
       <Filter>ui\dlg</Filter>
     </ClCompile>
@@ -363,6 +360,9 @@
     <ClCompile Include="ChangePswDlg.cpp" />
     <ClCompile Include="consumer.cpp">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoryRecordDlg.cpp">
+      <Filter>ui\dlg</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

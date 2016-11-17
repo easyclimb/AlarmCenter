@@ -1035,6 +1035,7 @@ bool alarm_machine::execute_set_banned(bool banned)
 bool alarm_machine::execute_set_machine_status(machine_status status)
 {
 	AUTO_LOG_FUNCTION;
+	_machine_status = status;
 	CString query;
 	if (_is_submachine) {
 		query.Format(L"update table_sub_machine set machine_status=%d where id=%d", status, _id);
@@ -1044,7 +1045,6 @@ bool alarm_machine::execute_set_machine_status(machine_status status)
 	auto mgr = alarm_machine_manager::get_instance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
-		_machine_status = status;
 		return true;
 	}
 

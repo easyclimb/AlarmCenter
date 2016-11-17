@@ -1332,7 +1332,14 @@ values(%d,%d,%d,%d,%d,\
 
 	{
 		std::lock_guard<std::mutex> lg(lock_for_invlaid_machines_);
-		invalid_machine_map_.erase(ademco_id);
+		auto iter = invalid_machine_map_.find(ademco_id);
+		if (iter != invalid_machine_map_.end()) {
+			machine->set_online(iter->second->get_online());
+			machine->execute_set_machine_type(iter->second->get_machine_type());
+			machine->set_machine_status(iter->second->get_machine_status());
+			
+			invalid_machine_map_.erase(ademco_id);
+		}
 	}
 	return TRUE;
 }

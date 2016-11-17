@@ -125,8 +125,8 @@ typedef struct alarm_text {
 	int _event;
 	time_t _time;
 	CString _txt;
-	alarm_text() : _zone(0), _subzone(0), _event(0), _time(), _txt(_T("")) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
-	alarm_text(const alarm_text& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _time(rhs._time), _txt(rhs._txt) { AUTO_LOG_FUNCTION; JLOG(L"%p", this); }
+	alarm_text() : _zone(0), _subzone(0), _event(0), _time(), _txt(_T("")) { }
+	alarm_text(const alarm_text& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _time(rhs._time), _txt(rhs._txt) { }
 
 	alarm_text& operator=(const alarm_text& rhs) {
 		_zone = rhs._zone;
@@ -135,6 +135,13 @@ typedef struct alarm_text {
 		_time = rhs._time;
 		_txt = rhs._txt;
 		return *this;
+	}
+
+	CString get_text_with_formatted_date() const {
+		CString ret;
+		ret = time_point_to_wstring(std::chrono::system_clock::from_time_t(_time)).c_str();
+		ret += _txt.Right(_txt.GetLength() - 9);
+		return ret;
 	}
 }alarm_text;
 
