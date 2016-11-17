@@ -679,25 +679,31 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		auto mgr = core::alarm_machine_manager::get_instance();
 		if (m_lock_4_timeup.try_lock()) {
 			std::lock_guard<std::mutex> lock(m_lock_4_timeup, std::adopt_lock);
-			for (auto pair : m_reminder_timeup_list) {
-				core::alarm_machine_ptr target_machine = nullptr;
-				auto machine = mgr->GetMachine(pair.first);
-				if (machine) {
-					if (pair.second != 0) {
-						auto zone = machine->GetZone(pair.second);
-						if (zone) {
-							target_machine = zone->GetSubMachineInfo();
+
+			SYSTEMTIME st = { 0 };
+			GetSystemTime(&st);
+			st.wHour += 8;
+			if (st.wHour == 12 && st.wMinute <= 10) {
+				for (auto pair : m_reminder_timeup_list) {
+					core::alarm_machine_ptr target_machine = nullptr;
+					auto machine = mgr->GetMachine(pair.first);
+					if (machine) {
+						if (pair.second != 0) {
+							auto zone = machine->GetZone(pair.second);
+							if (zone) {
+								target_machine = zone->GetSubMachineInfo();
+							}
+						} else {
+							target_machine = machine;
 						}
-					} else {
-						target_machine = machine;
+					}
+
+					if (target_machine) {
+						list.push_back(target_machine);
 					}
 				}
-
-				if (target_machine) {
-					list.push_back(target_machine);
-				}
+				m_reminder_timeup_list.clear();
 			}
-			m_reminder_timeup_list.clear();
 
 			for (auto pair : m_service_timeup_list) {
 				core::alarm_machine_ptr target_machine = nullptr;

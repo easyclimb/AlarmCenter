@@ -171,7 +171,7 @@ public:
 	void clear_ademco_event_list();
 
 	// 2016-5-5 10:41:37 for service management
-	void set_consumer(const consumer_ptr& consumer) { consumer_ = consumer; }
+	void set_consumer(const consumer_ptr& consumer);
 	consumer_ptr get_consumer() const { return consumer_; }
 
 	// 2016-3-3 17:53:12 for qianfangming retrieve

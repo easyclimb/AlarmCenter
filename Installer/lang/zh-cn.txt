@@ -785,3 +785,6 @@
 "IDS_STRING_QUERY_BY_GUARD" = "按保安查询"
 "IDS_STRING_FM_USER_EXPORT_ALARM" = "用户(ID%d%s)执行了“导出全部报警记录到Excel报表操作”。导出成功，旧报警记录已清空。"
 "IDS_STRING_IDD_DIALOG_EXPORT_ALARM_PROGRESS" = "正在导出报警记录，请稍候......"
+"IDS_STRING_REMIND" = "提醒"
+"IDS_STRING_BANNED" = "屏蔽"
+"IDS_STRING_TIMEUP" = "到期"

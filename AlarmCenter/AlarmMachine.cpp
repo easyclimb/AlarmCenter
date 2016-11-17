@@ -254,6 +254,17 @@ void alarm_machine::clear_ademco_event_list()
 	}
 }
 
+void alarm_machine::set_consumer(const consumer_ptr & consumer)
+{
+	bool empty = consumer_ == nullptr;
+	consumer_ = consumer;
+	if (!empty) {
+		auto t = time(nullptr);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		notify_observers(ademcoEvent);
+	}
+}
+
 
 bool alarm_machine::EnterBufferMode()
 { 
@@ -319,7 +330,20 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			auto now = std::chrono::system_clock::now();
 			auto diff = consumer_->remind_time - now;
 			if (std::chrono::duration_cast<std::chrono::minutes>(diff).count() <= 0) {
-				PostMessageToMainWnd(WM_REMINDER_TIME_UP, _ademco_id, _submachine_zone);
+				CString rec;
+				int zoneValue = 0;
+				if (_is_submachine) {
+					zoneValue = _submachine_zone;
+				}
+
+				rec = get_formatted_name() + L" " + TR(IDS_STRING_REMIND_TIME_UP);
+				history_record_manager::get_instance()->InsertRecord(_ademco_id, zoneValue, rec,
+																	 ademcoEvent->_recv_time,
+																	 RECORD_LEVEL_EXCEPTION);
+				//PostMessageToMainWnd(WM_REMINDER_TIME_UP, _ademco_id, _submachine_zone);
+				auto t = time(nullptr);
+				auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+				notify_observers(ademcoEvent);
 			}
 		}
 
@@ -335,6 +359,9 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 														ademcoEvent->_recv_time, 
 														RECORD_LEVEL_EXCEPTION);
 			PostMessageToMainWnd(WM_SERVICE_TIME_UP, _ademco_id, _submachine_zone);
+			auto t = time(nullptr);
+			auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+			notify_observers(ademcoEvent);
 		}
 		_last_time_check_if_expire = GetTickCount();
 	}
@@ -1506,7 +1533,9 @@ bool alarm_machine::execute_update_expire_time(const std::chrono::system_clock::
 		if (!mgr->ExecuteSql(query)) {
 			JLOG(L"update expire_time failed.\n"); break;
 		}
-
+		auto t = time(nullptr);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		notify_observers(ademcoEvent);
 		expire_time_ = tp;
 		return true;
 	} while (0);

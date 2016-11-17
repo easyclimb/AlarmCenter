@@ -785,3 +785,6 @@
 "IDS_STRING_QUERY_BY_GUARD" = "Query by Guard"
 "IDS_STRING_FM_USER_EXPORT_ALARM" = "User (ID%d%s) carried out "export all alarm record to Excel operation". Export success, old alarm record has been cleared."
 "IDS_STRING_IDD_DIALOG_EXPORT_ALARM_PROGRESS" = "Exporting alarm record, please wait..."
+"IDS_STRING_REMIND" = "Remind"
+"IDS_STRING_BANNED" = "Banned"
+"IDS_STRING_TIMEUP" = "Timeup"

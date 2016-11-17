@@ -39,6 +39,8 @@ private:
 	CIconPtr iconExtra_;
 	CRect rect4IconExtra_;
 	CColorTextPtr color_text_;
+	CColorTextPtr text_extra_ = nullptr;
+	CRect rect4TextExtra_ = {};
 	CursorInRegion last_time_cursor_in_region_ = CIR_TEXT;
 	CWnd* _wndParent;
 	//DWORD _data;

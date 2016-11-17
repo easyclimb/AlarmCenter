@@ -15,6 +15,7 @@
 #include "StaticBmp.h"
 #include "StaticColorText.h"
 #include "alarm_handle_mgr.h"
+#include "consumer.h"
 
 using namespace ademco;
 
@@ -132,6 +133,14 @@ CButtonEx::CButtonEx(const wchar_t* /*text*/,
 	//iconExtra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT, rcIcon, _button.get());
 	rect4IconExtra_ = rcIcon;
 
+	int h = rcIcon.Height();
+	h = h / 4;
+	rcIcon.top += h;
+	rcIcon.bottom -= h;
+	rcIcon.left = rcIcon.right + cIconGap * 3;
+	rcIcon.right = rcButton.right - cIconGap;
+	rect4TextExtra_ = rcIcon;
+
 	_button->SetFaceColor(cColorWhite);
 	color_text_->SetFaceColor(cColorWhite);
 	UpdateButtonText();
@@ -227,6 +236,40 @@ void CButtonEx::UpdateButtonText()
 	if (IsValidButton()) {
 		color_text_->SetWindowTextW(_machine->get_formatted_name(false));
 		//color_text_->SetWindowTextW(L"测试");
+		CString text;
+		CString gap = L"  ";
+
+		if (_machine->get_banned()) {
+			text = TR(IDS_STRING_BANNED) + gap;
+		} 
+
+		auto consumer = _machine->get_consumer();
+		if (consumer) {
+			auto now = std::chrono::system_clock::now();
+			auto diff = std::chrono::duration_cast<std::chrono::minutes>(now - consumer->remind_time);
+			if (diff.count() >= 0) {
+				text += TR(IDS_STRING_REMIND) + gap;
+			}
+		}
+
+		if (_machine->get_left_service_time_in_minutes() <= 0) {
+			text += TR(IDS_STRING_TIMEUP) + gap;
+		}
+		
+
+		if (!text.IsEmpty()) {
+			if (text_extra_ == nullptr) {
+				text_extra_ = std::shared_ptr<CColorText>(new CColorText(),
+														  [](CColorText* p) {SAFEDELETEDLG(p); });
+				text_extra_->Create(nullptr, WS_CHILD | WS_VISIBLE | WS_EX_TRANSPARENT | SS_LEFT | SS_WORDELLIPSIS, rect4TextExtra_, _button.get());
+			}
+
+			text_extra_->SetWindowTextW(text);
+			text_extra_->SetFaceColor(cColorWhite);
+			text_extra_->SetTextColor(cColorRed);
+		} else if (text_extra_) {
+			text_extra_->SetWindowTextW(L"");
+		}
 	}
 	UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 }
