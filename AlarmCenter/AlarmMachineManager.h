@@ -73,6 +73,9 @@ protected:
 
 public:
 
+	// 2016-11-18 15:08:17 fuzzy search
+	std::list<int> fuzzy_search_machine(const std::wstring& keyword, int limit = 10);
+
 	// 2016-5-28 19:25:32
 	bool CreateSmsConfigForMachine(const core::alarm_machine_ptr& machine);
 

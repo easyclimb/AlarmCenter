@@ -41,6 +41,7 @@
 #include "AlarmHandleStep1Dlg.h"
 #include "ChangePswDlg.h"
 #include "consumer.h"
+#include "SearchMachineResultDlg.h"
 
 #include <algorithm>
 #include <iterator>
@@ -245,6 +246,7 @@ BEGIN_MESSAGE_MAP(CAlarmCenterDlg, CTrayDialog)
 	ON_MESSAGE(WM_REMINDER_TIME_UP, &CAlarmCenterDlg::OnReminderTimeUp)
 	ON_MESSAGE(WM_SERVICE_TIME_UP, &CAlarmCenterDlg::OnServiceTimeUp)
 	ON_MESSAGE(WM_DISARM_PASSWD_WRONG, &CAlarmCenterDlg::OnMsgDisarmPasswdWrong)
+	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CAlarmCenterDlg::OnBnClickedButtonSearch)
 END_MESSAGE_MAP()
 
 
@@ -305,6 +307,7 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	m_btn_switch_user.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_SWITCH_USER));
 
 	m_group_group_info.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_006));
+	SET_WINDOW_TEXT(IDC_BUTTON_SEARCH, IDS_STRING_SEARCH_MACHINE);
 	m_groupHistory.SetWindowTextW(TR(IDS_STRING_HISTORY_RECORD));
 	m_btnSeeMoreHr.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_MORE_HR));
 	
@@ -595,6 +598,10 @@ void CAlarmCenterDlg::InitDisplay()
 	m_wndContainerAlarming = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(this), deleter);
 	m_wndContainerAlarming->Create(IDD_DIALOG_CONTAINER, &m_tab);
 
+	m_shearch_machine_result_dlg = std::shared_ptr<CSearchMachineResultDlg>(new CSearchMachineResultDlg(this), deleter);
+	m_shearch_machine_result_dlg->Create(IDD_DIALOG_SEARCH_MACHINE_RESULT, this);
+	m_shearch_machine_result_dlg->ShowWindow(SW_HIDE);
+
 	CRect rcTab;
 	m_tab.GetClientRect(rcTab);
 	rcTab.DeflateRect(5, 25, 5, 5);
@@ -608,6 +615,8 @@ void CAlarmCenterDlg::InitDisplay()
 
 	m_alarmCenterInfoDlg = std::shared_ptr<CAlarmCenterInfoDlg>(new CAlarmCenterInfoDlg(this), deleter);
 	m_alarmCenterInfoDlg->Create(IDD_DIALOG_CSR_ACCT, this);
+
+
 
 	video::video_manager::get_instance()->LoadFromDB();
 	video::device_list devList;
@@ -1855,4 +1864,12 @@ void CAlarmCenterDlg::OnTrayRButtonDown(CPoint pt)
 void CAlarmCenterDlg::HandleCongwinRouterMode()
 {
 
+}
+
+
+void CAlarmCenterDlg::OnBnClickedButtonSearch()
+{
+	if (m_shearch_machine_result_dlg) {
+		m_shearch_machine_result_dlg->ShowWindow(SW_SHOW);
+	}
 }

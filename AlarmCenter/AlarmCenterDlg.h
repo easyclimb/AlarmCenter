@@ -17,6 +17,7 @@ namespace core { class group_info; };
 
 class CAlarmMachineContainerDlg;
 class CAlarmCenterInfoDlg;
+class CSearchMachineResultDlg;
 
 class CAlarmCenterDlg : public CTrayDialog
 {
@@ -74,6 +75,7 @@ protected:
 private:
 	std::shared_ptr<CAlarmMachineContainerDlg> m_wndContainer;
 	std::shared_ptr<CAlarmMachineContainerDlg> m_wndContainerAlarming;
+	std::shared_ptr<CSearchMachineResultDlg> m_shearch_machine_result_dlg = nullptr;
 	HICON m_hIconComputer;
 	HICON m_hIconConnection;
 	HICON m_hIconInternet;
@@ -185,4 +187,5 @@ public:
 public:
 	virtual void OnTrayRButtonDown(CPoint pt) override;
 	void HandleCongwinRouterMode();
+	afx_msg void OnBnClickedButtonSearch();
 };

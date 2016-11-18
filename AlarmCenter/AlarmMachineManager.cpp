@@ -1274,6 +1274,34 @@ BOOL alarm_machine_manager::DistributeAdemcoID(int& ademco_id)
 }
 
 
+std::list<int> alarm_machine_manager::fuzzy_search_machine(const std::wstring & keyword, int limit)
+{
+	auto formatted_key = utf8::w2a(double_quotes(keyword));
+	auto like = " '%" + formatted_key + "%' ";
+	std::stringstream ss;
+	ss << "select ademco_id from table_machine where "
+		<< "ademco_id like" << like
+		<< "or machine_name like" << like
+		<< "or contact like" << like
+		<< "or address like" << like
+		<< "or phone like" << like
+		<< "or phone_bk like" << like
+		<< "order by ademco_id "
+		<< "limit " << limit;
+
+	auto sql = ss.str();
+	//JLOGA(sql.c_str());
+	Statement query(*db_, sql);
+	std::list<int> ret;
+
+	while (query.executeStep()) {
+		int aid = query.getColumn(0);
+		ret.push_back(aid);
+	}
+
+	return ret;
+}
+
 bool alarm_machine_manager::CreateSmsConfigForMachine(const core::alarm_machine_ptr& machine)
 {
 	sms_config cfg = {};

@@ -296,6 +296,7 @@
     <ClInclude Include="RestoreMachineDlg.h" />
     <ClInclude Include="RetrieveProgressDlg.h" />
     <ClInclude Include="ScrollHelper.h" />
+    <ClInclude Include="SearchMachineResultDlg.h" />
     <ClInclude Include="SecurityGuardMgrDlg.h" />
     <ClInclude Include="SerialPort.h" />
     <ClInclude Include="Server.h" />
@@ -427,6 +428,7 @@
     <ClCompile Include="RestoreMachineDlg.cpp" />
     <ClCompile Include="RetrieveProgressDlg.cpp" />
     <ClCompile Include="ScrollHelper.cpp" />
+    <ClCompile Include="SearchMachineResultDlg.cpp" />
     <ClCompile Include="SecurityGuardMgrDlg.cpp" />
     <ClCompile Include="SerialPort.cpp" />
     <ClCompile Include="Server.cpp" />
@@ -465,6 +467,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\..\Users\capta\Downloads\search.ico" />
     <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico" />
     <Image Include="..\Installer\Resource\flags.bmp" />
     <Image Include="res\AlarmCenter.ico" />

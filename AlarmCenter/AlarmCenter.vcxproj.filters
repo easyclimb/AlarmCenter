@@ -364,6 +364,7 @@
     <ClCompile Include="HistoryRecordDlg.cpp">
       <Filter>ui\dlg</Filter>
     </ClCompile>
+    <ClCompile Include="SearchMachineResultDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -729,6 +730,7 @@
     <ClInclude Include="consumer.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="SearchMachineResultDlg.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">
@@ -884,6 +886,7 @@
     <Image Include="res\Network.png">
       <Filter>resource</Filter>
     </Image>
+    <Image Include="..\..\..\Users\capta\Downloads\search.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\AlarmCenter.rc2">
