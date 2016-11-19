@@ -790,3 +790,4 @@
 "IDS_STRING_TIMEUP" = "到期"
 "IDS_STRING_SEARCH_MACHINE" = "搜索主機"
 "IDS_STRING_SEARCH_MACHINE_RESULTS" = "搜索結果"
+"IDS_STRING_SYSTEM_EXPORT_ALARM" = "系統自動執行了“導出全部報警記錄到Excel報表操作”。導出到Excel文件%s成功，舊報警記錄已清空。"

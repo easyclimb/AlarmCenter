@@ -168,7 +168,7 @@ public:
 
 	machine_uuid get_uuid() const;
 
-	void clear_ademco_event_list();
+	void clear_ademco_event_list(bool clear_sub_machine = true);
 
 	// 2016-5-5 10:41:37 for service management
 	void set_consumer(const consumer_ptr& consumer);

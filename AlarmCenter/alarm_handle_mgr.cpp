@@ -3,12 +3,19 @@
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
 #include "AppResource.h"
 #include "UserInfo.h"
+#include "AlarmCenter.h"
 
 #include <set>
 
 using namespace SQLite;
 
 namespace core {
+
+#ifdef _DEBUG
+static const int CHECK_COUNTER = 2;
+#else
+static const int CHECK_COUNTER = 100;
+#endif
 
 std::wstring alarm_judgement_info::get_alarm_judgement_type_text(int judgement_type_id) {
 	switch (judgement_type_id) {
@@ -336,8 +343,10 @@ alarm_date text)");
 		Statement query(*db_, ss.str());
 		while (query.executeStep()) {
 			int ndx = 0;
-			int id = query.getColumn(ndx++).getInt();
-			int alarm_id = query.getColumn(ndx++).getInt();
+			//int id = query.getColumn(ndx++).getInt();
+			ndx++;
+			//int alarm_id = query.getColumn(ndx++).getInt();
+			ndx++;
 			int zone = query.getColumn(ndx++);
 			int gg = query.getColumn(ndx++);
 			int adm_evnt = query.getColumn(ndx++);
@@ -366,7 +375,7 @@ alarm_handle_mgr::alarm_handle_mgr()
 	impl_->load_alarm_handles(buffered_alarm_handles_);
 	impl_->load_alarm_reasons(buffered_alarm_reasons_);
 
-	alarm_count_ = impl_->get_alarm_count();
+	//alarm_count_ = impl_->get_alarm_count();
 }
 
 alarm_handle_mgr::~alarm_handle_mgr()
@@ -653,6 +662,11 @@ alarm_reason_ptr alarm_handle_mgr::execute_add_alarm_reason(int reason, const st
 	return _reason;
 }
 
+int alarm_handle_mgr::get_alarm_count() const
+{
+	return impl_->get_alarm_count();
+}
+
 alarm_ptr alarm_handle_mgr::get_alarm_info(int id)
 {
 	auto iter = buffered_alarms_.find(id);
@@ -725,6 +739,14 @@ alarm_ptr alarm_handle_mgr::execute_add_alarm(int ademco_id, int zone, /*int gg,
 	alarm->status_ = alarm_status::alarm_status_not_judged;
 
 	buffered_alarms_[id] = alarm;
+
+	check_counter_++;
+	if (check_counter_ >= CHECK_COUNTER) {
+		int alarm_count = get_alarm_count();
+		if (alarm_count >= MAX_ALARM_RECORD) {
+			PostMessageToMainWnd(WM_NEED_TO_EXPORT_HR, alarm_count, 1);
+		}
+	}
 
 	return alarm;
 }
@@ -923,8 +945,50 @@ int alarm_handle_mgr::get_min_alarm_id() const
 
 bool alarm_handle_mgr::delete_half_record()
 {
+	auto count = get_alarm_count() / 2;
+	std::stringstream ss;
+	//ss << "delete from table_alarm where id in (select id from table_alarm order by id limit " << count << ")";
+	ss << "select id from table_alarm order by id limit " << count;
+	Statement query(*impl_->db_, ss.str());
+	while (query.executeStep()) {
+		int id = query.getColumn(0);
+		auto alarm = buffered_alarms_[id];
+		if (alarm) {
 
-	return false;
+			ss.str(""); ss.clear();
+			ss << "delete from table_alarm_text where alarm_id=" << alarm->get_id();
+			impl_->db_->exec(ss.str());
+
+			if (alarm->get_judgement_id() != 0) {
+				ss.str(""); ss.clear();
+				ss << "delete from table_judgement where id=" << alarm->get_judgement_id();
+				impl_->db_->exec(ss.str());
+				buffered_alarm_judgements_.erase(alarm->get_judgement_id());
+			}
+
+			if (alarm->get_handle_id() != 0) {
+				ss.str(""); ss.clear();
+				ss << "delete from table_handle where id=" << alarm->get_handle_id();
+				impl_->db_->exec(ss.str());
+				buffered_alarm_handles_.erase(alarm->get_handle_id());
+			}
+
+			if (alarm->get_reason_id() != 0) {
+				ss.str(""); ss.clear();
+				ss << "delete from table_reason where id=" << alarm->get_reason_id();
+				impl_->db_->exec(ss.str());
+				buffered_alarm_reasons_.erase(alarm->get_reason_id());
+			}
+
+			ss.str(""); ss.clear();
+			ss << "delete from table_alarm where id=" << alarm->get_id();
+			impl_->db_->exec(ss.str());
+		}
+
+		buffered_alarms_.erase(id);
+	}
+
+	return true;
 }
 
 bool alarm_handle_mgr::travers_alarm_record(const observer_ptr & ptr)

@@ -246,6 +246,12 @@ typedef std::vector<int> valid_data_ids;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#ifdef _DEBUG
+static const int MAX_ALARM_RECORD = 20;
+#else
+static const int MAX_ALARM_RECORD = 100000;
+#endif
+
 class alarm_handle_mgr : public dp::observable<alarm_ptr>, public dp::singleton<alarm_handle_mgr>
 {
 protected:
@@ -261,8 +267,8 @@ protected:
 	std::map<int, alarm_reason_ptr> buffered_alarm_reasons_ = {};
 	std::map<int, alarm_ptr> buffered_alarms_ = {};
 
-	int alarm_count_ = 0;
-
+	//int alarm_count_ = 0;
+	int check_counter_ = 0;
 
 protected:
 	alarm_handle_ptr execute_add_alarm_handle(int guard_id, const std::chrono::minutes& predict_minutes, const std::wstring& note);
@@ -295,7 +301,7 @@ public:
 	alarm_reason_ptr get_alarm_reason(int id);
 	alarm_reason_ptr execute_add_alarm_reason(int reason, const std::wstring& detail, const std::wstring& attachment);
 
-	int get_alarm_count() const { return alarm_count_; }
+	int get_alarm_count() const;
 	alarm_ptr get_alarm_info(int id);
 	alarm_ptr execute_add_alarm(int ademco_id, int zone, bool is_sub_machine, int judgement_id, int handle_id, int reason_id);
 	alarm_ptr execute_add_alarm_text(int alarm_id, const alarm_text_ptr& txt);

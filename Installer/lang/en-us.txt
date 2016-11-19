@@ -790,3 +790,4 @@
 "IDS_STRING_TIMEUP" = "Timeup"
 "IDS_STRING_SEARCH_MACHINE" = "Search"
 "IDS_STRING_SEARCH_MACHINE_RESULTS" = "Search results"
+"IDS_STRING_SYSTEM_EXPORT_ALARM" = "System automatically carried out "export all alarm record to operation by Excel. Export to Excel file % s successful, old alarm record has been cleared."

@@ -686,13 +686,14 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 		core::alarm_machine_list list;
 		
 		auto mgr = core::alarm_machine_manager::get_instance();
-		if (m_lock_4_timeup.try_lock()) {
-			std::lock_guard<std::mutex> lock(m_lock_4_timeup, std::adopt_lock);
 
-			SYSTEMTIME st = { 0 };
-			GetSystemTime(&st);
-			st.wHour += 8;
-			if (st.wHour == 12 && st.wMinute <= 10) {
+		SYSTEMTIME st = { 0 };
+		GetSystemTime(&st);
+		st.wHour += 8;
+		if (st.wHour == 12 && st.wMinute <= 10) {
+			if (m_lock_4_timeup.try_lock()) {
+				std::lock_guard<std::mutex> lock(m_lock_4_timeup, std::adopt_lock);
+
 				for (auto pair : m_reminder_timeup_list) {
 					core::alarm_machine_ptr target_machine = nullptr;
 					auto machine = mgr->GetMachine(pair.first);
@@ -712,97 +713,98 @@ void CAlarmCenterDlg::OnTimer(UINT_PTR nIDEvent)
 					}
 				}
 				m_reminder_timeup_list.clear();
-			}
 
-			for (auto pair : m_service_timeup_list) {
-				core::alarm_machine_ptr target_machine = nullptr;
-				auto machine = mgr->GetMachine(pair.first);
-				if (machine) {
-					if (pair.second != 0) {
-						auto zone = machine->GetZone(pair.second);
-						if (zone) {
-							target_machine = zone->GetSubMachineInfo();
+
+				for (auto pair : m_service_timeup_list) {
+					core::alarm_machine_ptr target_machine = nullptr;
+					auto machine = mgr->GetMachine(pair.first);
+					if (machine) {
+						if (pair.second != 0) {
+							auto zone = machine->GetZone(pair.second);
+							if (zone) {
+								target_machine = zone->GetSubMachineInfo();
+							}
+						} else {
+							target_machine = machine;
 						}
-					} else {
-						target_machine = machine;
+					}
+
+					if (target_machine) {
+						list.push_back(target_machine);
 					}
 				}
+				m_service_timeup_list.clear();
+			}
 
-				if (target_machine) {
-					list.push_back(target_machine);
+			std::list<std::wstring> msg_list;
+
+			list.unique();
+			for (auto machine : list) {
+				auto now = std::chrono::system_clock::now();
+				auto expire = machine->get_expire_time();
+				auto remind = machine->get_consumer()->remind_time;
+				auto span1 = expire - now;
+				auto span2 = remind - now;
+				auto mins = std::chrono::duration_cast<std::chrono::minutes>(span1).count();
+				auto min2 = std::chrono::duration_cast<std::chrono::minutes>(span2).count();
+
+				auto consumer = machine->get_consumer();
+
+				if (min2 <= 0) {
+					CString s = TR(IDS_STRING_REMIND_TIME_UP);
+					s.AppendFormat(L"\r\n%s" // 名称
+								   L"\r\n%s:%s" // 类型
+								   L"\r\n%s:%d" // 应付
+								   L"\r\n%s:%d" // 已付
+								   L"\r\n%s:%d" // 欠费
+								   L"\r\n%s:%s" // 是否欠费
+								   L"\r\n%s:%s" // 联系人
+								   L"\r\n%s:%s" // 电话
+								   L"\r\n%s:%s", // 备用电话
+								   machine->get_formatted_name(),
+								   TR(IDS_STRING_HRLV), consumer->type->name,
+								   TR(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
+								   TR(IDS_STRING_PAID), consumer->paid_amount,
+								   TR(IDS_STRING_OWED), consumer->get_owed_amount(),
+								   TR(IDS_STRING_IS_OWED), TR(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
+								   TR(IDS_STRING_CONTACT), machine->get_contact(),
+								   TR(IDS_STRING_PHONE), machine->get_phone(),
+								   TR(IDS_STRING_PHONE_BK), machine->get_phone_bk()
+					);
+					msg_list.push_back((LPCTSTR)s);
+				}
+
+				if (mins <= 0) {
+					CString s = TR(IDS_STRING_EXPIRE);
+					s.AppendFormat(L"\r\n%s" // 名称
+								   L"\r\n%s:%s" // 类型
+								   L"\r\n%s:%d" // 应付
+								   L"\r\n%s:%d" // 已付
+								   L"\r\n%s:%d" // 欠费
+								   L"\r\n%s:%s" // 是否欠费
+								   L"\r\n%s:%s" // 联系人
+								   L"\r\n%s:%s" // 电话
+								   L"\r\n%s:%s", // 备用电话
+								   machine->get_formatted_name(),
+								   TR(IDS_STRING_HRLV), consumer->type->name,
+								   TR(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
+								   TR(IDS_STRING_PAID), consumer->paid_amount,
+								   TR(IDS_STRING_OWED), consumer->get_owed_amount(),
+								   TR(IDS_STRING_IS_OWED), TR(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
+								   TR(IDS_STRING_CONTACT), machine->get_contact(),
+								   TR(IDS_STRING_PHONE), machine->get_phone(),
+								   TR(IDS_STRING_PHONE_BK), machine->get_phone_bk()
+					);
+					msg_list.push_back((LPCTSTR)s);
 				}
 			}
-			m_service_timeup_list.clear();
-		}
 
-		std::list<std::wstring> msg_list;
+			list.clear();
 
-		for (auto machine : list) {
-			auto now = std::chrono::system_clock::now();
-			auto expire = machine->get_expire_time();
-			auto remind = machine->get_consumer()->remind_time;
-			auto span1 = expire - now;
-			auto span2 = remind - now;
-			auto mins = std::chrono::duration_cast<std::chrono::minutes>(span1).count();
-			auto min2 = std::chrono::duration_cast<std::chrono::minutes>(span2).count();
-
-			auto consumer = machine->get_consumer();
-
-			if (min2 <= 0) {
-				CString s = TR(IDS_STRING_REMIND_TIME_UP);
-				s.AppendFormat(L"\r\n%s" // 名称
-							   L"\r\n%s:%s" // 类型
-							   L"\r\n%s:%d" // 应付
-							   L"\r\n%s:%d" // 已付
-							   L"\r\n%s:%d" // 欠费
-							   L"\r\n%s:%s" // 是否欠费
-							   L"\r\n%s:%s" // 联系人
-							   L"\r\n%s:%s" // 电话
-							   L"\r\n%s:%s", // 备用电话
-							   machine->get_formatted_name(),
-							   TR(IDS_STRING_HRLV), consumer->type->name,
-							   TR(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
-							   TR(IDS_STRING_PAID), consumer->paid_amount,
-							   TR(IDS_STRING_OWED), consumer->get_owed_amount(),
-							   TR(IDS_STRING_IS_OWED), TR(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
-							   TR(IDS_STRING_CONTACT), machine->get_contact(),
-							   TR(IDS_STRING_PHONE), machine->get_phone(),
-							   TR(IDS_STRING_PHONE_BK), machine->get_phone_bk()
-							   );
-				msg_list.push_back((LPCTSTR)s);
-			}
-
-			if (mins <= 0) {
-				CString s = TR(IDS_STRING_EXPIRE);
-				s.AppendFormat(L"\r\n%s" // 名称
-							   L"\r\n%s:%s" // 类型
-							   L"\r\n%s:%d" // 应付
-							   L"\r\n%s:%d" // 已付
-							   L"\r\n%s:%d" // 欠费
-							   L"\r\n%s:%s" // 是否欠费
-							   L"\r\n%s:%s" // 联系人
-							   L"\r\n%s:%s" // 电话
-							   L"\r\n%s:%s", // 备用电话
-							   machine->get_formatted_name(),
-							   TR(IDS_STRING_HRLV), consumer->type->name,
-							   TR(IDS_STRING_RECEIVABLE), consumer->receivable_amount,
-							   TR(IDS_STRING_PAID), consumer->paid_amount,
-							   TR(IDS_STRING_OWED), consumer->get_owed_amount(),
-							   TR(IDS_STRING_IS_OWED), TR(consumer->get_owed_amount() > 0 ? IDS_STRING_YES : IDS_STRING_NO),
-							   TR(IDS_STRING_CONTACT), machine->get_contact(),
-							   TR(IDS_STRING_PHONE), machine->get_phone(),
-							   TR(IDS_STRING_PHONE_BK), machine->get_phone_bk()
-							   );
-				msg_list.push_back((LPCTSTR)s);
+			for (auto msg : msg_list) {
+				MessageBox(msg.c_str());
 			}
 		}
-
-		list.clear();
-
-		for (auto msg : msg_list) {
-			MessageBox(msg.c_str());
-		}
-
 	} else if (detail::cTimerIdHandleDisarmPasswdWrong == nIDEvent) {
 		auto_timer timer(m_hWnd, detail::cTimerIdHandleDisarmPasswdWrong, 1000);
 		std::set<int> ademco_list;
@@ -1546,15 +1548,18 @@ afx_msg LRESULT CAlarmCenterDlg::OnMsgNeedQuerySubMachine(WPARAM wParam, LPARAM 
 }
 
 
-afx_msg LRESULT CAlarmCenterDlg::OnMsgNeedToExportHr(WPARAM wParam, LPARAM /*lParam*/)
+// wparam for record count
+// lparam 0 for hisroty, 1 for alarm
+afx_msg LRESULT CAlarmCenterDlg::OnMsgNeedToExportHr(WPARAM wParam, LPARAM lParam)
 {
 	int curRecord = static_cast<int>(wParam);
 	CExportHrProcessDlg dlg(this);
 	dlg.m_nTotalCount = curRecord;
+	dlg.export_history_ = lParam == 0;
 	dlg.DoModal();
 
 	CString s, fm;
-	fm = TR(IDS_STRING_SYSTEM_EXPORT_HR);
+	fm = TR(dlg.export_history_ ? IDS_STRING_SYSTEM_EXPORT_HR : IDS_STRING_SYSTEM_EXPORT_ALARM);
 	s.Format(fm, dlg.m_excelPath);
 	auto hr = history_record_manager::get_instance();
 	hr->InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_SYSTEM);

@@ -766,7 +766,7 @@ void CAlarmMachineDlg::OnBnClickedButton3()
 void CAlarmMachineDlg::OnBnClickedButtonClearmsg()
 {
 	if (m_machine) {
-		m_machine->clear_ademco_event_list();
+		m_machine->clear_ademco_event_list(false);
 	}
 }
 

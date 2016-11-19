@@ -120,7 +120,7 @@ void CLoginDlg::OnEnChangeEditUserid()
 		m_user_name.SetWindowTextW(user_name.c_str());
 		m_note_id.SetWindowTextW(L"");
 		m_user_id.SetFocus();
-		m_user_id.SetSel(-1);
+		m_user_id.SetSel((DWORD)-1);
 	}
 }
 
@@ -145,7 +145,7 @@ void CLoginDlg::OnEnChangeEditUserName()
 		m_user_id.SetWindowTextW(user_name);
 		m_note_name.SetWindowTextW(L"");
 		m_user_name.SetFocus();
-		m_user_name.SetSel(-1);
+		m_user_name.SetSel((DWORD)-1);
 	}
 }
 

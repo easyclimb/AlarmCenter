@@ -178,7 +178,7 @@ bool alarm_machine::execute_set_zoomLevel(int zoomLevel)
 }
 
 
-void alarm_machine::clear_ademco_event_list()
+void alarm_machine::clear_ademco_event_list(bool clear_sub_machine)
 {
 	if (!_alarming) return;
 	std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList);
@@ -207,7 +207,7 @@ void alarm_machine::clear_ademco_event_list()
 		}
 		if (zoneIter->second->get_type() == ZT_SUB_MACHINE) {
 			alarm_machine_ptr subMachine = zoneIter->second->GetSubMachineInfo();
-			if (subMachine && subMachine->get_alarming()) {
+			if (clear_sub_machine && subMachine && subMachine->get_alarming()) {
 				subMachine->clear_ademco_event_list();
 			}
 		}
@@ -342,8 +342,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 																	 RECORD_LEVEL_EXCEPTION);
 				//PostMessageToMainWnd(WM_REMINDER_TIME_UP, _ademco_id, _submachine_zone);
 				auto t = time(nullptr);
-				auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
-				notify_observers(ademcoEvent);
+				auto dummy = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+				notify_observers(dummy);
 			}
 		}
 
@@ -360,8 +360,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 														RECORD_LEVEL_EXCEPTION);
 			PostMessageToMainWnd(WM_SERVICE_TIME_UP, _ademco_id, _submachine_zone);
 			auto t = time(nullptr);
-			auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
-			notify_observers(ademcoEvent);
+			auto dummy = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+			notify_observers(dummy);
 		}
 		_last_time_check_if_expire = GetTickCount();
 	}
@@ -1533,6 +1533,18 @@ bool alarm_machine::execute_update_expire_time(const std::chrono::system_clock::
 		if (!mgr->ExecuteSql(query)) {
 			JLOG(L"update expire_time failed.\n"); break;
 		}
+
+		// 2016-11-19 14:21:05 automatically set remind time to 7 days before expire time.
+		if (consumer_) {
+			auto diff = std::chrono::hours(24 * 7);
+			auto remind_time = tp - diff;
+			auto tmp = std::make_shared<consumer>(*consumer_);
+			tmp->remind_time = remind_time;
+			if (consumer_manager::get_instance()->execute_update_consumer(tmp)) {
+				consumer_ = tmp;
+			}
+		}
+
 		auto t = time(nullptr);
 		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
 		notify_observers(ademcoEvent);

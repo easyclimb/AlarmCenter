@@ -1585,15 +1585,21 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 	CString srecord, suser, sfm, sop;
 	suser = TR(IDS_STRING_USER);
 	sfm = TR(IDS_STRING_LOCAL_OP);
+
+	bool need_reply = false;
+
 	switch (ademco_event) {
 		case EVENT_ARM:
 			sop = TR(IDS_STRING_ARM);
+			need_reply = true;
 			break;
 		case EVENT_HALFARM:
 			sop = TR(IDS_STRING_HALFARM);
+			need_reply = true;
 			break;
 		case EVENT_DISARM:
 			sop = TR(IDS_STRING_DISARM);
+			need_reply = true;
 			break;
 		case EVENT_EMERGENCY:
 			sop = TR(IDS_STRING_EMERGENCY);
@@ -1631,7 +1637,9 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 		history_record_manager::get_instance()->InsertRecord(machine->get_ademco_id(),
 															zone, srecord, time(nullptr),
 															RECORD_LEVEL_USERCONTROL);
-	} 
+	} else if (need_reply) {
+		// todo
+	}
 
 
 	

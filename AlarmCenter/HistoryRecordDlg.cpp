@@ -1215,6 +1215,7 @@ void CHistoryRecordDlg::OnButtonExport()
 
 		Sleep(1000);
 		init_grid();
+		InitData();
 		LoadRecordsBasedOnPage(1);
 	}
 }

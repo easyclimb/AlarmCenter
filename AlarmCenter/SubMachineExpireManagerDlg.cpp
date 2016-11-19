@@ -208,6 +208,7 @@ void CMachineExpireManagerDlg::SetExpireTime(CPoint pos)
 		}
 
 		if (machine && machine->execute_update_expire_time(expire_time)) {
+			m_grid.SetItemText(row, col_remind_time, time_point_to_wstring(machine->get_consumer()->remind_time).c_str());
 			m_grid.SetItemText(row, col_expire_time, time_point_to_wstring(expire_time).c_str());
 			m_grid.SetItemText(row, col_is_expired, machine->get_left_service_time_in_minutes() <= 0 ? syes : sno);
 		}

@@ -841,6 +841,10 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 							m_clientsMap[conn_id] = std::make_shared<CLIENT_DATA>();
 						}
 
+						if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
+							ok = FALSE; break;
+						}
+
 						core::alarm_machine_ptr machine = mgr->GetMachine(ademco_id);
 						if (!machine) {
 							JLOG(L"machine %04d is not created!", ademco_id);
@@ -853,9 +857,6 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 							std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
 							JLOGA("alarm machine: 05 00 aid %04d acct %s online.\n",
 											ademco_id, acct);
-							if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
-								ok = FALSE; break;
-							}
 							
 							if (machine) {
 								auto csr_acct = util::CConfigHelper::get_instance()->get_csr_acct();
@@ -1040,6 +1041,10 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						m_clientsMap[conn_id] = std::make_shared<CLIENT_DATA>();
 					}
 
+					if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
+						ok = FALSE; break;
+					}
+
 					core::alarm_machine_ptr machine = mgr->GetMachine(ademco_id);
 
 					if (!m_clientsMap[conn_id]->online || (machine && !machine->get_online())) {
@@ -1047,9 +1052,6 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						std::copy(m_packet1._acct.begin(), m_packet1._acct.end(), acct);
 						JLOGA("alarm machine ONLINE:0d 00 aid %04d acct %s online.\n",
 										ademco_id, acct);
-						if (!mgr->CheckIsValidMachine(ademco_id, /*acct, */zone)) {
-							ok = FALSE; break;
-						}
 					 
 						if (machine) {
 							(_event_source == ES_TCP_SERVER1) ? machine->SetPrivatePacketFromServer1(&m_packet2) : machine->SetPrivatePacketFromServer2(&m_packet2);

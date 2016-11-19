@@ -1167,6 +1167,7 @@ void CMachineManagerDlg::OnBnClickedButtonExtend()
 	}
 
 	if (machine->execute_update_expire_time(expire_time)) {
+		m_remind_time.SetWindowTextW(time_point_to_wstring(machine->get_consumer()->remind_time).c_str());
 		m_expire_time.SetWindowTextW(time_point_to_wstring(expire_time).c_str());
 	}
 }

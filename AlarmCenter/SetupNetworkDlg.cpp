@@ -705,7 +705,7 @@ void CSetupNetworkDlg::InitCom()
 
 	int com = cfg->get_com_port();
 	for (int i = 0; i < m_cmbCom.GetCount(); i++) {
-		if (m_cmbCom.GetItemData(i) == com) {
+		if (m_cmbCom.GetItemData(i) == (DWORD)com) {
 			m_cmbCom.SetCurSel(i);
 		}
 	}
@@ -729,7 +729,7 @@ void CSetupNetworkDlg::InitCom()
 
 	com = cfg->get_congwin_com_port();
 	for (int i = 0; i < m_cmb_congwin_com.GetCount(); i++) {
-		if (m_cmb_congwin_com.GetItemData(i) == com) {
+		if (m_cmb_congwin_com.GetItemData(i) == (DWORD)com) {
 			m_cmb_congwin_com.SetCurSel(i);
 		}
 	}

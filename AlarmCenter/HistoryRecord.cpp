@@ -169,16 +169,13 @@ void history_record_manager::InsertRecordPrivate(const history_record_ptr& hr)
 	}
 
 	if (++m_nRecordCounter >= CHECK_POINT) {
-		if (/*(WARNING_VAR <= m_nTotalRecord)
-			|| */((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT)
+		if (((MAX_HISTORY_RECORD - m_nTotalRecord) <= CHECK_POINT)
 			|| (m_nTotalRecord >= MAX_HISTORY_RECORD)) {
 			m_nRecordCounter -= CHECK_POINT;
-			PostMessageToMainWnd(WM_NEED_TO_EXPORT_HR, m_nTotalRecord, MAX_HISTORY_RECORD);
-			m_nRecordCounter = 0;
-			
-		} else {
-			m_nRecordCounter = 0;
+			PostMessageToMainWnd(WM_NEED_TO_EXPORT_HR, m_nTotalRecord, 0);			
 		}
+
+		m_nRecordCounter = 0;
 	}
 	
 	JLOG(L"m_csLock.UnLock()\n");

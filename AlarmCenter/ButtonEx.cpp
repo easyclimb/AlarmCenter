@@ -706,7 +706,7 @@ void CButtonEx::OnRBnClicked()
 			break;
 		case ID_DDD_32775: // clear msg
 			if (_machine) {
-				_machine->clear_ademco_event_list();
+				_machine->clear_ademco_event_list(false);
 			}
 			break;
 		case ID_DDD_32785: // show baidu map

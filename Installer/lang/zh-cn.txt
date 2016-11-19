@@ -790,3 +790,4 @@
 "IDS_STRING_TIMEUP" = "到期"
 "IDS_STRING_SEARCH_MACHINE" = "搜索主机"
 "IDS_STRING_SEARCH_MACHINE_RESULTS" = "搜索结果"
+"IDS_STRING_SYSTEM_EXPORT_ALARM" = "系统自动执行了“导出全部报警记录到Excel报表操作”。导出到Excel文件%s成功，旧报警记录已清空。"
