@@ -24,6 +24,10 @@ private:
 	group_info_ptr invalid_machine_group_ = {};
 	std::mutex lock_for_invlaid_machines_ = {};
 
+	//    machine_uuid              event        start time
+	std::map<machine_uuid, std::pair<int, std::chrono::steady_clock::time_point>> map_for_remote_control_waiting_reply_ = {};
+	std::mutex lock_for_mfrcwr_ = {};
+
 	map_info_map m_mapInfoMap;
 	detector_info_list m_detectorList;
 	std::map<std::pair<int, int>, camera_info_list> m_cameraMap;
@@ -55,7 +59,7 @@ protected:
 	void LoadServiceInfoFromDB();
 	void LoadSmsConfigFromDB(const core::alarm_machine_ptr& machine);
 
-	void ThreadCheckSubMachine();
+	void ThreadWorker();
 	typedef struct CHECKER_PARAM{
 		alarm_machine_manager* mgr;
 		int ademco_id;
@@ -66,6 +70,7 @@ protected:
 	std::mutex mutex_ = {};
 	std::condition_variable condvar_ = {};
 	std::thread thread_ = {};
+	std::chrono::steady_clock::time_point last_time_check_sub_machine_ = {};
 
 	HANDLE m_hEventOotebm;
 	std::mutex m_lock4Machines;

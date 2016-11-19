@@ -38,7 +38,8 @@ static const int ONE_HOUR = 60 * ONE_MINUTE;
 //static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = 3000;
 //#else
 static const int MAX_SUBMACHINE_ACTION_TIME_OUT = 16 * ONE_HOUR; // 16 hour
-static const int CHECK_GAP = 16 * ONE_HOUR;
+//static const int CHECK_GAP = 16 * ONE_HOUR;
+static const int CHECK_GAP = 1000;
 static const int TRY_LOCK_RETRY_GAP = ONE_MINUTE;
 static const int WAIT_TIME_FOR_RETRIEVE_RESPONCE = ONE_MINUTE;
 //#endif
@@ -66,7 +67,7 @@ alarm_machine_manager::alarm_machine_manager()
 
 	m_hEventOotebm = CreateEvent(nullptr, TRUE, FALSE, nullptr);
 
-	thread_ = std::thread(&alarm_machine_manager::ThreadCheckSubMachine, this);
+	thread_ = std::thread(&alarm_machine_manager::ThreadWorker, this);
 }
 
 
@@ -1587,19 +1588,23 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 	sfm = TR(IDS_STRING_LOCAL_OP);
 
 	bool need_reply = false;
+	int target_reply = EVENT_INVALID_EVENT;
 
 	switch (ademco_event) {
 		case EVENT_ARM:
 			sop = TR(IDS_STRING_ARM);
 			need_reply = true;
+			target_reply = EVENT_ARM;
 			break;
 		case EVENT_HALFARM:
 			sop = TR(IDS_STRING_HALFARM);
 			need_reply = true;
+			target_reply = EVENT_HALFARM;
 			break;
 		case EVENT_DISARM:
 			sop = TR(IDS_STRING_DISARM);
 			need_reply = true;
+			target_reply = EVENT_DISARM;
 			break;
 		case EVENT_EMERGENCY:
 			sop = TR(IDS_STRING_EMERGENCY);
@@ -1638,7 +1643,8 @@ BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& m
 															zone, srecord, time(nullptr),
 															RECORD_LEVEL_USERCONTROL);
 	} else if (need_reply) {
-		// todo
+		std::lock_guard<std::mutex> lg(lock_for_mfrcwr_);
+		map_for_remote_control_waiting_reply_[machine->get_uuid()] = std::pair<int, std::chrono::steady_clock::time_point>(target_reply, std::chrono::steady_clock::now());
 	}
 
 
@@ -1683,9 +1689,11 @@ void __stdcall alarm_machine_manager::OnOtherCallEnterBufferMode(void* udata)
 }
 
 //m_hEventOotebm
-void alarm_machine_manager::ThreadCheckSubMachine()
+void alarm_machine_manager::ThreadWorker()
 {
 	AUTO_LOG_FUNCTION;
+
+	last_time_check_sub_machine_ = std::chrono::steady_clock::now();
 	
 	while (running_) {
 		
@@ -1697,6 +1705,31 @@ void alarm_machine_manager::ThreadCheckSubMachine()
 
 		if (!running_) {
 			break;
+		}
+
+		if (lock_for_mfrcwr_.try_lock()) {
+			std::lock_guard<std::mutex> lg(lock_for_mfrcwr_, std::adopt_lock);
+			auto hr = history_record_manager::get_instance();
+			auto now = std::chrono::steady_clock::now();
+			auto iter = map_for_remote_control_waiting_reply_.begin();
+			while (iter != map_for_remote_control_waiting_reply_.end()) {
+				auto diff = std::chrono::duration_cast<std::chrono::seconds>(now - iter->second.second);
+				static const int REMOTE_CONTROL_TIMEOUT = 10;
+				if (diff.count() >= REMOTE_CONTROL_TIMEOUT) { // 10s no reply, write history
+					auto machine = GetMachineByUuid(iter->first);
+					if (machine && iter->second.first != machine->get_machine_status()) {
+						CString txt;
+						txt = machine->get_formatted_name() + L" ";
+						txt.AppendFormat(TR(IDS_STRING_REMOTE_CONTROL_FAIL_BY_TIME_OUT), 
+										 REMOTE_CONTROL_TIMEOUT, 
+										 CAppResource::get_instance()->AdemcoEventToString(iter->second.first));
+						hr->InsertRecord(iter->first.first, iter->first.second, txt, time(nullptr), RECORD_LEVEL_USERCONTROL);
+					}
+					iter = map_for_remote_control_waiting_reply_.erase(iter);
+				} else {
+					iter++;
+				}
+			}
 		}
 
 		{
