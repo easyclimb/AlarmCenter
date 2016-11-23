@@ -917,7 +917,12 @@ void alarm_machine_manager::ResolveCameraInfo(int device_id, int productor)
 		for (auto camera : iter->second) {
 			bool resolved = false;
 			do {
-				alarm_machine_ptr machine = m_machineMap[camera->get_ademco_id()];
+				auto iter = m_machineMap.find(camera->get_ademco_id());
+				if (iter == m_machineMap.end()) {
+					break;
+				}
+				//alarm_machine_ptr machine = m_machineMap[camera->get_ademco_id()];
+				auto machine = iter->second;
 				if (!machine) break;
 				if (camera->get_sub_machine_id() != -1) {
 					auto zone = machine->GetZone(camera->get_sub_machine_id());
@@ -1264,8 +1269,8 @@ BOOL alarm_machine_manager::DistributeAdemcoID(int& ademco_id)
 	}
 	
 	for (int i = MIN_MACHINE; i < MAX_MACHINE; i++) {
-		auto machine = m_machineMap[i];
-		if (!machine) {
+		auto iter = m_machineMap.find(i);
+		if (iter == m_machineMap.end()) {
 			ademco_id = i;
 			return TRUE;
 		}
@@ -1757,7 +1762,12 @@ void alarm_machine_manager::ThreadWorker()
 			if (!running_)
 				break;
 
-			alarm_machine_ptr machine = m_machineMap[i];
+			auto alarm_machine_iter = m_machineMap.find(i);
+			if (alarm_machine_iter == m_machineMap.end()) {
+				continue;
+			}
+
+			auto machine = alarm_machine_iter->second;
 			if (machine && machine->get_online() && machine->get_submachine_count() > 0) {
 				if (!machine->EnterBufferMode()) {
 					machine->SetOotebmObj(nullptr, nullptr);

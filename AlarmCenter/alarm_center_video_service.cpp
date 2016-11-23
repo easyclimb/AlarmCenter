@@ -12,6 +12,9 @@
 
 namespace ipc {
 
+
+const int g_start_video_process_on_start = 1;
+
 class alarm_center_video_service::alarm_center_video_service_impl : public alarm_center_video::video_service::Service
 {
 public:
@@ -163,7 +166,9 @@ alarm_center_video_service::alarm_center_video_service()
 
 	auto alarm_center_video_exe = get_exe_path_a() + "\\AlarmCenterVideo.exe";
 	sub_process_mgr_ = std::make_shared<sub_process_mgr>(alarm_center_video_exe);
-	sub_process_mgr_->restart();
+	if (g_start_video_process_on_start) {
+		sub_process_mgr_->restart();
+	}
 
 	thread1_ = std::thread([this]() {
 		AUTO_LOG_FUNCTION;
@@ -231,7 +236,9 @@ void alarm_center_video_service::daemon_video_process()
 	while (running_) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		if (sub_process_mgr_->get_elapsed_ms() > 15000) {
-			sub_process_mgr_->restart();
+			if (g_start_video_process_on_start) {
+				sub_process_mgr_->restart();
+			}
 		}
 	}
 }

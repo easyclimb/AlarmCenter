@@ -476,7 +476,7 @@ void CAlarmHandleStep4Dlg::OnBnClickedOk()
 	cur_handling_alarm_info_ = mgr->execute_update_alarm_judgment(cur_handling_alarm_info_->get_id(), judgment_);
 
 	if (alarm_status::alarm_status_cleared == status) {
-		machine_->clear_ademco_event_list();
+		machine_->clear_ademco_event_list(true, false);
 		machine_->set_alarm_id(0);
 	} else {
 		machine_->set_alarm_id(cur_handling_alarm_info_->get_id());

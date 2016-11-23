@@ -381,7 +381,7 @@ void group_info::ClearAlarmMsgOfDescendantAlarmingMachine()
 
 	for (auto child_machine : _child_machines) {
 		if (child_machine->get_alarming()) {
-			child_machine->clear_ademco_event_list();
+			child_machine->clear_ademco_event_list(false, false);
 		}
 	}
 

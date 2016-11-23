@@ -178,9 +178,13 @@ bool alarm_machine::execute_set_zoomLevel(int zoomLevel)
 }
 
 
-void alarm_machine::clear_ademco_event_list(bool clear_sub_machine)
+void alarm_machine::clear_ademco_event_list(bool alarm_handled_over, bool clear_sub_machine)
 {
 	if (!_alarming) return;
+	if (!alarm_handled_over && alarm_id_ != 0) {
+		return;
+	}
+
 	std::lock_guard<std::recursive_mutex> lock(_lock4AdemcoEventList);
 	_alarming = false;
 	_has_alarming_direct_zone = false;
@@ -208,7 +212,7 @@ void alarm_machine::clear_ademco_event_list(bool clear_sub_machine)
 		if (zoneIter->second->get_type() == ZT_SUB_MACHINE) {
 			alarm_machine_ptr subMachine = zoneIter->second->GetSubMachineInfo();
 			if (clear_sub_machine && subMachine && subMachine->get_alarming()) {
-				subMachine->clear_ademco_event_list();
+				subMachine->clear_ademco_event_list(alarm_handled_over);
 			}
 		}
 		zoneIter->second->HandleAdemcoEvent(ademcoEvent);
@@ -1611,7 +1615,7 @@ void alarm_machine::dec_alarmingSubMachineCount()
 		return;
 
 	if (--_alarmingSubMachineCount == 0 && !_has_alarming_direct_zone) {
-		clear_ademco_event_list();
+		clear_ademco_event_list(true, true);
 	}
 }
 

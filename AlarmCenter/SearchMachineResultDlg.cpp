@@ -126,15 +126,20 @@ void CSearchMachineResultDlg::OnTimer(UINT_PTR nIDEvent)
 		container_->ClearButtonList();
 		last_input_content_ = (LPCTSTR)txt;
 
-		auto mgr = core::alarm_machine_manager::get_instance();
-		auto list = mgr->fuzzy_search_machine(last_input_content_, 10);
-		for (auto id : list) {
-			auto machine = mgr->GetMachine(id);
-			if (machine) {
-				container_->InsertMachine(machine, -1, false);
+		if (!last_input_content_.empty()) {
+			auto mgr = core::alarm_machine_manager::get_instance();
+			auto list = mgr->fuzzy_search_machine(last_input_content_, 10);
+			for (auto id : list) {
+				auto machine = mgr->GetMachine(id);
+				if (machine) {
+					container_->InsertMachine(machine, -1, false);
+				}
 			}
 		}
 	}
+
+	m_input.SetFocus();
+	m_input.SetSel((DWORD)-1);
 
 	CDialogEx::OnTimer(nIDEvent);
 }

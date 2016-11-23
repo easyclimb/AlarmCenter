@@ -1189,7 +1189,7 @@ LRESULT CVideoPlayerDlg::OnInvertFocuseChanged(WPARAM wParam, LPARAM lParam)
 						 
 						for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
 							auto data = reinterpret_cast<video::video_device_identifier*>(m_ctrl_play_list.GetItemData(i));
-							if (data && data->dev_id == info->_device->get_id() && data->productor_type == info->_device->get_userInfo()->get_productor().get_productor_type()) {
+							if (data && info->_device->get_userInfo() && data->dev_id == info->_device->get_id() && data->productor_type == info->_device->get_userInfo()->get_productor().get_productor_type()) {
 								m_ctrl_play_list.SetItemState(i, LVNI_FOCUSED | LVIS_SELECTED, LVNI_FOCUSED | LVIS_SELECTED);
 								break;
 							}
@@ -1216,7 +1216,10 @@ void CVideoPlayerDlg::PlayVideoByDevice(const video::device_ptr& device, int spe
 		return;
 	}
 
-	user_ptr user = device->get_userInfo(); assert(user);
+	user_ptr user = device->get_userInfo(); 
+	if (!user) {
+		return;
+	}
 	auto productor = user->get_productor().get_productor_type();
 	switch (productor) {
 	case video::EZVIZ:
@@ -1254,7 +1257,9 @@ void CVideoPlayerDlg::StopPlayCurselVideo()
 bool CVideoPlayerDlg::do_hd_verify(const video::ezviz::ezviz_user_ptr& user)
 {
 	AUTO_LOG_FUNCTION;
-	assert(user);
+	if (!user) {
+		return false;
+	}
 
 	auto pack_0 = [](char* s) {
 		while (isalpha(*s) || isdigit(*s)) {
@@ -1427,6 +1432,10 @@ void CVideoPlayerDlg::on_jov_play_stop(const record_ptr & record)
 
 void CVideoPlayerDlg::show_one_by_record(const record_ptr & info)
 {
+	if (!info->_device->get_userInfo()) {
+		return;
+	}
+
 	CString txt;
 	txt.Format(L"%s-(%s)", info->_device->get_userInfo()->get_user_name().c_str(), info->_device->get_formatted_name().c_str());
 	m_static_group_cur_video.SetWindowTextW(txt);
@@ -1955,12 +1964,15 @@ void CVideoPlayerDlg::PlayVideoJovision(video::jovision::jovision_device_ptr dev
 }
 
 
-void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::ezviz_device_ptr device)
+bool CVideoPlayerDlg::StopPlayEzviz(video::ezviz::ezviz_device_ptr device)
 {
 	AUTO_LOG_FUNCTION;
 	assert(device);
 	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
-	auto user = std::dynamic_pointer_cast<video::ezviz::ezviz_user>(device->get_userInfo()); assert(user);
+	auto user = std::dynamic_pointer_cast<video::ezviz::ezviz_user>(device->get_userInfo()); 
+	if (!user) {
+		return false;
+	}
 	auto mgr = video::ezviz::sdk_mgr_ezviz::get_instance();
 	
 	std::string session_id = mgr->GetSessionId(user->get_user_phone(), device->get_cameraId(), messageHandler, this);
@@ -1984,10 +1996,11 @@ void CVideoPlayerDlg::StopPlayEzviz(video::ezviz::ezviz_device_ptr device)
 			on_ins_play_stop(record);
 		}*/
 	}
+	return true;
 }
 
 
-void CVideoPlayerDlg::StopPlayJovision(video::jovision::jovision_device_ptr device)
+bool CVideoPlayerDlg::StopPlayJovision(video::jovision::jovision_device_ptr device)
 {
 	AUTO_LOG_FUNCTION;
 	assert(device);
@@ -1995,7 +2008,10 @@ void CVideoPlayerDlg::StopPlayJovision(video::jovision::jovision_device_ptr devi
 	auto record = record_op_get_record_info_by_device(device);
 	if (record) {
 		sdk_mgr_jovision::get_instance()->disconnect(record->link_id_);
+		return true;
 	}
+
+	return false;
 }
 
 
@@ -2138,7 +2154,7 @@ void CVideoPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 }
 
 
-void CVideoPlayerDlg::StopPlayByRecordInfo(record_ptr info)
+bool CVideoPlayerDlg::StopPlayByRecordInfo(record_ptr info)
 {
 	AUTO_LOG_FUNCTION;
 
@@ -2148,13 +2164,14 @@ void CVideoPlayerDlg::StopPlayByRecordInfo(record_ptr info)
 	}
 
 	if (info->productor_ == EZVIZ) {
-		StopPlayEzviz(std::dynamic_pointer_cast<video::ezviz::ezviz_device>(info->_device));
+		return StopPlayEzviz(std::dynamic_pointer_cast<video::ezviz::ezviz_device>(info->_device));
 	} else if (info->productor_ == JOVISION) {
-		StopPlayJovision(std::dynamic_pointer_cast<video::jovision::jovision_device>(info->_device));
+		return StopPlayJovision(std::dynamic_pointer_cast<video::jovision::jovision_device>(info->_device));
 	} else {
 		assert(0);
 	}
 
+	return false;
 }
 
 
@@ -2378,7 +2395,7 @@ void CVideoPlayerDlg::InsertList(const record_ptr& info)
 
 	for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
 		video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_ctrl_play_list.GetItemData(i));
-		if (data->productor_type == info->_device->get_userInfo()->get_productor().get_productor_type()
+		if (info->_device->get_userInfo() && data->productor_type == info->_device->get_userInfo()->get_productor().get_productor_type()
 			&& data->dev_id == info->_device->get_id()) {
 			return;
 		}
@@ -2948,12 +2965,40 @@ void CVideoPlayerDlg::OnLbnSelchangeListZone()
 
 void CVideoPlayerDlg::OnBnClickedButtonStopAll()
 {
+	bool failed = false;
 	for (auto info : record_list_) {
-		StopPlayByRecordInfo(info);
+		if (!StopPlayByRecordInfo(info)) {
+			failed = true;
+		}
 	}
 #ifdef _DEBUG
-	video_user_mgr_dlg_->ShowWindow(SW_SHOW);
+	//video_user_mgr_dlg_->ShowWindow(SW_SHOW);
 #endif // _DEBUG
+
+	if (failed) {
+		record_list_.clear();
+		m_curPlayingDevice = nullptr;
+		player_ex_vector_.clear();
+		back_end_players_.clear();
+		player_buffer_.clear();
+		CRect rc;
+		m_player.GetWindowRect(rc);
+		ScreenToClient(rc);
+		const int same_time_play_vidoe_route_count = util::CConfigHelper::get_instance()->get_show_video_same_time_route_count();
+		for (int i = 0; i < same_time_play_vidoe_route_count; i++) {
+			auto a_player_ex = std::make_shared<player_ex>();
+			a_player_ex->player = std::shared_ptr<CVideoPlayerCtrl>(new CVideoPlayerCtrl(), player_deleter);
+			a_player_ex->player->set_index(i + 1);
+			a_player_ex->player->Create(nullptr, m_dwPlayerStyle, rc, this, IDC_STATIC_PLAYER);
+			player_ex_vector_[i] = (a_player_ex);
+		}
+		player_op_set_same_time_play_video_route(util::CConfigHelper::get_instance()->get_show_video_same_time_route_count());
+		for (int i = 0; i < m_ctrl_play_list.GetItemCount(); i++) {
+			video_device_identifier* data = reinterpret_cast<video_device_identifier*>(m_ctrl_play_list.GetItemData(i));
+			delete data;
+		}
+		m_ctrl_play_list.DeleteAllItems();
+	}
 }
 
 

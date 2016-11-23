@@ -126,9 +126,9 @@ protected:
 	void EnableControlPanel(BOOL bAble = TRUE, int level = 0);
 	void PlayVideoEzviz(video::ezviz::ezviz_device_ptr device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
 	void PlayVideoJovision(video::jovision::jovision_device_ptr device, int speed, const video::zone_uuid_ptr& zid = nullptr, const core::alarm_text_ptr& at = nullptr);
-	void StopPlayEzviz(video::ezviz::ezviz_device_ptr device);
-	void StopPlayJovision(video::jovision::jovision_device_ptr device);
-	void StopPlayByRecordInfo(record_ptr info);
+	bool StopPlayEzviz(video::ezviz::ezviz_device_ptr device);
+	bool StopPlayJovision(video::jovision::jovision_device_ptr device);
+	bool StopPlayByRecordInfo(record_ptr info);
 	void EnqueEzvizMsg(const ezviz_msg_ptr& msg);
 	void HandleEzvizMsg(const ezviz_msg_ptr& msg);
 	void PtzControl(video::ezviz::sdk_mgr_ezviz::PTZCommand command, video::ezviz::sdk_mgr_ezviz::PTZAction action);

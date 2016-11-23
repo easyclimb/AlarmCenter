@@ -1073,7 +1073,7 @@ void CDetector::OnRClick()
 		break;
 	case ID_DDD_32775: // clear msg
 		if (subMachine) {
-			subMachine->clear_ademco_event_list();
+			subMachine->clear_ademco_event_list(false);
 		}
 		break;
 	default:
