@@ -2,6 +2,7 @@
 
 #include "AlarmMachineContainer.h"
 #include "afxwin.h"
+#include "afxcmn.h"
 // CSearchMachineResultDlg dialog
 
 class CSearchMachineResultDlg : public CDialogEx
@@ -35,4 +36,8 @@ public:
 	CEdit m_input;
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnGetMinMaxInfo(MINMAXINFO* lpMMI);
+	CTabCtrl m_tab;
+	CListCtrl m_list;
+	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	afx_msg void OnEnChangeEdit1();
 };

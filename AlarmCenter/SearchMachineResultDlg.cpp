@@ -27,6 +27,8 @@ void CSearchMachineResultDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT1, m_input);
+	DDX_Control(pDX, IDC_TAB1, m_tab);
+	DDX_Control(pDX, IDC_LIST1, m_list);
 }
 
 
@@ -37,6 +39,8 @@ BEGIN_MESSAGE_MAP(CSearchMachineResultDlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CSearchMachineResultDlg::OnBnClickedCancel)
 	ON_WM_TIMER()
 	ON_WM_GETMINMAXINFO()
+	ON_WM_SHOWWINDOW()
+	ON_EN_CHANGE(IDC_EDIT1, &CSearchMachineResultDlg::OnEnChangeEdit1)
 END_MESSAGE_MAP()
 
 
@@ -85,7 +89,7 @@ BOOL CSearchMachineResultDlg::OnInitDialog()
 	container_->MoveWindow(rc);
 	container_->ShowWindow(SW_SHOW);
 
-	SetTimer(1, 2000, nullptr);
+	//SetTimer(1, 2000, nullptr);
 
 	init_over_ = true;
 
@@ -117,7 +121,7 @@ void CSearchMachineResultDlg::OnSize(UINT nType, int cx, int cy)
 
 void CSearchMachineResultDlg::OnTimer(UINT_PTR nIDEvent)
 {
-	auto_timer t(m_hWnd, 1, 2000);
+	//auto_timer t(m_hWnd, 1, 2000);
 
 	CString txt;
 	m_input.GetWindowTextW(txt);
@@ -151,4 +155,22 @@ void CSearchMachineResultDlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	lpMMI->ptMinTrackSize.y = 400;
 
 	CDialogEx::OnGetMinMaxInfo(lpMMI);
+}
+
+
+void CSearchMachineResultDlg::OnShowWindow(BOOL bShow, UINT nStatus)
+{
+	CDialogEx::OnShowWindow(bShow, nStatus);
+
+	if (bShow) {
+		auto_timer t(m_hWnd, 1, 2000);
+	} else {
+		KillTimer(1);
+	}
+}
+
+
+void CSearchMachineResultDlg::OnEnChangeEdit1()
+{
+	auto_timer t(m_hWnd, 1, 2000);
 }

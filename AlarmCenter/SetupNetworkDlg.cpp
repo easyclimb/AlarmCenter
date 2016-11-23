@@ -990,7 +990,7 @@ void CSetupNetworkDlg::OnBnClickedButtonConnGsm2()
 			}
 		}
 	} else {
-		core::gsm_manager::get_instance()->Close();
+		core::congwin_fe100_mgr::get_instance()->Close();
 		m_btn_conn_congwin_com.SetWindowTextW(open);
 		m_cmb_congwin_com.EnableWindow(1);
 		m_btn_check_com2.EnableWindow(1);
