@@ -16,6 +16,9 @@
 #include "StaticColorText.h"
 #include "alarm_handle_mgr.h"
 #include "consumer.h"
+#include "AlarmHandleStep1Dlg.h"
+#include "AlarmHandleStep4Dlg.h"
+#include "alarm_handle_mgr.h"
 
 using namespace ademco;
 
@@ -703,6 +706,36 @@ void CButtonEx::OnRBnClicked()
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
 											   nullptr, nullptr, ES_UNKNOWN, _button.get());
+			break;
+		case IDM_ALARM_HANDLE:
+		{
+			auto m_machine = _machine;
+			if (m_machine && m_machine->get_alarming()) {
+
+				int alarm_id = m_machine->get_alarm_id();
+
+				if (alarm_id == 0) {
+					CAlarmHandleStep1Dlg dlg;
+					dlg.machine_ = m_machine;
+					if (IDOK == dlg.DoModal()) {
+
+
+					}
+				} else { // handle outstanding alarm
+					auto mgr = core::alarm_handle_mgr::get_instance();
+					auto alarm = mgr->get_alarm_info(alarm_id);
+					if (alarm) {
+						CAlarmHandleStep4Dlg dlg;
+						dlg.cur_handling_alarm_info_ = alarm;
+						dlg.judgment_ = mgr->get_alarm_judgement(alarm->get_judgement_id());
+						dlg.handle_ = mgr->get_alarm_handle(alarm->get_handle_id());
+						dlg.reason_ = mgr->get_alarm_reason(alarm->get_reason_id());
+						dlg.machine_ = m_machine;
+						dlg.DoModal();
+					}
+				}
+			}
+		}
 			break;
 		case ID_DDD_32775: // clear msg
 			if (_machine) {

@@ -41,11 +41,35 @@ BEGIN_MESSAGE_MAP(CSearchMachineResultDlg, CDialogEx)
 	ON_WM_GETMINMAXINFO()
 	ON_WM_SHOWWINDOW()
 	ON_EN_CHANGE(IDC_EDIT1, &CSearchMachineResultDlg::OnEnChangeEdit1)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CSearchMachineResultDlg::OnTcnSelchangeTab1)
 END_MESSAGE_MAP()
 
 
 // CSearchMachineResultDlg message handlers
 
+
+void CSearchMachineResultDlg::reposition_items()
+{
+	CRect rc;
+	m_input.GetWindowRect(rc);
+	int h = rc.Height();
+	GetClientRect(rc);
+	int b = rc.bottom;
+	rc.bottom = rc.top + h;
+	m_input.MoveWindow(rc);
+	rc.top = rc.bottom + 5;
+	rc.bottom = b;
+
+	m_tab.MoveWindow(rc);
+	rc.DeflateRect(5, 25, 5, 5);
+	m_list.MoveWindow(rc);
+
+	m_tab.GetClientRect(rc);
+	rc.DeflateRect(5, 25, 5, 5);
+	container_->MoveWindow(rc);
+	
+	
+}
 
 void CSearchMachineResultDlg::OnBnClickedOk()
 {
@@ -78,20 +102,29 @@ BOOL CSearchMachineResultDlg::OnInitDialog()
 	SetIcon(icon, TRUE);
 
 	container_ = std::shared_ptr<CAlarmMachineContainerDlg>(new CAlarmMachineContainerDlg(this), [](CDialogEx*p) {SAFEDELETEDLG(p); });
-	container_->Create(IDD_DIALOG_CONTAINER, this);
+	container_->Create(IDD_DIALOG_CONTAINER, &m_tab);
 
-	CRect rc;
+	/*CRect rc;
 	m_input.GetWindowRect(rc);
 	int h = rc.Height();
 	GetClientRect(rc);
 	rc.top += h + 5;
 
 	container_->MoveWindow(rc);
-	container_->ShowWindow(SW_SHOW);
+	container_->ShowWindow(SW_SHOW);*/
 
 	//SetTimer(1, 2000, nullptr);
 
+	m_tab.InsertItem(0, TR(IDS_STRING_LIST));
+	m_tab.InsertItem(1, TR(IDS_STRING_DETAIL));
+
+	reposition_items();
+
+	m_list.ShowWindow(SW_HIDE);
+
 	init_over_ = true;
+
+
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
@@ -106,16 +139,7 @@ void CSearchMachineResultDlg::OnSize(UINT nType, int cx, int cy)
 		return;
 	}
 
-	CRect rc;
-	m_input.GetWindowRect(rc);
-	int h = rc.Height();
-	GetClientRect(rc);
-	int b = rc.bottom;
-	rc.bottom = rc.top + h;
-	m_input.MoveWindow(rc);
-	rc.top = rc.bottom + 5;
-	rc.bottom = b;
-	container_->MoveWindow(rc);
+	reposition_items();
 }
 
 
@@ -173,4 +197,21 @@ void CSearchMachineResultDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 void CSearchMachineResultDlg::OnEnChangeEdit1()
 {
 	auto_timer t(m_hWnd, 1, 2000);
+}
+
+
+void CSearchMachineResultDlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	*pResult = 0;
+
+	int index = m_tab.GetCurSel();
+	if (index < 0) { return; }
+
+	if (index == 0) {
+		container_->ShowWindow(SW_SHOW);
+		m_list.ShowWindow(SW_HIDE);
+	} else if (index == 1) {
+		container_->ShowWindow(SW_HIDE);
+		m_list.ShowWindow(SW_SHOW);
+	}
 }

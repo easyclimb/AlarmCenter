@@ -27,6 +27,8 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+
+	void reposition_items();
 public:
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
@@ -40,4 +42,5 @@ public:
 	CListCtrl m_list;
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnEnChangeEdit1();
+	afx_msg void OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
 };

@@ -455,6 +455,7 @@ void CAlarmHandleStep4Dlg::OnBnClickedOk()
 	if (judgment == 0) { // user define
 		m_judgment_user_define.GetWindowTextW(txt);
 		if (txt.IsEmpty()) {
+			MessageBoxW(TR(IDS_STRING_E_CUSTOM_JUDGMENT_IS_EMPTY), TR(IDS_STRING_ERROR), MB_ICONERROR);
 			return; // can't be empty
 		}
 		judge_type = mgr->execute_add_judgement_type((LPCTSTR)txt); // add a new judgment type
@@ -463,6 +464,7 @@ void CAlarmHandleStep4Dlg::OnBnClickedOk()
 	}
 
 	if (judge_type.first == alarm_judgement::alarm_judgement_min) { // not a valid judgement type
+		MessageBoxW(TR(IDS_STRING_E_NO_JUDGMENT_SELECTED), TR(IDS_STRING_ERROR), MB_ICONERROR);
 		return;
 	}
 
