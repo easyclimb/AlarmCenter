@@ -284,9 +284,11 @@ inline machine_status Integer2MachineStatus(int status) {
 
 inline ADEMCO_EVENT MachineStatus2AdemcoEvent(machine_status status) {
 	switch (status) {
-	case core::MACHINE_ARM:return ademco::EVENT_ARM;
+	case core::MACHINE_ARM:
+		return ademco::EVENT_ARM;
 		break;
-	case core::MACHINE_HALFARM:return ademco::EVENT_HALFARM;
+	case core::MACHINE_HALFARM:
+		return ademco::EVENT_HALFARM;
 		break;
 	case core::MACHINE_DISARM:
 	default:return ademco::EVENT_DISARM;

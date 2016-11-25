@@ -24,8 +24,8 @@ private:
 	group_info_ptr invalid_machine_group_ = {};
 	std::mutex lock_for_invlaid_machines_ = {};
 
-	//    machine_uuid              event        start time
-	std::map<machine_uuid, std::pair<int, std::chrono::steady_clock::time_point>> map_for_remote_control_waiting_reply_ = {};
+	//    machine_uuid              machine_status   start time
+	std::map<machine_uuid, std::pair<machine_status, std::chrono::steady_clock::time_point>> map_for_remote_control_waiting_reply_ = {};
 	std::mutex lock_for_mfrcwr_ = {};
 
 	map_info_map m_mapInfoMap;
