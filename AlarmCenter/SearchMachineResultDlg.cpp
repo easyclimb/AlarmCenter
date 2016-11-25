@@ -42,6 +42,7 @@ BEGIN_MESSAGE_MAP(CSearchMachineResultDlg, CDialogEx)
 	ON_WM_SHOWWINDOW()
 	ON_EN_CHANGE(IDC_EDIT1, &CSearchMachineResultDlg::OnEnChangeEdit1)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CSearchMachineResultDlg::OnTcnSelchangeTab1)
+	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CSearchMachineResultDlg::OnNMDblclkList1)
 END_MESSAGE_MAP()
 
 
@@ -69,6 +70,86 @@ void CSearchMachineResultDlg::reposition_items()
 	container_->MoveWindow(rc);
 	
 	
+}
+
+void CSearchMachineResultDlg::init_list_headers()
+{
+	DWORD dwStyle = m_list.GetExtendedStyle();
+	dwStyle |= LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES;
+	m_list.SetExtendedStyle(dwStyle);
+
+	int i = -1;
+	CString fm;
+	fm = TR(IDS_STRING_MACHINE);
+	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 50, -1);
+	fm = TR(IDS_STRING_ALIAS);
+	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 200, -1);
+	fm = TR(IDS_STRING_CONTACT);
+	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 100, -1);
+	fm = TR(IDS_STRING_ADDRESS);
+	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 225, -1);
+	fm = TR(IDS_STRING_PHONE);
+	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
+	fm = TR(IDS_STRING_PHONE_BK);
+	m_list.InsertColumn(++i, fm, LVCFMT_LEFT, 150, -1);
+}
+
+void CSearchMachineResultDlg::insert_list_content(const core::alarm_machine_ptr & machine)
+{
+	int nResult = -1;
+	LV_ITEM lvitem = { 0 };
+	CString tmp = _T("");
+
+	lvitem.lParam = 0;
+	lvitem.mask = LVIF_TEXT;
+	lvitem.iItem = m_list.GetItemCount();
+	lvitem.iSubItem = 0;
+
+	// aid
+	tmp.Format(_T("%06d"), machine->get_ademco_id());
+	lvitem.pszText = tmp.LockBuffer();
+	nResult = m_list.InsertItem(&lvitem);
+	tmp.UnlockBuffer();
+
+	if (nResult != -1) {
+		// alias
+		lvitem.iItem = nResult;
+		lvitem.iSubItem++;
+		tmp = machine->get_machine_name();
+		lvitem.pszText = tmp.LockBuffer();
+		m_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// contact
+		lvitem.iSubItem++;
+		tmp = machine->get_contact();
+		lvitem.pszText = tmp.LockBuffer();
+		m_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// address
+		lvitem.iSubItem++;
+		tmp = machine->get_address();
+		lvitem.pszText = tmp.LockBuffer();
+		m_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// phone
+		lvitem.iSubItem++;
+		tmp = machine->get_phone();
+		lvitem.pszText = tmp.LockBuffer();
+		m_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		// phone_bk
+		lvitem.iSubItem++;
+		tmp = machine->get_phone_bk();
+		lvitem.pszText = tmp.LockBuffer();
+		m_list.SetItem(&lvitem);
+		tmp.UnlockBuffer();
+
+		m_list.SetItemData(nResult, machine->get_ademco_id());
+	}
 }
 
 void CSearchMachineResultDlg::OnBnClickedOk()
@@ -120,6 +201,8 @@ BOOL CSearchMachineResultDlg::OnInitDialog()
 
 	reposition_items();
 
+	init_list_headers();
+
 	m_list.ShowWindow(SW_HIDE);
 
 	init_over_ = true;
@@ -152,6 +235,8 @@ void CSearchMachineResultDlg::OnTimer(UINT_PTR nIDEvent)
 
 	if (last_input_content_ != (LPCTSTR)txt) {
 		container_->ClearButtonList();
+		m_list.DeleteAllItems();
+
 		last_input_content_ = (LPCTSTR)txt;
 
 		if (!last_input_content_.empty()) {
@@ -161,6 +246,7 @@ void CSearchMachineResultDlg::OnTimer(UINT_PTR nIDEvent)
 				auto machine = mgr->GetMachine(id);
 				if (machine) {
 					container_->InsertMachine(machine, -1, false);
+					insert_list_content(machine);
 				}
 			}
 		}
@@ -200,7 +286,7 @@ void CSearchMachineResultDlg::OnEnChangeEdit1()
 }
 
 
-void CSearchMachineResultDlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult)
+void CSearchMachineResultDlg::OnTcnSelchangeTab1(NMHDR * /*pNMHDR*/, LRESULT *pResult)
 {
 	*pResult = 0;
 
@@ -214,4 +300,13 @@ void CSearchMachineResultDlg::OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult
 		container_->ShowWindow(SW_HIDE);
 		m_list.ShowWindow(SW_SHOW);
 	}
+}
+
+
+void CSearchMachineResultDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMITEMACTIVATE pNMItemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pNMHDR);
+	*pResult = 0;
+	auto data = m_list.GetItemData(pNMItemActivate->iItem);
+	container_->PostMessageW(WM_BNCLKEDEX, 0, data);
 }

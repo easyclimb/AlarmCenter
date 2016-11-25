@@ -29,6 +29,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 	void reposition_items();
+	void init_list_headers();
+	void insert_list_content(const core::alarm_machine_ptr& machine);
+
 public:
 	afx_msg void OnBnClickedOk();
 	virtual BOOL OnInitDialog();
@@ -43,4 +46,5 @@ public:
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnEnChangeEdit1();
 	afx_msg void OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
 };

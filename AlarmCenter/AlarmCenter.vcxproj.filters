@@ -886,7 +886,9 @@
     <Image Include="res\Network.png">
       <Filter>resource</Filter>
     </Image>
-    <Image Include="..\..\..\Users\capta\Downloads\search.ico" />
+    <Image Include="..\..\..\Users\capta\Downloads\search.ico">
+      <Filter>resource</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\AlarmCenter.rc2">
