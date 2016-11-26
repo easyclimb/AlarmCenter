@@ -36,7 +36,7 @@ CDesktopTextDrawer::~CDesktopTextDrawer()
 }
 
 
-void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, ADEMCO_EVENT ademco_event)
+void CDesktopTextDrawer::AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, ademco::ADEMCO_EVENT ademco_event)
 {
 	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	//if (IsZoneEventExists(zone, subzone, ademco_event))
@@ -179,7 +179,7 @@ void CDesktopTextDrawer::Hide()
 	}
 }
 
-void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ademco_event)
+void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, ademco::ADEMCO_EVENT ademco_event)
 {
 	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {
@@ -195,7 +195,7 @@ void CDesktopTextDrawer::DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ade
 	}
 }
 
-BOOL CDesktopTextDrawer::GetZoneEvent(int zone, int subzone, int& ademco_event)
+BOOL CDesktopTextDrawer::GetZoneEvent(int zone, int subzone, ademco::ADEMCO_EVENT& ademco_event)
 {
 	std::lock_guard<std::recursive_mutex> lock(m_cs);
 	for (int i = 0; i < m_nMaxLine; i++) {

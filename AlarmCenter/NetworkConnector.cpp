@@ -166,7 +166,7 @@ BOOL CNetworkConnector::RestartClient(restart_server_number number)
 }
 
 
-BOOL CNetworkConnector::Send(int ademco_id, int ademco_event, int gg, int zone, 
+BOOL CNetworkConnector::Send(int ademco_id, ademco::ADEMCO_EVENT ademco_event, int gg, int zone,
 							 const ademco::char_array_ptr& xdata, 
 							 const ademco::char_array_ptr& cmd, 
 							 ademco::EventSource path)

@@ -91,7 +91,7 @@ public:
 	unsigned int	_len;
 	unsigned int	_ademco_id;
 	//unsigned char	_mt;
-	unsigned int	_ademco_event;
+	ademco::ADEMCO_EVENT	_ademco_event;
 	unsigned char	_gg;
 	unsigned int	_zone;
 
@@ -113,13 +113,13 @@ public:
 		_data.clear();
 		_len = 0;
 		_ademco_id = 0;
-		_ademco_event = 0;
+		_ademco_event = EVENT_INVALID_EVENT;
 		_gg = 0;
 		_zone = 0;
 	}
 
 	// maker
-	void Make(int ademco_id, int gg, int ademco_event, int zone);
+	void Make(int ademco_id, int gg, ADEMCO_EVENT ademco_event, int zone);
 
 	void Make() {
 		reset();
@@ -210,7 +210,7 @@ public:
 	// maker
 	size_t Make(char* pack, size_t pack_len, const char* id,
 				int seq, char const* acct, int ademco_id,
-				int ademco_event, int gg, int zone,
+				ADEMCO_EVENT ademco_event, int gg, int zone,
 				const char_array_ptr& xdata = nullptr);
 
 	// parser
@@ -335,20 +335,20 @@ protected:
 };
 
 
-inline bool IsCloseEvent(int ademco_event)
+inline bool IsCloseEvent(ADEMCO_EVENT ademco_event)
 {
 	return ademco_event == EVENT_ARM
 		|| ademco_event == EVENT_HALFARM;
 }
 
-inline bool IsStatusEvent(int ademco_event)
+inline bool IsStatusEvent(ADEMCO_EVENT ademco_event)
 {
 	return ademco_event == EVENT_ARM
 		|| ademco_event == EVENT_HALFARM
 		|| ademco_event == EVENT_DISARM;
 }
 
-inline bool IsMachineTypeEvent(int ademco_event) {
+inline bool IsMachineTypeEvent(ADEMCO_EVENT ademco_event) {
 	return ademco_event == EVENT_I_AM_NET_MODULE
 		|| ademco_event == EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE
 		|| ademco_event == EVENT_I_AM_LCD_MACHINE;

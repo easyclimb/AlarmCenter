@@ -293,7 +293,7 @@ bool CAutoRetrieveZoneInfoDlg::RetrieveZoneInfo(int zoneValue, CString& msg)
 				}
 				//m_machine->inc_submachine_count();
 				char status = zoneInfo->get_status_or_property() & 0xFF;
-				ADEMCO_EVENT ademco_event = zone_info::char_to_status(status);
+				ADEMCO_EVENT ademco_event = static_cast<ADEMCO_EVENT>(zone_info::char_to_status(status));
 				auto t = time(nullptr);
 				m_machine->SetAdemcoEvent(ES_UNKNOWN, ademco_event, zoneValue, 0xEE, t, t);
 			}

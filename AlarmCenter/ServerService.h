@@ -23,16 +23,16 @@ typedef struct Task {
 	COleDateTime _last_send_time;
 	int _seq;
 	int _ademco_id;
-	int _ademco_event;
+	ademco::ADEMCO_EVENT _ademco_event;
 	int _gg;
 	int _zone;
 	ademco::char_array_ptr _xdata;
 
 	Task() : _retry_times(0), _last_send_time(), _seq(1), _ademco_id(0),
-		_ademco_event(0), _gg(0), _zone(0), _xdata()
+		_ademco_event(ademco::EVENT_INVALID_EVENT), _gg(0), _zone(0), _xdata()
 	{}
 
-	Task(int ademco_id, int ademco_event, int gg, int zone, const ademco::char_array_ptr& xdata) :
+	Task(int ademco_id, ademco::ADEMCO_EVENT ademco_event, int gg, int zone, const ademco::char_array_ptr& xdata) :
 		_retry_times(0), _last_send_time(), _seq(1), _ademco_id(ademco_id),
 		_ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(xdata) 
 	{}
@@ -236,7 +236,7 @@ public:
 	void Stop();
 	void ResolveOutstandingClient(const net::server::CClientDataPtr& client, BOOL& bTheSameIpPortClientReconnect);
 	void RecycleOutstandingClient(const net::server::CClientDataPtr& client);
-	bool SendToClient(int ademco_id, int ademco_event, int gg, int zone, const ademco::char_array_ptr& xdata = nullptr);
+	bool SendToClient(int ademco_id, ademco::ADEMCO_EVENT ademco_event, int gg, int zone, const ademco::char_array_ptr& xdata = nullptr);
 	bool RealSendToClient(const net::server::CClientDataPtr& client, const char* data, size_t data_len);
 };
 

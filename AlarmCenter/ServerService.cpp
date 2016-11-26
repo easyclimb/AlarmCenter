@@ -529,7 +529,7 @@ bool CServerService::RealSendToClient(const net::server::CClientDataPtr& client,
 }
 
 
-bool CServerService::SendToClient(int ademco_id, int ademco_event, int gg,
+bool CServerService::SendToClient(int ademco_id, ademco::ADEMCO_EVENT ademco_event, int gg,
 								  int zone, const ademco::char_array_ptr& xdata)
 {
 	do {

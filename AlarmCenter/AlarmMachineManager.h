@@ -99,7 +99,7 @@ public:
 	map_info_ptr GetMapInfoById(int id);
 	void LoadFromDB(void* udata = nullptr, LoadDBProgressCB cb = nullptr);
 	BOOL RemoteControlAlarmMachine(const alarm_machine_ptr& machine,
-								   int ademco_event, int gg, int zone, 
+								   ademco::ADEMCO_EVENT ademco_event, int gg, int zone,
 								   const ademco::char_array_ptr& xdata = nullptr, 
 								   const ademco::char_array_ptr& cmd = nullptr,
 								   ademco::EventSource path = ademco::ES_UNKNOWN,
@@ -114,7 +114,7 @@ public:
 	BOOL CheckIfMachineAdemcoIdCanUse(int ademco_id);
 	void MachineOnline(ademco::EventSource source, int ademco_id, BOOL online = TRUE, const char* ipv4 = nullptr, 
 					   net::server::CClientDataPtr = nullptr, remote_control_command_conn_call_back cb = nullptr);
-	void MachineEventHandler(ademco::EventSource source, int ademco_id, int ademco_event, int zone,
+	void MachineEventHandler(ademco::EventSource source, int ademco_id, ademco::ADEMCO_EVENT ademco_event, int zone,
 							 int subzone, const time_t& timestamp,
 							 const time_t& recv_time,
 							 const ademco::char_array_ptr& xdata = nullptr

@@ -1522,7 +1522,7 @@ BOOL alarm_machine_manager::DeleteSubMachine(const zone_info_ptr& zoneInfo)
 
 
 void alarm_machine_manager::MachineEventHandler(EventSource source, 
-											   int ademco_id, int ademco_event,
+											   int ademco_id, ademco::ADEMCO_EVENT ademco_event,
 											   int zone, int subzone, 
 											   const time_t& timestamp,
 											   const time_t& recv_time,
@@ -1571,12 +1571,12 @@ void alarm_machine_manager::MachineOnline(ademco::EventSource source,
 }
 
 
-BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& machine, 
-													 int ademco_event, int gg, int zone, 
-													 const ademco::char_array_ptr& xdata,
-													 const ademco::char_array_ptr& cmd,
-													 ademco::EventSource path,
-													 CWnd* pWnd)
+BOOL alarm_machine_manager::RemoteControlAlarmMachine(const alarm_machine_ptr& machine,
+													  ademco::ADEMCO_EVENT ademco_event, int gg, int zone,
+													  const ademco::char_array_ptr& xdata,
+													  const ademco::char_array_ptr& cmd,
+													  ademco::EventSource path,
+													  CWnd* pWnd)
 {
 	assert(machine);
 	//char xdata[64] = { 0 };

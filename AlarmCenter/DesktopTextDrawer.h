@@ -22,14 +22,14 @@ class CDesktopTextDrawer
 		BOOL bProcessStart;
 		int zone;
 		int subzone;
-		int ademco_event;
+		ademco::ADEMCO_EVENT ademco_event;
 		//DWORD idThread;
 		CString string;
 		CAlarmTextDlgPtr dlg;
 		//time_t _time;
 		COLORREF color;
 		AlarmTextInfo() : bUsed(FALSE), bProcessStart(FALSE), zone(-1),
-			subzone(-1), ademco_event(-1), string(_T("")), dlg(nullptr)/*, _time()*/
+			subzone(-1), ademco_event(ademco::EVENT_INVALID_EVENT), string(_T("")), dlg(nullptr)/*, _time()*/
 			, color(RGB(255, 0, 0))
 		{}
 
@@ -55,13 +55,13 @@ public:
 	CDesktopTextDrawer();
 	BOOL IsThisZoneAlarming(int zone, int subzone);
 	int GetCount();
-	BOOL GetZoneEvent(int zone, int subzone, int& ademco_event);
+	BOOL GetZoneEvent(int zone, int subzone, ademco::ADEMCO_EVENT& ademco_event);
 	//BOOL IsZoneEventExists(int zone, int subzone, ADEMCO_EVENT ademco_event);
-	void DeleteAlarmText(int zone, int subzone, ADEMCO_EVENT ademco_event);
+	void DeleteAlarmText(int zone, int subzone, ademco::ADEMCO_EVENT ademco_event);
 	void Hide();
 	void Show();
 	void Quit();
-	void AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, ADEMCO_EVENT ademco_event);
+	void AddAlarmText(LPCTSTR szAlarm, int zone, int subzone, ademco::ADEMCO_EVENT ademco_event);
 	//CDesktopTextDrawer(const CWnd* pParentWnd);
 	virtual ~CDesktopTextDrawer();
 	void SetOwner(CWnd* pParentWnd)
@@ -86,5 +86,6 @@ protected:
 	BOOL ShutdownSubProcess(int id);
 	BOOL StartupSubProcess(int id);
 };
-};
+
+};
 #endif // !defined(AFX_DESKTOPTEXTDRAWER_H__96EDCE70_5D36_4F6D_8193_5EAA4238A5D9__INCLUDED_)

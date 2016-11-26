@@ -48,7 +48,7 @@ void map_info::InversionControl(inversion_control_map_command icmc, const alarm_
 		std::lock_guard<std::mutex> lock(_lock4AlarmTextList);
 		ademco::EventLevel level = ademco::GetEventLevel(at->_event);
 		if (ademco::EVENT_LEVEL_EXCEPTION_RESUME == level) {
-			ADEMCO_EVENT exception_event = ademco::GetExceptionEventByResumeEvent(at->_event);
+			auto exception_event = ademco::GetExceptionEventByResumeEvent(at->_event);
 			auto iter = _alarmTextList.begin();
 			while (iter != _alarmTextList.end()) {
 				alarm_text_ptr& old = *iter;

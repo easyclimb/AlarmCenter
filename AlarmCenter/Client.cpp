@@ -648,7 +648,7 @@ DWORD CMyClientEventHandler::GenerateLinkTestPackage(char* buff, size_t buff_len
 	static int seq = 1;
 	if (seq >= 9999)
 		seq = 1;
-	DWORD dwLen = m_packet1.Make(buff, buff_len, AID_NULL, seq++, nullptr, 0, 0, 0, 0);
+	DWORD dwLen = m_packet1.Make(buff, buff_len, AID_NULL, seq++, nullptr, 0, ademco::EVENT_INVALID_EVENT, 0, 0);
 	ConnID conn_id = m_conn_id;
 	char_array cmd;
 	AppendConnIdToCharArray(cmd, conn_id);
@@ -728,7 +728,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			auto csr_acct = util::CConfigHelper::get_instance()->get_csr_acct();
 			if (!csr_acct.empty() && csr_acct.length() <= 18) {
 				size_t len = m_packet1.Make(buff, sizeof(buff), AID_HB, 0, nullptr,
-											m_packet1._ademco_data._ademco_id, 0, 0, 0);
+											m_packet1._ademco_data._ademco_id, ademco::EVENT_INVALID_EVENT, 0, 0);
 				char_array cmd;
 				AppendConnIdToCharArray(cmd, ConnID(m_conn_id));
 				char temp[9] = { 0 };
@@ -745,7 +745,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			size_t len = m_packet1.Make(buff, sizeof(buff), AID_ACK, seq,
 									    /*acct, packet2._acct_machine, */
 									    ademco::HexCharArrayToStr(m_packet2._acct_machine, 9),
-										m_packet1._ademco_data._ademco_id, 0, 0, 0);
+										m_packet1._ademco_data._ademco_id, ademco::EVENT_INVALID_EVENT, 0, 0);
 			char_array cmd;
 			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(m_packet2._cmd));
 			char csr_acct[9] = { 0 };
@@ -761,7 +761,7 @@ DWORD CMyClientEventHandler::OnRecv2(CClientService* service)
 			size_t len = m_packet1.Make(buff, sizeof(buff), AID_DUH, seq,
 									  /*acct, packet2._acct_machine, */
 									  ademco::HexCharArrayToStr(m_packet2._acct_machine, 9),
-										m_packet1._ademco_data._ademco_id, 0, 0, 0);
+										m_packet1._ademco_data._ademco_id, ademco::EVENT_INVALID_EVENT, 0, 0);
 			char_array cmd;
 			AppendConnIdToCharArray(cmd, GetConnIdFromCharArray(m_packet2._cmd));
 			len += m_packet2.Make(buff + len, sizeof(buff) - len, 0x0c, 0x01, cmd,
@@ -985,18 +985,25 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 				bool b_ok = 1 == m_packet2._cmd.at(4);
 				ADEMCO_EVENT ademco_event = b_ok ? EVENT_ENTER_SET_MODE : EVENT_STOP_RETRIEVE;
 				auto data = m_clientsMap[conn_id];
-				if (data && data->online && b_enter) {
+				
+				if (data && data->online) {
 					if (ademco_id != data->ademco_id)
 						ademco_id = data->ademco_id;
+
+					auto t = time(nullptr);
+
 					char temp[9] = { 0 };
 					auto csr_acct = util::CConfigHelper::get_instance()->get_csr_acct();
 					NumStr2HexCharArray_N(csr_acct.c_str(), temp, 9);
-					if (memcmp(temp, m_packet2._acct, 9) == 0) {
-						auto t = time(nullptr);
+					if (b_enter && memcmp(temp, m_packet2._acct, 9) == 0) {
 						mgr->MachineEventHandler(_event_source, ademco_id, ademco_event, 0, 0, t, t);
 					}
-				}
 
+					// 2016-11-26 18:03:01 
+					if (b_ok) {
+						mgr->MachineEventHandler(_event_source, ademco_id, b_enter ? EVENT_ENTER_SETTING_MODE : EVENT_EXIT_SETTING_MODE, 0, 0, t, t);
+					}
+				}
 			} else if (m_packet2._lit_type == 0x0c) { // responce of retrieve zone info
 				int ademco_id = m_packet1._ademco_data._ademco_id;
 				ADEMCO_EVENT ademco_event = EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE;
@@ -1080,7 +1087,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 						JLOGA("alarm machine EVENT:0d 01 aid %04d event %04d zone %03d %s\n",
 							  ademco_id, ademco_event, zone, m_packet1._timestamp._data);
 						auto cmd = m_packet2._cmd;
-						static ADEMCO_EVENT cStatus[] = { EVENT_ARM, EVENT_HALFARM, EVENT_DISARM, EVENT_DISARM };
+						static ADEMCO_EVENT cStatus[] = { EVENT_ARM, EVENT_HALFARM, EVENT_DISARM, EVENT_ENTER_SETTING_MODE };
 						char machine_status = cmd[6];
 
 						if (machine_status < 4) {

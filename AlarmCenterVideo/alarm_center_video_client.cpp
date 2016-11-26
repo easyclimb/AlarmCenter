@@ -131,7 +131,7 @@ public:
 						at = std::make_shared<core::alarm_text>();
 						at->_zone = alarm_info.alarm_txt().zone_value();
 						at->_subzone = alarm_info.alarm_txt().sub_zone();
-						at->_event = alarm_info.alarm_txt().event_code();
+						at->_event = static_cast<ademco::ADEMCO_EVENT>(alarm_info.alarm_txt().event_code());
 						at->_txt = utf8::a2w(alarm_info.alarm_txt().alarm_txt()).c_str();
 					}
 

@@ -252,7 +252,7 @@ void ConvertHiLoAsciiToAscii(char* dst, const char* src, size_t len)
 	}
 }
 
-void AdemcoDataSegment::Make(int ademco_id, int gg, int ademco_event, int zone)
+void AdemcoDataSegment::Make(int ademco_id, int gg, ADEMCO_EVENT ademco_event, int zone)
 {
 	reset();
 	std::stringstream ss;
@@ -344,7 +344,7 @@ bool AdemcoDataSegment::Parse(const char* pack, unsigned int pack_len)
 		//if (*p++ != ' ')
 		//	break;
 		//data.q = NumStr2Dec(p++, 1);
-		_ademco_event = NumStr2Dec(p, 4);
+		_ademco_event = static_cast<ADEMCO_EVENT>(NumStr2Dec(p, 4));
 		p += 4;
 		if (*p++ != ' ')
 			break;
@@ -499,7 +499,7 @@ void AdemcoPacket::CopyData(char* dst, size_t length)
 
 size_t AdemcoPacket::Make(char* pack, size_t pack_len, const char* id,
 						  int seq, char const* acct, int ademco_id,
-						  int ademco_event, int gg, int zone,
+						  ADEMCO_EVENT ademco_event, int gg, int zone,
 						  const char_array_ptr& xdata)
 {
 	assert(pack); assert(id); //assert(acct);
@@ -999,7 +999,7 @@ bool congwin_fe100_packet::from_ademco_data_segment(const AdemcoDataSegment * da
 	}
 
 	int acct = data->_ademco_id % 10000;
-	int evnt = data->_ademco_event;
+	auto evnt = data->_ademco_event;
 	//int gg = data->_gg;
 	int zone = data->_zone;
 

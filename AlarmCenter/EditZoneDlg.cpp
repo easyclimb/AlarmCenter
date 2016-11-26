@@ -515,7 +515,7 @@ bool CEditZoneDlg::CreateSubMachine(const core::zone_info_ptr& zoneInfo, bool le
 		ASSERT(0); JLOG(L"execute_set_sub_machine failed.\n"); return false;
 	}
 	char status = zoneInfo->get_status_or_property() & 0xFF;
-	ADEMCO_EVENT ademco_event = zone_info::char_to_status(status);
+	ADEMCO_EVENT ademco_event = static_cast<ADEMCO_EVENT>(zone_info::char_to_status(status));
 	if (let_machine_online) {
 		m_machine->SetAdemcoEvent(ES_UNKNOWN, EVENT_ONLINE, zoneInfo->get_zone_value(), 0xEE, time(nullptr), time(nullptr));
 	}

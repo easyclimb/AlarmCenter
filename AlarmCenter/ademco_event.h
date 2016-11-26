@@ -12,86 +12,101 @@
 
 
 
-typedef int ADEMCO_EVENT;
+
 
 namespace ademco
 {
+
+//typedef int ADEMCO_EVENT;
 typedef std::vector<char> char_array;
 typedef std::shared_ptr<char_array> char_array_ptr;
 
 
 #pragma region event_definetion
 
-// -------------------接警中心内部使用事件------------------------------
-static const ADEMCO_EVENT EVENT_INVALID_EVENT		= 0;
-static const ADEMCO_EVENT EVENT_PRIVATE_EVENT_BASE	= 0x00010000;
-static const ADEMCO_EVENT EVENT_CLEARMSG			= EVENT_PRIVATE_EVENT_BASE;
-static const ADEMCO_EVENT EVENT_OFFLINE				= EVENT_PRIVATE_EVENT_BASE + 1;
-static const ADEMCO_EVENT EVENT_ONLINE				= EVENT_PRIVATE_EVENT_BASE + 2;
-static const ADEMCO_EVENT EVENT_SUBMACHINECNT		= EVENT_PRIVATE_EVENT_BASE + 3;
-static const ADEMCO_EVENT EVENT_MACHINE_ALIAS		= EVENT_PRIVATE_EVENT_BASE + 4;
-static const ADEMCO_EVENT EVENT_IM_GONNA_DIE		= EVENT_PRIVATE_EVENT_BASE + 5;
-static const ADEMCO_EVENT EVENT_LINK_TEST			= EVENT_PRIVATE_EVENT_BASE + 6;
-//static const ADEMCO_EVENT EVENT_SERVICE_TIME_UP   = EVENT_PRIVATE_EVENT_BASE + 7;
-static const ADEMCO_EVENT EVENT_OP_FAILED			= EVENT_PRIVATE_EVENT_BASE + 7; // 布撤防失败
-static const ADEMCO_EVENT EVENT_PRIVATE_EVENT_MAX	= EVENT_PRIVATE_EVENT_BASE + 7;
-// ------------------------------------------------------------------
+enum ADEMCO_EVENT : unsigned int {
 
-// -------------------标准安定宝协议事件--------------------------------
-// 主机或分机状态报告
-static const ADEMCO_EVENT EVENT_ARM									= 3400; // 布防
-static const ADEMCO_EVENT EVENT_DISARM								= 1400; // 撤防
-static const ADEMCO_EVENT EVENT_HALFARM								= 3456; // 半布防
-static const ADEMCO_EVENT EVENT_EMERGENCY							= 1120; // 紧急报警
+	EVENT_INVALID_EVENT							= 0,
 
-// 防区报警
-static const ADEMCO_EVENT EVENT_BURGLAR								= 1130; // 盗警
-static const ADEMCO_EVENT EVENT_DOORRINGING							= 1134; // 门铃
-static const ADEMCO_EVENT EVENT_FIRE								= 1110; // 火警
-static const ADEMCO_EVENT EVENT_DURESS								= 1121; // 胁迫
-static const ADEMCO_EVENT EVENT_GAS									= 1151; // 煤气
-static const ADEMCO_EVENT EVENT_WATER								= 1113; // 水警
-static const ADEMCO_EVENT EVENT_TEMPER								= 1137; // 防拆
-static const ADEMCO_EVENT EVENT_ZONE_TEMPER							= 1383; // 防拆
+	// -------------------标准安定宝协议事件--------------------------------
+	// 主机或分机状态报告
+	EVENT_ARM									= 3400, // 布防
+	EVENT_DISARM								= 1400, // 撤防
+	EVENT_HALFARM								= 3456, // 半布防
+	EVENT_EMERGENCY								= 1120, // 紧急报警
 
-// 防区异常
-static const ADEMCO_EVENT EVENT_LOWBATTERY							= 1302; // 低电
-static const ADEMCO_EVENT EVENT_BATTERY_RECOVER						= 3302; // 复电
-static const ADEMCO_EVENT EVENT_BADBATTERY							= 1311; // 坏电
-static const ADEMCO_EVENT EVENT_SOLARDISTURB						= 1387; // 光扰
-static const ADEMCO_EVENT EVENT_DISCONNECT							= 1381; // 失效
-static const ADEMCO_EVENT EVENT_RECONNECT							= 3381; // 恢复
-static const ADEMCO_EVENT EVENT_BATTERY_EXCEPTION					= 1384; // 电源故障
-static const ADEMCO_EVENT EVENT_BATTERY_EXCEPTION_RECOVER			= 3384; // 电源故障恢复
-static const ADEMCO_EVENT EVENT_OTHER_EXCEPTION						= 1380; // 其他故障
-static const ADEMCO_EVENT EVENT_OTHER_EXCEPTION_RECOVER				= 3380; // 其他故障恢复
-// ------------------------------------------------------------------
+	// 防区报警
+	EVENT_BURGLAR								= 1130, // 盗警
+	EVENT_DOORRINGING							= 1134, // 门铃
+	EVENT_FIRE									= 1110, // 火警
+	EVENT_DURESS								= 1121, // 胁迫
+	EVENT_GAS									= 1151, // 煤气
+	EVENT_WATER									= 1113, // 水警
+	EVENT_TEMPER								= 1137, // 防拆
+	EVENT_ZONE_TEMPER							= 1383, // 防拆
 
-// ------------------私有事件-----------------------------------------
-static const ADEMCO_EVENT EVENT_SERIAL485DIS						= 1485; // 网络模块与主机485串口连接断开
-static const ADEMCO_EVENT EVENT_SERIAL485CONN						= 3485; // 网络模块与主机485串口连接恢复
+	// 防区异常
+	EVENT_LOWBATTERY							= 1302, // 低电
+	EVENT_BATTERY_RECOVER						= 3302, // 复电
+	EVENT_BADBATTERY							= 1311, // 坏电
+	EVENT_SOLARDISTURB							= 1387, // 光扰
+	EVENT_DISCONNECT							= 1381, // 失效
+	EVENT_RECONNECT								= 3381, // 恢复
+	EVENT_BATTERY_EXCEPTION						= 1384, // 电源故障
+	EVENT_BATTERY_EXCEPTION_RECOVER				= 3384, // 电源故障恢复
+	EVENT_OTHER_EXCEPTION						= 1380, // 其他故障
+	EVENT_OTHER_EXCEPTION_RECOVER				= 3380, // 其他故障恢复
+	// ------------------------------------------------------------------
 
-static const ADEMCO_EVENT EVENT_CONN_HANGUP							= 1700; // 链路挂起
-static const ADEMCO_EVENT EVENT_CONN_RESUME							= 3700; // 链路恢复
+	// ------------------私有事件-----------------------------------------
+	EVENT_SERIAL485DIS							= 1485, // 网络模块与主机485串口连接断开
+	EVENT_SERIAL485CONN							= 3485, // 网络模块与主机485串口连接恢复
 
-static const ADEMCO_EVENT EVENT_DISARM_PWD_ERR						= 1701; // 撤防密码错误
-static const ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_EXCEPTION		= 1702; // 分机探头异常
-static const ADEMCO_EVENT EVENT_SUB_MACHINE_SENSOR_RESUME			= 3702; // 分机探头恢复
-static const ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_EXCEPTION			= 1703; // 分机电源异常
-static const ADEMCO_EVENT EVENT_SUB_MACHINE_POWER_RESUME			= 3703; // 分机电源恢复
-static const ADEMCO_EVENT EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE		= 1704; // 索要防区或分机信息
-static const ADEMCO_EVENT EVENT_ENTER_SET_MODE						= 2704; // 进入设置状态
-static const ADEMCO_EVENT EVENT_STOP_RETRIEVE						= 3704;	// 接警中心发送，为停止索要；报警主机发送，为拒绝索要
-static const ADEMCO_EVENT EVENT_QUERY_SUB_MACHINE					= 1705; // 查询分机信息
-static const ADEMCO_EVENT EVENT_WRITE_TO_MACHINE					= 1706; // 写入主机信息
-static const ADEMCO_EVENT EVENT_I_AM_NET_MODULE						= 1707; // 主机类型--我是网络模块
-static const ADEMCO_EVENT EVENT_PHONE_USER_SOS						= 1709; // 手机用户SOS
-static const ADEMCO_EVENT EVENT_PHONE_USER_CANCLE_ALARM				= 1711; // 手机用户消警
-static const ADEMCO_EVENT EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE	= 1717; // 主机类型--我是改进型卧式主机2050型
-static const ADEMCO_EVENT EVENT_I_AM_LCD_MACHINE					= 1727; // 主机类型--我是液晶主机
-static const ADEMCO_EVENT EVENT_I_AM_WIRE_MACHINE					= 1737; // 主机类型--我是网线主机
-static const ADEMCO_EVENT EVENT_WHAT_IS_YOUR_TYPE					= 1798; // 索要主机类型
-static const ADEMCO_EVENT EVENT_SIGNAL_STRENGTH_CHANGED				= 1799; // 主机信号强度变化
+	EVENT_CONN_HANGUP							= 1700, // 链路挂起
+	EVENT_CONN_RESUME							= 3700, // 链路恢复
+
+	EVENT_DISARM_PWD_ERR						= 1701, // 撤防密码错误
+
+	EVENT_SUB_MACHINE_SENSOR_EXCEPTION			= 1702, // 分机探头异常
+	EVENT_SUB_MACHINE_SENSOR_RESUME				= 3702, // 分机探头恢复
+	EVENT_SUB_MACHINE_POWER_EXCEPTION			= 1703, // 分机电源异常
+	EVENT_SUB_MACHINE_POWER_RESUME				= 3703, // 分机电源恢复
+
+	EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE			= 1704, // 索要防区或分机信息
+	EVENT_ENTER_SET_MODE						= 2704, // 进入设置状态
+	EVENT_STOP_RETRIEVE							= 3704,	// 接警中心发送，为停止索要；报警主机发送，为拒绝索要
+
+	EVENT_QUERY_SUB_MACHINE						= 1705, // 查询分机信息
+	EVENT_WRITE_TO_MACHINE						= 1706, // 写入主机信息
+
+	EVENT_I_AM_NET_MODULE						= 1707, // 主机类型--网络模块
+	EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE		= 1717, // 主机类型--改进型卧式主机2050型
+	EVENT_I_AM_LCD_MACHINE						= 1727, // 主机类型--液晶主机
+	EVENT_I_AM_WIRE_MACHINE						= 1737, // 主机类型--网线主机
+
+	EVENT_PHONE_USER_SOS						= 1709, // 手机用户SOS
+	EVENT_PHONE_USER_CANCLE_ALARM				= 1711, // 手机用户消警
+
+	EVENT_ENTER_SETTING_MODE					= 1712, // 主机进入设置状态
+	EVENT_EXIT_SETTING_MODE						= 3712, // 主机退出设置状态
+	EVENT_RESTORE_FACTORY_SETTINGS				= 1713, // 主机恢复出厂设置
+
+	EVENT_WHAT_IS_YOUR_TYPE						= 1798, // 索要主机类型
+	EVENT_SIGNAL_STRENGTH_CHANGED				= 1799, // 主机信号强度变化
+
+	// -------------------接警中心内部使用事件------------------------------
+	EVENT_PRIVATE_EVENT_BASE					= 0x00010000,
+	EVENT_CLEARMSG,										// 清除报警信息
+	EVENT_OFFLINE,										// 主机断线
+	EVENT_ONLINE,										// 主机上线
+	EVENT_SUBMACHINECNT,								// 分机数量变化
+	EVENT_MACHINE_INFO_CHANGED,							// 主机信息改变，需要界面刷新
+	EVENT_IM_GONNA_DIE,									// 主机类已析构，通知界面
+	EVENT_LINK_TEST,									// 主机心跳
+	EVENT_OP_FAILED,									// 布撤防失败
+	EVENT_PRIVATE_EVENT_MAX,
+
+};
 // ------------------------------------------------------------------
 
 
@@ -110,6 +125,7 @@ static const ADEMCO_EVENT gc_AdemcoEvent[] = {
 	EVENT_WATER,
 	EVENT_TEMPER,
 	EVENT_ZONE_TEMPER,
+
 	EVENT_LOWBATTERY,
 	EVENT_BATTERY_RECOVER,
 	EVENT_BADBATTERY,
@@ -125,18 +141,30 @@ static const ADEMCO_EVENT gc_AdemcoEvent[] = {
 	EVENT_SERIAL485CONN,
 	EVENT_CONN_HANGUP,
 	EVENT_CONN_RESUME,
+	EVENT_DISARM_PWD_ERR,
+
 	EVENT_SUB_MACHINE_SENSOR_EXCEPTION,
 	EVENT_SUB_MACHINE_SENSOR_RESUME,
 	EVENT_SUB_MACHINE_POWER_EXCEPTION,
 	EVENT_SUB_MACHINE_POWER_RESUME,
 	EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE,
+
 	EVENT_ENTER_SET_MODE,
 	EVENT_STOP_RETRIEVE,
 	EVENT_QUERY_SUB_MACHINE,
 	EVENT_WRITE_TO_MACHINE,
+
 	EVENT_I_AM_NET_MODULE,
-	EVENT_PHONE_USER_SOS,
 	EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE,
+	EVENT_I_AM_LCD_MACHINE,
+	EVENT_I_AM_WIRE_MACHINE,
+
+	EVENT_PHONE_USER_SOS,
+	EVENT_PHONE_USER_CANCLE_ALARM,
+	EVENT_ENTER_SETTING_MODE,
+	EVENT_EXIT_SETTING_MODE,
+	EVENT_RESTORE_FACTORY_SETTINGS,
+	
 	EVENT_SIGNAL_STRENGTH_CHANGED,
 };
 
@@ -173,6 +201,7 @@ inline std::string GetAdemcoEventStringEnglish(ADEMCO_EVENT ademco_event)
 	case EVENT_DOORRINGING:							return n_to_s(ademco_event) + "DOORRINGING";						break;
 	case EVENT_CONN_HANGUP: 						return n_to_s(ademco_event) + "CONN_HANGUP";						break;
 	case EVENT_CONN_RESUME: 						return n_to_s(ademco_event) + "CONN_RESUME";						break;
+	case EVENT_DISARM_PWD_ERR: 						return n_to_s(ademco_event) + "DISARM_PWD_ERR";						break;
 	case EVENT_SUB_MACHINE_SENSOR_EXCEPTION:		return n_to_s(ademco_event) + "SUB_SENSOR_EXCEPTION"; 				break;
 	case EVENT_SUB_MACHINE_SENSOR_RESUME:			return n_to_s(ademco_event) + "SUB_SENSOR_RESUME"; 					break;
 	case EVENT_SUB_MACHINE_POWER_EXCEPTION:			return n_to_s(ademco_event) + "SUB_POWER_EXCEPTION"; 				break;
@@ -184,9 +213,14 @@ inline std::string GetAdemcoEventStringEnglish(ADEMCO_EVENT ademco_event)
 	case EVENT_WRITE_TO_MACHINE:					return n_to_s(ademco_event) + "WRITE_TO_MACHINE"; 					break;
 	case EVENT_I_AM_NET_MODULE:						return n_to_s(ademco_event) + "I_AM_NET_MODULE"; 					break;
 	case EVENT_PHONE_USER_SOS:						return n_to_s(ademco_event) + "SOS"; 								break;
+	case EVENT_PHONE_USER_CANCLE_ALARM:				return n_to_s(ademco_event) + "PHONE_USER_CANCLE_ALARM"; 			break;
 	case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:	return n_to_s(ademco_event) + "I_AM_EXPRESSED_GPRS_2050_MACHINE";	break;
-	case EVENT_I_AM_LCD_MACHINE:					return n_to_s(ademco_event) + "EVENT_I_AM_LCD_MACHINE";				break;
-	case EVENT_SIGNAL_STRENGTH_CHANGED:				return n_to_s(ademco_event) + "EVENT_SIGNAL_STRENGTH_CHANGED";		break;
+	case EVENT_I_AM_LCD_MACHINE:					return n_to_s(ademco_event) + "I_AM_LCD_MACHINE";					break;
+	case EVENT_I_AM_WIRE_MACHINE:					return n_to_s(ademco_event) + "I_AM_WIRE_MACHINE";					break;
+	case EVENT_ENTER_SETTING_MODE:					return n_to_s(ademco_event) + "ENTER_SETTING_MODE";					break;
+	case EVENT_EXIT_SETTING_MODE:					return n_to_s(ademco_event) + "EXIT_SETTING_MODE";					break;
+	case EVENT_RESTORE_FACTORY_SETTINGS:			return n_to_s(ademco_event) + "RESTORE_FACTORY_SETTINGS";			break;
+	case EVENT_SIGNAL_STRENGTH_CHANGED:				return n_to_s(ademco_event) + "SIGNAL_STRENGTH_CHANGED";			break;
 	default:										return n_to_s(ademco_event) + "undefined";							break;
 	}
 }
@@ -224,10 +258,12 @@ inline const std::wstring GetAdemcoEventStringChinese(ADEMCO_EVENT ademco_event)
 	case EVENT_DOORRINGING:							return n_to_s(ademco_event) + L"门铃";						break;
 	case EVENT_CONN_HANGUP:							return n_to_s(ademco_event) + L"链路挂起"; 					break;
 	case EVENT_CONN_RESUME:							return n_to_s(ademco_event) + L"链路恢复"; 					break;
+	case EVENT_DISARM_PWD_ERR: 						return n_to_s(ademco_event) + L"撤防密码错误";				break;
+
 	case EVENT_SUB_MACHINE_SENSOR_EXCEPTION:		return n_to_s(ademco_event) + L"分防区异常"; 				break;
 	case EVENT_SUB_MACHINE_SENSOR_RESUME:			return n_to_s(ademco_event) + L"分防区恢复"; 				break;
-	case EVENT_SUB_MACHINE_POWER_EXCEPTION:			return n_to_s(ademco_event) + L"分防区电源异常"; 				break;
-	case EVENT_SUB_MACHINE_POWER_RESUME:			return n_to_s(ademco_event) + L"分防区电源恢复"; 				break;
+	case EVENT_SUB_MACHINE_POWER_EXCEPTION:			return n_to_s(ademco_event) + L"分防区电源异常"; 			break;
+	case EVENT_SUB_MACHINE_POWER_RESUME:			return n_to_s(ademco_event) + L"分防区电源恢复"; 			break;
 	case EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:		return n_to_s(ademco_event) + L"索要"; 						break;
 	case EVENT_ENTER_SET_MODE:						return n_to_s(ademco_event) + L"进入设置状态"; 				break;
 	case EVENT_STOP_RETRIEVE:						return n_to_s(ademco_event) + L"拒绝索要"; 					break;
@@ -235,8 +271,13 @@ inline const std::wstring GetAdemcoEventStringChinese(ADEMCO_EVENT ademco_event)
 	case EVENT_WRITE_TO_MACHINE:					return n_to_s(ademco_event) + L"写入主机信息"; 				break;
 	case EVENT_I_AM_NET_MODULE:						return n_to_s(ademco_event) + L"我是网络模块"; 				break;
 	case EVENT_PHONE_USER_SOS:						return n_to_s(ademco_event) + L"手机用户SOS"; 				break;
+	case EVENT_PHONE_USER_CANCLE_ALARM:				return n_to_s(ademco_event) + L"手机用户消警"; 				break;
 	case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:	return n_to_s(ademco_event) + L"我是改进型卧式主机2050型";	break;
 	case EVENT_I_AM_LCD_MACHINE:					return n_to_s(ademco_event) + L"我是液晶主机";				break;
+	case EVENT_I_AM_WIRE_MACHINE:					return n_to_s(ademco_event) + L"我是网线主机";				break;
+	case EVENT_ENTER_SETTING_MODE:					return n_to_s(ademco_event) + L"主机进入设置状态";			break;
+	case EVENT_EXIT_SETTING_MODE:					return n_to_s(ademco_event) + L"主机退出设置状态";			break;
+	case EVENT_RESTORE_FACTORY_SETTINGS:			return n_to_s(ademco_event) + L"主机恢复出厂设置";			break;
 	case EVENT_SIGNAL_STRENGTH_CHANGED:				return n_to_s(ademco_event) + L"信号强度变化";				break;
 	default:										return n_to_s(ademco_event) + L"未定义";						break;
 	}
@@ -372,20 +413,17 @@ static const char* get_event_source_name(EventSource es) {
 // 安定宝事件
 typedef struct AdemcoEvent
 {
-	EventSource _source;	// 来源
-	int _event;				// 事件码
-	int _zone;				// 防区号
-	int _sub_zone;			// 分防区号
-	time_t _timestamp;		// 时间戳
-	time_t _recv_time;		// 接收时间
+	EventSource _source		= ES_UNKNOWN;			// 来源
+	ADEMCO_EVENT _event		= EVENT_INVALID_EVENT;	// 事件码
+	int _zone				= 0;					// 防区号
+	int _sub_zone			= 0;					// 分防区号
+	time_t _timestamp		= 0;					// 时间戳
+	time_t _recv_time		= 0;					// 接收时间
+	char_array_ptr _xdata	= nullptr;				// 附加信息
 
-	char_array_ptr _xdata;
+	AdemcoEvent() {}
 
-	AdemcoEvent() : _source(ES_UNKNOWN), _event(0), _zone(0), _sub_zone(0), _timestamp(0),
-		_recv_time(0), _xdata()
-	{}
-
-	AdemcoEvent(EventSource source, int ademco_event, int zone, int sub_zone, const time_t& timestamp,
+	AdemcoEvent(EventSource source, ADEMCO_EVENT ademco_event, int zone, int sub_zone, const time_t& timestamp,
 				const time_t& recv_time, const char_array_ptr& xdata = nullptr)
 		: _source(source), _event(ademco_event), _zone(zone), _sub_zone(sub_zone),
 		_timestamp(timestamp), _recv_time(recv_time), _xdata(xdata)
@@ -422,6 +460,7 @@ typedef struct AdemcoEvent
 				return false;
 			}
 		};
+
 		return (_event == rhs._event)
 			&& (_zone == rhs._zone)
 			&& (_sub_zone == rhs._sub_zone)

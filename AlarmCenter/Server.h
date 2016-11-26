@@ -18,7 +18,7 @@ class CServer : public boost::noncopyable
 {
 public:
 	BOOL IsConnectionEstablished() const { return m_bServerStarted; }
-	BOOL SendToClient(int ademco_id, int ademco_event, int gg,
+	BOOL SendToClient(int ademco_id, ademco::ADEMCO_EVENT ademco_event, int gg,
 					  int zone, const ademco::char_array_ptr& = nullptr);
 	void Stop();
 	BOOL Start(unsigned int& port);

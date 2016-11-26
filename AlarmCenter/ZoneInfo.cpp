@@ -232,7 +232,7 @@ bool zone_info::execute_update_alias(const wchar_t* alias)
 		set_alias(alias);
 		if (_subMachineInfo) {
 			_subMachineInfo->set_alias(alias);
-			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
+			_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, INDEX_SUB_MACHINE, t, t);
 		}
 		return true;
 	} else {
@@ -264,7 +264,7 @@ bool zone_info::execute_update_contact(const wchar_t* contact)
 		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_contact(), contact);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_contact(contact);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update table_sub_machine contact failed.\n");
@@ -295,7 +295,7 @@ bool zone_info::execute_update_address(const wchar_t* address)
 		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_address(), address);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_address(address);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update table_sub_machine address failed.\n");
@@ -325,7 +325,7 @@ bool zone_info::execute_update_phone(const wchar_t* phone)
 		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_phone(), phone);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone(phone);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update table_sub_machine phone failed.\n");
@@ -358,7 +358,7 @@ bool zone_info::execute_update_phone_bk(const wchar_t* phone_bk)
 		rec.Format(L"%s %s: %s --> %s", get_formatted_zone_id(), sfield, _subMachineInfo->get_phone_bk(), phone_bk);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, _zone_value, rec, t, RECORD_LEVEL_USEREDIT);
 		_subMachineInfo->set_phone_bk(phone_bk);
-		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, INDEX_SUB_MACHINE, t, t);
+		_subMachineInfo->SetAdemcoEvent(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, INDEX_SUB_MACHINE, t, t);
 		return true;
 	} else {
 		ASSERT(0); JLOG(L"update table_sub_machine phone_bk failed.\n");

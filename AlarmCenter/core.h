@@ -122,10 +122,10 @@ typedef std::list<group_info_weak_ptr> group_info_weak_list;
 typedef struct alarm_text {
 	int _zone;
 	int _subzone;
-	int _event;
+	ademco::ADEMCO_EVENT _event;
 	time_t _time;
 	CString _txt;
-	alarm_text() : _zone(0), _subzone(0), _event(0), _time(), _txt(_T("")) { }
+	alarm_text() : _zone(0), _subzone(0), _event(ademco::EVENT_INVALID_EVENT), _time(), _txt(_T("")) { }
 	alarm_text(const alarm_text& rhs) : _zone(rhs._zone), _subzone(rhs._subzone), _event(rhs._event), _time(rhs._time), _txt(rhs._txt) { }
 
 	alarm_text& operator=(const alarm_text& rhs) {
@@ -282,7 +282,7 @@ inline machine_status Integer2MachineStatus(int status) {
 	}
 }
 
-inline ADEMCO_EVENT MachineStatus2AdemcoEvent(machine_status status) {
+inline ademco::ADEMCO_EVENT MachineStatus2AdemcoEvent(machine_status status) {
 	switch (status) {
 	case core::MACHINE_ARM:
 		return ademco::EVENT_ARM;

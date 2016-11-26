@@ -148,7 +148,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			}
 			if (packet._ademco_data._len > 2) {
 				int ademco_id = packet._ademco_data._ademco_id;
-				int ademco_event = packet._ademco_data._ademco_event;
+				auto ademco_event = packet._ademco_data._ademco_event;
 				int zone = packet._ademco_data._zone;
 				int subzone = packet._ademco_data._gg;
 				client->ademco_id = ademco_id;
@@ -212,13 +212,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 		if (bFaild) {
 			client->buff.Clear();
 			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_DUH, seq,
-									   /*acct, */nullptr, client->ademco_id, 0, 0, 0);
+									   /*acct, */nullptr, client->ademco_id, ademco::EVENT_INVALID_EVENT, 0, 0);
 			server->RealSendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
 				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/nullptr,
-										   client->ademco_id, 0, 0, 0);
+										   client->ademco_id, ademco::EVENT_INVALID_EVENT, 0, 0);
 				server->RealSendToClient(client, buff, dwSize);
 			}
 		}
@@ -266,7 +266,7 @@ void CServer::Stop()
 }
 
 
-BOOL CServer::SendToClient(int ademco_id, int ademco_event, int gg, 
+BOOL CServer::SendToClient(int ademco_id, ademco::ADEMCO_EVENT ademco_event, int gg,
 						   int zone, const ademco::char_array_ptr& xdata)
 {
 	AUTO_LOG_FUNCTION;

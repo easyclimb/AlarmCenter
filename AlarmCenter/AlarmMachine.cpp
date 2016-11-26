@@ -264,7 +264,7 @@ void alarm_machine::set_consumer(const consumer_ptr & consumer)
 	consumer_ = consumer;
 	if (!empty) {
 		auto t = time(nullptr);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 		notify_observers(ademcoEvent);
 	}
 }
@@ -346,7 +346,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 																	 RECORD_LEVEL_EXCEPTION);
 				//PostMessageToMainWnd(WM_REMINDER_TIME_UP, _ademco_id, _submachine_zone);
 				auto t = time(nullptr);
-				auto dummy = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+				auto dummy = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 				notify_observers(dummy);
 			}
 		}
@@ -364,7 +364,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 														RECORD_LEVEL_EXCEPTION);
 			PostMessageToMainWnd(WM_SERVICE_TIME_UP, _ademco_id, _submachine_zone);
 			auto t = time(nullptr);
-			auto dummy = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+			auto dummy = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 			notify_observers(dummy);
 		}
 		_last_time_check_if_expire = GetTickCount();
@@ -441,10 +441,23 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				return;
 				break;
 			case ademco::EVENT_RETRIEVE_ZONE_OR_SUB_MACHINE:
-			case ademco::EVENT_ENTER_SET_MODE:
 			case ademco::EVENT_STOP_RETRIEVE:
+			case ademco::EVENT_ENTER_SET_MODE:
 				HandleRetrieveResult(ademcoEvent);
 				return;
+				break;
+			case ademco::EVENT_ENTER_SETTING_MODE:
+				setting_mode_ = true;
+				handle_setting_mode();
+				return;
+				break;
+			case ademco::EVENT_EXIT_SETTING_MODE:
+				setting_mode_ = false;
+				handle_setting_mode();
+				return;
+				break;
+			case ademco::EVENT_RESTORE_FACTORY_SETTINGS:
+				
 				break;
 			case ademco::EVENT_QUERY_SUB_MACHINE:
 				return;
@@ -595,6 +608,11 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				if (!bOnofflineStatus && (_machine_status != machine_status)) {
 					bStatusChanged = true;
 					execute_set_machine_status(machine_status);
+
+					// 2016-11-26 14:54:55
+					if (setting_mode_) {
+
+					}
 				}
 			}
 #pragma endregion
@@ -890,6 +908,26 @@ void alarm_machine::SetAllSubMachineOnOffLine(bool online)
 	}
 }
 
+void alarm_machine::handle_setting_mode()
+{
+	CString rec = get_formatted_name();
+	if (setting_mode_) {
+		rec += L" " + TR(IDS_STRING_ENTER_SET_MODE);
+	} else {
+		rec += L" " + TR(IDS_STRING_EXIT_SET_MODE);
+	}
+
+	history_record_manager::get_instance()->InsertRecord(_ademco_id, _is_submachine ? _submachine_zone : 0, rec, time(nullptr), RECORD_LEVEL_STATUS);
+	notify_observers_with_event();
+}
+
+void alarm_machine::notify_observers_with_event(ademco::ADEMCO_EVENT evnt)
+{
+	auto t = time(nullptr);
+	auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, evnt, 0, 0, t, t);
+	notify_observers(ademcoEvent);
+}
+
 
 void alarm_machine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
@@ -941,7 +979,7 @@ void alarm_machine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEve
 			JLOG(L"ok\n");
 			if ((gg == 0xEE) && (subMachine != nullptr)) {
 				JLOG(L"(gg == 0xEE) && (subMachine != nullptr)\n");
-				ADEMCO_EVENT ademco_event = zone_info::char_to_status(status);
+				ADEMCO_EVENT ademco_event = static_cast<ADEMCO_EVENT>(zone_info::char_to_status(status));
 				auto t = time(nullptr);
 				SetAdemcoEvent(ademcoEvent->_source, ademco_event, zoneInfo->get_zone_value(), 0xEE, t, t);
 			} else if ((gg == 0x00) && (subMachine == nullptr)) {
@@ -980,7 +1018,7 @@ void alarm_machine::NotifySubmachines(const ademco::AdemcoEventPtr& ademcoEvent)
 
 
 void alarm_machine::SetAdemcoEvent(EventSource source, 
-								   int ademco_event, int zone, int subzone,
+								   ADEMCO_EVENT ademco_event, int zone, int subzone,
 								   const time_t& timestamp, const time_t& recv_time,
 								   const ademco::char_array_ptr& xdata
 								   )
@@ -1054,7 +1092,7 @@ bool alarm_machine::execute_set_banned(bool banned)
 													0, rec, t,
 													RECORD_LEVEL_USEREDIT);
 		_banned = banned;
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 		notify_observers(ademcoEvent);
 		return true;
 	}
@@ -1121,7 +1159,7 @@ bool alarm_machine::execute_set_alias(const wchar_t* alias)
 				   smachine, _ademco_id, sfield, get_machine_name(), alias);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, 0, rec, t, RECORD_LEVEL_USEREDIT);
 		set_alias(alias);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 		notify_observers(ademcoEvent);
 		return true;
 	}
@@ -1152,7 +1190,7 @@ bool alarm_machine::execute_set_contact(const wchar_t* contact)
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													t, RECORD_LEVEL_USEREDIT);
 		set_contact(contact);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 		notify_observers(ademcoEvent);
 		return true;
 	}
@@ -1184,7 +1222,7 @@ bool alarm_machine::execute_set_address(const wchar_t* address)
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													t, RECORD_LEVEL_USEREDIT);
 		set_address(address);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 		notify_observers(ademcoEvent);
 		return true;
 	}
@@ -1216,7 +1254,7 @@ bool alarm_machine::execute_set_phone(const wchar_t* phone)
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													t, RECORD_LEVEL_USEREDIT);
 		set_phone(phone);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 		notify_observers(ademcoEvent);
 		return true;
 	}
@@ -1247,7 +1285,7 @@ bool alarm_machine::execute_set_phone_bk(const wchar_t* phone_bk)
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													t, RECORD_LEVEL_USEREDIT);
 		set_phone_bk(phone_bk);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 		notify_observers(ademcoEvent);
 		return true;
 	}
@@ -1550,7 +1588,7 @@ bool alarm_machine::execute_update_expire_time(const std::chrono::system_clock::
 		}
 
 		auto t = time(nullptr);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 0, 0, t, t);
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
 		notify_observers(ademcoEvent);
 		expire_time_ = tp;
 		return true;
@@ -1695,7 +1733,7 @@ void alarm_machine::set_alarm_id(int id)
 	//if (alarm_id_ != id) {
 		alarm_id_ = id;
 		auto t = time(nullptr);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_ALIAS, 
+		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 
 														 _is_submachine ? _submachine_zone : 0, 
 														 _is_submachine ? INDEX_SUB_MACHINE : 0,
 														 t, t);

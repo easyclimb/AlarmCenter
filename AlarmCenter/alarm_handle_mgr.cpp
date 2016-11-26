@@ -356,7 +356,7 @@ alarm_date text)");
 			auto at = std::make_shared<core::alarm_text>();
 			at->_zone = zone;
 			at->_subzone = gg;
-			at->_event = adm_evnt;
+			at->_event = static_cast<ademco::ADEMCO_EVENT>(adm_evnt);
 			at->_txt = utf8::a2w(txt).c_str();
 			at->_time = std::chrono::system_clock::to_time_t(string_to_time_point(tim));
 			alarm->alarm_texts_.push_back(at);

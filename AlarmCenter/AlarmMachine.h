@@ -105,6 +105,9 @@ private:
 	bool _buffer_mode;
 	bool _is_submachine;
 
+	// 2016-11-26 14:52:01
+	bool setting_mode_ = false;
+
 	volatile int _submachine_zone;
 	volatile int _submachine_count;
 	map_info_ptr _unbindZoneMap;
@@ -161,7 +164,9 @@ protected:
 	void HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent);
 	void UpdateLastActionTime() { /*AUTO_LOG_FUNCTION; */JLOG(L"subMachine %03d, %s", _submachine_zone, alias_); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
-	
+	void handle_setting_mode();
+	void notify_observers_with_event(ademco::ADEMCO_EVENT evnt = ademco::EVENT_MACHINE_INFO_CHANGED);
+
 public:
 	alarm_machine();
 	~alarm_machine();
@@ -246,7 +251,7 @@ public:
 	map_info_ptr GetMapInfo(int map_id);
 	
 	void SetAdemcoEvent(ademco::EventSource source,
-						int ademco_event,
+						ademco::ADEMCO_EVENT ademco_event,
 						int zone, int subzone,
 						const time_t& timestamp,
 						const time_t& recv_time,
@@ -321,6 +326,10 @@ public:
 	// after is handled, alarm_id needs to be reset to 0.
 	int get_alarm_id() const { return alarm_id_; }
 	void set_alarm_id(int id);
+
+
+	// 2016-11-26 17:39:04 
+	bool get_set_mode() const { return setting_mode_; }
 };
 
 

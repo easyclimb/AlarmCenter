@@ -943,7 +943,7 @@ void CAlarmMachineDlg::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEve
 	case EVENT_I_AM_WIRE_MACHINE:
 		UpdateBtn123();
 		break;
-	case EVENT_MACHINE_ALIAS:
+	case EVENT_MACHINE_INFO_CHANGED:
 		UpdateCaption();
 		break;
 	default:	// means its alarming

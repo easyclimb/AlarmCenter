@@ -240,7 +240,11 @@ void CButtonEx::UpdateButtonText()
 		color_text_->SetWindowTextW(_machine->get_formatted_name(false));
 		//color_text_->SetWindowTextW(L"测试");
 		CString text;
-		CString gap = L"  ";
+		CString gap = L" ";
+
+		if (_machine->get_set_mode()) {
+			text = TR(IDS_STRING_SETTING) + gap;
+		}
 
 		if (_machine->get_banned()) {
 			text = TR(IDS_STRING_BANNED) + gap;
@@ -336,7 +340,7 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			}
 			break;
 		case EVENT_SUBMACHINECNT:
-		case EVENT_MACHINE_ALIAS:
+		case EVENT_MACHINE_INFO_CHANGED:
 			if (bmybusinese) {
 				UpdateButtonText();
 				_button->GetParent()->PostMessageW(WM_ADEMCOEVENT, _machine->get_ademco_id());
@@ -622,26 +626,38 @@ void CButtonEx::OnRBnClicked()
 
 	auto manager = core::alarm_machine_manager::get_instance();
 
-	auto check_is_sms_mode = [this, &manager]() {
+	auto check_can_remote_control = [this, &manager]() {
 		bool sms_mode = _machine->get_sms_mode();
+		bool set_mode = _machine->get_set_mode();
 		CString txt = _machine->get_formatted_name() + L" ";
-		if (sms_mode) {
-			txt += TR(IDS_STRING_ENTER_SMS_MODE);
+		if (sms_mode || set_mode) {
+			if (sms_mode) {
+				txt += TR(IDS_STRING_ENTER_SMS_MODE);
+			} else if (set_mode) {
+				txt += TR(IDS_STRING_STOP_RTRV_BY_SET_MODE);
+			}
+			
 			_button->MessageBox(txt);
-			return true;
+			return false;
 		} else if (_machine->get_is_submachine()) {
 			auto parent_machine = manager->GetMachine(_machine->get_ademco_id());
 			if (parent_machine) {
 				sms_mode = parent_machine->get_sms_mode();
-				if (sms_mode) {
+				set_mode = parent_machine->get_set_mode();
+				if (sms_mode || set_mode) {
 					txt = parent_machine->get_formatted_name() + L" ";
-					txt += TR(IDS_STRING_ENTER_SMS_MODE);
+					if (sms_mode) {
+						txt += TR(IDS_STRING_ENTER_SMS_MODE);
+					} else if (set_mode) {
+						txt += TR(IDS_STRING_STOP_RTRV_BY_SET_MODE);
+					}
 					_button->MessageBox(txt);
-					return true;
+					return false;
 				}
 			}
 		}
-		return false;
+
+		return true;
 	};
 	
 	switch (ret) {
@@ -649,7 +665,7 @@ void CButtonEx::OnRBnClicked()
 			OnBnClicked();
 			break;
 		case ID_DDD_32772: // arm
-			if (check_is_sms_mode()) return;
+			if (!check_can_remote_control()) return;
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_ARM,
 												_machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 												_machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,
@@ -659,7 +675,7 @@ void CButtonEx::OnRBnClicked()
 		break;
 		case ID_DDD_32786: // halfarm
 		{
-			if (check_is_sms_mode()) return;
+			if (!check_can_remote_control()) return;
 			auto xdata = std::make_shared<ademco::char_array>();
 			if (_machine->get_machine_status() == core::MACHINE_ARM) {
 				if (!_machine->get_is_submachine()) {
@@ -681,7 +697,7 @@ void CButtonEx::OnRBnClicked()
 		}
 			break;
 		case ID_DDD_32773: { // disarm
-			if (check_is_sms_mode()) return;
+			if (!check_can_remote_control()) return;
 			auto xdata = std::make_shared<ademco::char_array>();
 			if (!_machine->get_is_submachine()) {
 				CInputPasswdDlg dlg(_button.get());
@@ -701,7 +717,7 @@ void CButtonEx::OnRBnClicked()
 			break; 
 		}
 		case ID_DDD_32774: // emergency
-			if (check_is_sms_mode()) return;
+			if (!check_can_remote_control()) return;
 			manager->RemoteControlAlarmMachine(_machine, ademco::EVENT_EMERGENCY, 
 											   _machine->get_is_submachine() ? core::INDEX_SUB_MACHINE : core::INDEX_ZONE,
 											   _machine->get_is_submachine() ? _machine->get_submachine_zone() : 0,

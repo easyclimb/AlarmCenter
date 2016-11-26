@@ -92,7 +92,7 @@ public:
 	~CClient() {}
 	BOOL Start(const std::string& server_ip, unsigned int server_port);
 	void Stop();
-	int SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int gg, int zone, 
+	int SendToTransmitServer(int ademco_id, ademco::ADEMCO_EVENT ademco_event, int gg, int zone, 
 							 const ademco::char_array_ptr& xdata = nullptr,
 							 const ademco::char_array_ptr& cmd = nullptr);
 	void set_event_source(ademco::EventSource es) { _event_source = es; }
