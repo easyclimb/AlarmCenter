@@ -942,6 +942,20 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 					return DCR_DUH;
 				}
 			} // end 05 04
+			else if (m_packet2._lit_type == 0x13) { // 05 13 machine restoring factory settings
+				int ademco_id = m_packet1._ademco_data._ademco_id;
+
+				auto data = m_clientsMap[conn_id];
+				if (data && data->online) {
+					if (ademco_id != data->ademco_id)
+						ademco_id = data->ademco_id;
+
+					auto t = time(nullptr);
+					mgr->MachineEventHandler(_event_source, ademco_id, EVENT_RESTORE_FACTORY_SETTINGS, 0, 0, t, t);
+					HandleOffline(conn_id);
+				}
+
+			}
 		} // end case 0x05
 		break;
 		

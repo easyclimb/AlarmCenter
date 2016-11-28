@@ -165,6 +165,7 @@ protected:
 	void UpdateLastActionTime() { /*AUTO_LOG_FUNCTION; */JLOG(L"subMachine %03d, %s", _submachine_zone, alias_); _lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
 	void handle_setting_mode();
+	void handle_restore_factory_settings();
 	void notify_observers_with_event(ademco::ADEMCO_EVENT evnt = ademco::EVENT_MACHINE_INFO_CHANGED);
 
 public:

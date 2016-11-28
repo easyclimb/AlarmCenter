@@ -457,7 +457,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				return;
 				break;
 			case ademco::EVENT_RESTORE_FACTORY_SETTINGS:
-				
+				handle_restore_factory_settings();
+				return;
 				break;
 			case ademco::EVENT_QUERY_SUB_MACHINE:
 				return;
@@ -515,11 +516,9 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_EMERGENCY:
 			case ademco::EVENT_BADBATTERY:
 			case ademco::EVENT_LOWBATTERY:
-			//	bMachineStatus = true;
 			case ademco::EVENT_BURGLAR:
 			case ademco::EVENT_TEMPER:
 			case ademco::EVENT_ZONE_TEMPER:
-			
 			case ademco::EVENT_SOLARDISTURB:
 			case ademco::EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
 			case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
@@ -919,6 +918,13 @@ void alarm_machine::handle_setting_mode()
 
 	history_record_manager::get_instance()->InsertRecord(_ademco_id, _is_submachine ? _submachine_zone : 0, rec, time(nullptr), RECORD_LEVEL_STATUS);
 	notify_observers_with_event();
+}
+
+void alarm_machine::handle_restore_factory_settings()
+{
+	CString rec = get_formatted_name();
+	rec += L" " + TR(IDS_STRING_RESTORE_FACTORY_SETTINGS);
+	history_record_manager::get_instance()->InsertRecord(_ademco_id, _is_submachine ? _submachine_zone : 0, rec, time(nullptr), RECORD_LEVEL_STATUS);
 }
 
 void alarm_machine::notify_observers_with_event(ademco::ADEMCO_EVENT evnt)
