@@ -43,42 +43,12 @@ static const int CHECK_EXPIRE_GAP_TIME = 60 * 1000; // check machine if expire i
 
 using namespace detail;
 
-
-
-
-
-
 /////////////////// alarm machine implement /////////////////////////////////////////
 alarm_machine::alarm_machine()
-	: _id(0)
-	, _ademco_id(0)
-	, _group_id(0)
-	, _machine_status(MACHINE_STATUS_UNKNOWN)
-	, _alarming(false)
-	, _has_alarming_direct_zone(false)
-	, _buffer_mode(false)
-	, _is_submachine(false)
-	, _submachine_zone(0)
-	, _submachine_count(0)
-	, _unbindZoneMap(nullptr)
-	, _highestEventLevel(EVENT_LEVEL_STATUS)
-	, _alarmingSubMachineCount(0)
-	, _lastActionTime(time(nullptr))
-	, _bChecking(false)
-	, expire_time_()
-	, _last_time_check_if_expire(0)
-	, _coor()
-	, _zoomLevel(14)
-	, _auto_show_map_when_start_alarming(true)
 {
-	memset(_ipv4, 0, sizeof(_ipv4));
-
 	_unbindZoneMap = std::make_shared<map_info>();
 	_unbindZoneMap->set_id(-1);
-	CString fmAlias;
-	fmAlias = TR(IDS_STRING_NOZONEMAP);
-	_unbindZoneMap->set_alias(fmAlias);
-
+	_unbindZoneMap->set_alias(TR(IDS_STRING_NOZONEMAP));
 }
 
 
@@ -1130,13 +1100,13 @@ bool alarm_machine::execute_set_machine_status(machine_status status)
 bool alarm_machine::execute_set_machine_type(machine_type type)
 {
 	AUTO_LOG_FUNCTION;
+	_machine_type = type;
 	CString query;
 	query.Format(L"update table_machine set machine_type=%d where id=%d and ademco_id=%d",
 				 type, _id, _ademco_id);
 	auto mgr = alarm_machine_manager::get_instance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
-		_machine_type = type;
 		return true;
 	}
 

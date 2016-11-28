@@ -38,16 +38,16 @@ static machine_type Integer2MachineType(int type)
 	}
 }
 
-typedef enum signal_strangth{
+typedef enum signal_strength{
 	SIGNAL_STRENGTH_0,
 	SIGNAL_STRENGTH_1,
 	SIGNAL_STRENGTH_2,
 	SIGNAL_STRENGTH_3,
 	SIGNAL_STRENGTH_4,
 	SIGNAL_STRENGTH_5,
-}signal_strangth;
+}signal_strength;
 
-inline static signal_strangth Integer2SignalStrength(int strength) {
+inline static signal_strength Integer2SignalStrength(int strength) {
 	if (0 <= strength && strength <= 5) {
 		return SIGNAL_STRENGTH_0;
 	} else if (6 <= strength && strength <= 10) {
@@ -85,12 +85,12 @@ class alarm_machine :
 { 
 
 private:
-	int _id;
-	int _ademco_id;
-	int _group_id;
-	machine_type _machine_type;
+	int _id = 0;
+	int _ademco_id = 0;
+	int _group_id = 0;
+	machine_type _machine_type = MT_UNKNOWN;
 	bool _banned = false;
-	char _ipv4[64];
+	char _ipv4[64] = { 0 };
 	CString alias_ = L"";
 	CString _contact = L"";
 	CString _address = L"";
@@ -99,41 +99,41 @@ private:
 	bool _online_by_direct_mode = false;
 	bool _online_by_transmit_mode1 = false;
 	bool _online_by_transmit_mode2 = false;
-	machine_status _machine_status;
-	bool _alarming;
-	bool _has_alarming_direct_zone;
-	bool _buffer_mode;
-	bool _is_submachine;
+	machine_status _machine_status = machine_status::MACHINE_STATUS_UNKNOWN;
+	bool _alarming = false;
+	bool _has_alarming_direct_zone = false;
+	bool _buffer_mode = false;
+	bool _is_submachine = false;
 
 	// 2016-11-26 14:52:01
 	bool setting_mode_ = false;
 
-	volatile int _submachine_zone;
-	volatile int _submachine_count;
-	map_info_ptr _unbindZoneMap;
-	map_info_list _mapList;
-	map_info_list::iterator _curMapListIter;
-	std::list<AdemcoEventPtr> _ademcoEventList;
-	std::list<AdemcoEventPtr> _ademcoEventFilter;
-	std::recursive_mutex _lock4AdemcoEventList;
-	std::map<int, zone_info_ptr> _zoneMap;
-	remote_control_command_conn_obj _rcccObj;
-	ademco::EventLevel _highestEventLevel;
-	volatile long _alarmingSubMachineCount;
-	time_t _lastActionTime;
-	bool _bChecking;
-	on_other_try_enter_buffer_mode_obj _ootebmOjb;
-	std::chrono::system_clock::time_point expire_time_;
+	volatile int _submachine_zone = 0;
+	volatile int _submachine_count = 0;
+	map_info_ptr _unbindZoneMap = nullptr;
+	map_info_list _mapList = {};
+	map_info_list::iterator _curMapListIter = {};
+	std::list<AdemcoEventPtr> _ademcoEventList = {};
+	std::list<AdemcoEventPtr> _ademcoEventFilter = {};
+	std::recursive_mutex _lock4AdemcoEventList = {};
+	std::map<int, zone_info_ptr> _zoneMap = {};
+	remote_control_command_conn_obj _rcccObj = {};
+	ademco::EventLevel _highestEventLevel = ademco::EventLevel::EVENT_LEVEL_STATUS;
+	volatile long _alarmingSubMachineCount = 0;
+	time_t _lastActionTime = {};
+	bool _bChecking = {};
+	on_other_try_enter_buffer_mode_obj _ootebmOjb = {};
+	std::chrono::system_clock::time_point expire_time_ = {};
 	// 2016-5-5 18:28:59 for service expire
-	std::chrono::system_clock::time_point remind_time_;
+	std::chrono::system_clock::time_point remind_time_ = {};
 
-	DWORD _last_time_check_if_expire;
-	web::BaiduCoordinate _coor;
-	int _zoomLevel;
-	sms_config _sms_cfg;
+	DWORD _last_time_check_if_expire = {};
+	web::BaiduCoordinate _coor = {};
+	int _zoomLevel = 14;
+	sms_config _sms_cfg = {};
 
 	// 2015年8月1日 14:45:30 storaged in xml
-	bool _auto_show_map_when_start_alarming;
+	bool _auto_show_map_when_start_alarming = {};
 
 	// 2015年8月18日 21:45:36 for qianfangming
 	std::shared_ptr<ademco::PrivatePacket> privatePacket_from_server1_ = nullptr;
@@ -146,11 +146,11 @@ private:
 	EventSource _last_time_event_source = ES_UNKNOWN;
 
 	// 2016-4-9 18:15:40 for signal strength
-	signal_strangth signal_strength_ = SIGNAL_STRENGTH_5;
+	signal_strength signal_strength_ = SIGNAL_STRENGTH_5;
 	int real_signal_strength_ = 0;
 
 	// 2016-5-4 23:09:00 for service expire management
-	consumer_ptr consumer_;
+	consumer_ptr consumer_ = {};
 
 	//2016-11-14 15:31:50 for alarm handle
 	int alarm_id_ = 0;
@@ -275,6 +275,11 @@ public:
 	bool get_online_by_transmit_mode2() const { return _online_by_transmit_mode2; }
 	bool get_online() const { return _online_by_direct_mode || _online_by_transmit_mode1 || _online_by_transmit_mode2; }
 	void set_online(bool online) { _online_by_direct_mode = _online_by_transmit_mode1 = _online_by_transmit_mode2 = online; }
+	void set_online(const alarm_machine_ptr& rhs) {
+		_online_by_direct_mode = rhs->_online_by_direct_mode;
+		_online_by_transmit_mode1 = rhs->_online_by_transmit_mode1;
+		_online_by_transmit_mode2 = rhs->_online_by_transmit_mode2;
+	}
 	DECLARE_GETTER_SETTER(machine_status, _machine_status);
 	DECLARE_GETTER_SETTER(bool, _bChecking);
 	DECLARE_GETTER_SETTER_INT(_submachine_zone);
@@ -317,9 +322,12 @@ public:
 	DECLARE_GETTER_SETTER(bool, _sms_mode);
 
 	int get_real_signal_strength() const { return real_signal_strength_; }
-	signal_strangth get_signal_strength() const { return signal_strength_; }
-	void set_signal_strength(signal_strangth strength) { signal_strength_ = strength; }
-
+	signal_strength get_signal_strength() const { return signal_strength_; }
+	void set_signal_strength(signal_strength strength) { signal_strength_ = strength; }
+	void set_signal_strength(const alarm_machine_ptr& rhs) {
+		real_signal_strength_ = rhs->real_signal_strength_;
+		signal_strength_ = rhs->signal_strength_;
+	}
 
 	// 2016-11-14 15:32:27 for alarm handle. 
 	// alarm_id == 0 means this machine is not handled or hanlded over, no matter its alarming or not.
