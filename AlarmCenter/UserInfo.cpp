@@ -24,7 +24,7 @@ user_info::~user_info()
 
 user_manager::user_manager()
 {
-	auto path = get_config_path() + "\\user.db3";
+	auto path = get_config_path_a() + "\\user.db3";
 	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 	assert(db_);
 	if (!db_) { return; }

@@ -45,7 +45,7 @@ video_manager::video_manager()
 	, ProductorEzviz(EZVIZ, L"", L"")
 	, ProductorJovision(JOVISION, L"", L"")
 {
-	auto path = get_config_path() + "\\video.db3";
+	auto path = get_config_path_a() + "\\video.db3";
 	db_ = std::make_shared<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 	assert(db_);
 	if (!db_) { return; }

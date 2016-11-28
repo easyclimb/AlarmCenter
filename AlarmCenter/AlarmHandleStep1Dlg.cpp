@@ -16,6 +16,38 @@
 
 using namespace core;
 
+namespace detail {
+bool open_file_and_upload_to_data_attach(HWND hwnd, std::wstring& dest)
+{
+	std::wstring from;
+	if (!jlib::get_file_open_dialog_result(from, hwnd)) {
+		return false;
+	}
+
+	dest = get_data_path() + L"\\attach";
+	CreateDirectory(dest.c_str(), nullptr);
+
+	SHFILEOPSTRUCT sfos = {};
+	sfos.hwnd = hwnd;
+	CString pFrom = from.c_str();
+	pFrom.Insert(pFrom.GetLength() + 1, L'\0');
+	sfos.pFrom = pFrom;
+	CString pTo = dest.c_str();
+	pTo.Insert(pTo.GetLength() + 1, L'\0');
+	sfos.pTo = dest.c_str();
+	sfos.wFunc = FO_COPY;
+	sfos.fFlags = FOF_SIMPLEPROGRESS;
+	auto ret = SHFileOperation(&sfos);
+	if (!sfos.fAnyOperationsAborted && ret == 0) {
+		auto name = CFileOper::GetFileNameFromPathName(from.c_str());
+		dest += L"\\";
+		dest += name;
+		return true;
+	}
+	return false;
+}
+}
+
 
 class CAlarmHandleStep1Dlg::alarm_text_observer : public dp::observer<core::icmc_buffer_ptr>
 {
@@ -275,6 +307,8 @@ BOOL CAlarmHandleStep1Dlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_BUTTON_PRINT, IDS_STRING_PRINT);
 	SET_WINDOW_TEXT(IDOK, IDS_OK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
+
+	m_alarm_text.set_text_color(RGB(255, 0, 0));
 
 
 	m_radio_cannot_determine.SetCheck(1);

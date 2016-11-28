@@ -2,6 +2,7 @@
 #include "afxwin.h"
 #include "core.h"
 #include "alarm_handle_mgr.h"
+#include "ColorEdit.h"
 
 // CAlarmHandleStep4Dlg dialog
 
@@ -41,7 +42,7 @@ public:
 	CEdit m_addr;
 	CEdit m_phone;
 	CEdit m_phone_bk;
-	CEdit m_alarm_text;
+	CColorEdit m_alarm_text;
 	CComboBox m_cmb_status;
 	CEdit m_assign_time;
 	CComboBox m_cmb_guard;
@@ -76,4 +77,7 @@ public:
 	CButton m_btn_print;
 	CButton m_btn_switch_user;
 	CButton m_btn_add_reason_attach;
+	afx_msg void OnBnClickedButtonSeeReasonAttach();
+	afx_msg void OnBnClickedButtonSeeJudgeAttach();
+	afx_msg void OnBnClickedButtonSeeJudgeAttatch2();
 };

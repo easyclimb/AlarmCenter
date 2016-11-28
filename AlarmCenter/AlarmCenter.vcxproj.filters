@@ -365,6 +365,7 @@
       <Filter>ui\dlg</Filter>
     </ClCompile>
     <ClCompile Include="SearchMachineResultDlg.cpp" />
+    <ClCompile Include="ColorEdit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AlarmCenter.h" />
@@ -731,6 +732,7 @@
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="SearchMachineResultDlg.h" />
+    <ClInclude Include="ColorEdit.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\AlarmCenter.ico">

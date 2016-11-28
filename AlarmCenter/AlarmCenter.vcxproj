@@ -234,6 +234,7 @@
     <ClInclude Include="ChooseMachineDlg.h" />
     <ClInclude Include="ChooseVideoDeviceDlg.h" />
     <ClInclude Include="Client.h" />
+    <ClInclude Include="ColorEdit.h" />
     <ClInclude Include="ConfigBase.h" />
     <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="congwin_fe100_mgr.h" />
@@ -370,6 +371,7 @@
     <ClCompile Include="ChooseMachineDlg.cpp" />
     <ClCompile Include="ChooseVideoDeviceDlg.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="ColorEdit.cpp" />
     <ClCompile Include="ConfigBase.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="congwin_fe100_mgr.cpp" />

@@ -3,8 +3,14 @@
 #include "core.h"
 #include "afxwin.h"
 #include "alarm_handle_mgr.h"
+#include "C:/dev/Global/win32/mfc/FileOper.h"
+#include "ColorEdit.h"
 
 // CAlarmHandleStep1Dlg dialog
+
+namespace detail {
+bool open_file_and_upload_to_data_attach(HWND hwnd, std::wstring& dest);
+}
 
 class CAlarmHandleStep1Dlg : public CDialogEx
 {
@@ -49,7 +55,7 @@ public:
 	CEdit m_addr;
 	CEdit m_phone;
 	CEdit m_phone_bk;
-	CEdit m_alarm_text;
+	CColorEdit m_alarm_text;
 	CButton m_radio_true_alarm;
 	CButton m_radio_device_false_positive;
 	CButton m_radio_test_device;

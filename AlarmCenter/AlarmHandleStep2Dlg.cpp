@@ -7,8 +7,10 @@
 #include "afxdialogex.h"
 #include "alarm_handle_mgr.h"
 #include "C:/dev/Global/win32/file_op.h"
+#include "AlarmHandleStep1Dlg.h"
 
 using namespace core;
+using namespace ::detail;
 
 
 core::alarm_judgement CAlarmHandleStep2Dlg::prev_sel_alarm_judgement_ = core::alarm_judgement_by_video_image;
@@ -222,23 +224,27 @@ void CAlarmHandleStep2Dlg::OnBnClickedOk()
 
 void CAlarmHandleStep2Dlg::OnBnClickedButtonVideo()
 {
-	std::wstring path;
-	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
-		return;
+	std::wstring dest = {};
+	if (open_file_and_upload_to_data_attach(GetSafeHwnd(), dest)) {
+		video_ = dest;
+		m_edit_video_path.SetWindowTextW(dest.c_str());
+	} else {
+		video_.clear();
+		m_edit_video_path.SetWindowTextW(L"");
+		MessageBox(TR(IDS_STRING_FAILED), TR(IDS_STRING_ERROR), MB_ICONERROR);
 	}
-
-	video_ = path;
-	m_edit_video_path.SetWindowTextW(path.c_str());
 }
 
 
 void CAlarmHandleStep2Dlg::OnBnClickedButtonImage()
 {
-	std::wstring path;
-	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
-		return;
+	std::wstring dest = {};
+	if (open_file_and_upload_to_data_attach(GetSafeHwnd(), dest)) {
+		video_ = dest;
+		m_edit_video_path.SetWindowTextW(dest.c_str());
+	} else {
+		video_.clear();
+		m_edit_image_path.SetWindowTextW(L"");
+		MessageBox(TR(IDS_STRING_FAILED), TR(IDS_STRING_ERROR), MB_ICONERROR);
 	}
-
-	image_ = path;
-	m_edit_image_path.SetWindowTextW(path.c_str());
 }

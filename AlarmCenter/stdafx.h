@@ -37,14 +37,24 @@
 #include "C:/dev/Global/win32.h"
 using namespace jlib;
 
-inline std::string get_data_path()
+inline std::string get_data_path_a()
 {
 	return get_exe_path_a() + "\\data";
 }
 
-inline std::string get_config_path()
+inline std::wstring get_data_path()
 {
-	return get_data_path() + "\\config";
+	return get_exe_path() + L"\\data";
+}
+
+inline std::string get_config_path_a()
+{
+	return get_data_path_a() + "\\config";
+}
+
+inline std::wstring get_config_path()
+{
+	return get_data_path() + L"\\config";
 }
 
 

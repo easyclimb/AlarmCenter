@@ -415,7 +415,7 @@ BOOL CHistoryRecordDlg::OnInitDialog()
 	LoadRecordsBasedOnPage(1);
 
 #ifndef _DEBUG
-	::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	//::SetWindowPos(m_hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 #endif
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE

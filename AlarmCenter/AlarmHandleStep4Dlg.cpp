@@ -9,11 +9,13 @@
 #include "afxdialogex.h"
 #include "AlarmMachine.h"
 #include "UserInfo.h"
+#include "AlarmHandleStep1Dlg.h"
 
 using namespace core;
 
 namespace detail {
 const int c_timer_id_update_date = 1;
+
 
 }
 
@@ -80,6 +82,9 @@ BEGIN_MESSAGE_MAP(CAlarmHandleStep4Dlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT11, &CAlarmHandleStep4Dlg::OnEnChangeEditPredictMinutes)
 	ON_CBN_SELCHANGE(IDC_COMBO_JUDGEMENT, &CAlarmHandleStep4Dlg::OnCbnSelchangeComboJudgement)
 	ON_BN_CLICKED(IDC_BUTTON_PRINT, &CAlarmHandleStep4Dlg::OnBnClickedButtonPrint)
+	ON_BN_CLICKED(IDC_BUTTON_SEE_REASON_ATTACH, &CAlarmHandleStep4Dlg::OnBnClickedButtonSeeReasonAttach)
+	ON_BN_CLICKED(IDC_BUTTON_SEE_JUDGE_ATTACH, &CAlarmHandleStep4Dlg::OnBnClickedButtonSeeJudgeAttach)
+	ON_BN_CLICKED(IDC_BUTTON_SEE_JUDGE_ATTATCH_2, &CAlarmHandleStep4Dlg::OnBnClickedButtonSeeJudgeAttatch2)
 END_MESSAGE_MAP()
 
 
@@ -161,16 +166,21 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 	SET_WINDOW_TEXT(IDC_STATIC_REASON_DETAIL, IDS_STRING_DETAIL);
 	SET_WINDOW_TEXT(IDC_STATIC_REASON_ATTACH, IDS_STRING_ATTACHMENT);
 	SET_WINDOW_TEXT(IDC_BUTTON_ADD_REASON_ATTACH, IDS_STRING_ADD_ATTACHMENT);
+	SET_WINDOW_TEXT(IDC_BUTTON_SEE_REASON_ATTACH, IDS_STRING_IDC_STATIC_059);
 
 	SET_WINDOW_TEXT(IDC_STATIC_JUDGEMENT, IDS_STRING_JUDGMENT);
 	SET_WINDOW_TEXT(IDC_STATIC_JUDGEMENT_DETAIL, IDS_STRING_DETAIL);
 	SET_WINDOW_TEXT(IDC_STATIC_JUDGEMENT_ATTACH1, IDS_STRING_ATTACHMENT);
 	SET_WINDOW_TEXT(IDC_BUTTON_ADD_JUDGMENT_ATTACH1, IDS_STRING_ADD_ATTACHMENT);
+	SET_WINDOW_TEXT(IDC_BUTTON_SEE_JUDGE_ATTACH, IDS_STRING_IDC_STATIC_059);
 	SET_WINDOW_TEXT(IDC_BUTTON_ADD_JUDGEMENT_ATTACH2, IDS_STRING_ADD_ATTACHMENT);
+	SET_WINDOW_TEXT(IDC_BUTTON_SEE_JUDGE_ATTATCH_2, IDS_STRING_IDC_STATIC_059);
 
 	SET_WINDOW_TEXT(IDC_BUTTON_PRINT, IDS_STRING_PRINT);
 	SET_WINDOW_TEXT(IDOK, IDS_OK);
 	SET_WINDOW_TEXT(IDCANCEL, IDS_CANCEL);
+
+	m_alarm_text.set_text_color(RGB(255, 0, 0));
 
 	{
 		CString txt;
@@ -270,16 +280,16 @@ BOOL CAlarmHandleStep4Dlg::OnInitDialog()
 	if (read_only_) {
 		m_cmb_status.EnableWindow(0);
 		m_cmb_guard.EnableWindow(0);
-		m_predict_minutes.EnableWindow(0);
+		m_predict_minutes.SetReadOnly();
 
 		m_btn_switch_user.EnableWindow(0);
 		m_cmb_alarm_reason.EnableWindow(0);
-		m_reason_detail.EnableWindow(0);
-		m_reason_attach.EnableWindow(0);
+		m_reason_detail.SetReadOnly();
+		m_reason_attach.SetReadOnly();
 		m_btn_add_reason_attach.EnableWindow(0);
 		m_cmb_judgement.EnableWindow(0);
-		m_judgment_user_define.EnableWindow(0);
-		m_judgement_detail.EnableWindow(0);
+		m_judgment_user_define.SetReadOnly();
+		m_judgement_detail.SetReadOnly();
 		m_btn_add_judgment_attach_1.EnableWindow(0);
 		m_btn_add_judgment_attach_2.EnableWindow(0);
 	}
@@ -322,38 +332,44 @@ void CAlarmHandleStep4Dlg::OnBnClickedButtonSwitchUser()
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddReasonAttach()
 {
-	std::wstring path;
-	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
-		return;
+	std::wstring dest = {};
+	if (open_file_and_upload_to_data_attach(GetSafeHwnd(), dest)) {
+		m_reason_attach.SetWindowTextW(dest.c_str());
+	} else {
+		m_reason_attach.SetWindowTextW(L"");
+		MessageBox(TR(IDS_STRING_FAILED), TR(IDS_STRING_ERROR), MB_ICONERROR);
 	}
-	m_reason_attach.SetWindowTextW(path.c_str());
 }
+
+
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgmentAttach1()
 {
-	std::wstring path;
-	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
-		return;
+	std::wstring dest = {};
+	if (open_file_and_upload_to_data_attach(GetSafeHwnd(), dest)) {
+		m_judgement_attach1.SetWindowTextW(dest.c_str());
+	} else {
+		m_judgement_attach1.SetWindowTextW(L"");
+		MessageBox(TR(IDS_STRING_FAILED), TR(IDS_STRING_ERROR), MB_ICONERROR);
 	}
-	m_judgement_attach1.SetWindowTextW(path.c_str());
 }
 
 
 void CAlarmHandleStep4Dlg::OnBnClickedButtonAddJudgementAttach2()
 {
-	std::wstring path;
-	if (!jlib::get_file_open_dialog_result(path, m_hWnd)) {
-		return;
+	std::wstring dest = {};
+	if (open_file_and_upload_to_data_attach(GetSafeHwnd(), dest)) {
+		m_judgement_attach2.SetWindowTextW(dest.c_str());
+	} else {
+		m_judgement_attach2.SetWindowTextW(L"");
+		MessageBox(TR(IDS_STRING_FAILED), TR(IDS_STRING_ERROR), MB_ICONERROR);
 	}
-	m_judgement_attach2.SetWindowTextW(path.c_str());
 }
 
 
 void CAlarmHandleStep4Dlg::OnEnChangeEditPredictMinutes()
 {
-	AUTO_LOG_FUNCTION;
-	//KillTimer(c_timer_id_update_date);
 }
 
 
@@ -587,5 +603,35 @@ void CAlarmHandleStep4Dlg::OnBnClickedButtonPrint()
 				dcPrinter.EndDoc();
 			}
 		}
+	}
+}
+
+
+void CAlarmHandleStep4Dlg::OnBnClickedButtonSeeReasonAttach()
+{
+	CString path;
+	m_reason_attach.GetWindowTextW(path);
+	if (!path.IsEmpty()) {
+		ShellExecute(m_hWnd, L"open", path, nullptr, nullptr, SW_SHOW);
+	}
+}
+
+
+void CAlarmHandleStep4Dlg::OnBnClickedButtonSeeJudgeAttach()
+{
+	CString path;
+	m_judgement_attach1.GetWindowTextW(path);
+	if (!path.IsEmpty()) {
+		ShellExecute(m_hWnd, L"open", path, nullptr, nullptr, SW_SHOW);
+	}
+}
+
+
+void CAlarmHandleStep4Dlg::OnBnClickedButtonSeeJudgeAttatch2()
+{
+	CString path;
+	m_judgement_attach2.GetWindowTextW(path);
+	if (!path.IsEmpty()) {
+		ShellExecute(m_hWnd, L"open", path, nullptr, nullptr, SW_SHOW);
 	}
 }

@@ -161,7 +161,7 @@ public:
 	// return true for init ok, false for already exists and need not to init
 	bool init_db() {
 		using namespace SQLite;
-		auto path = get_config_path() + "\\alarm_v1.2.db3";
+		auto path = get_config_path_a() + "\\alarm_v1.2.db3";
 		db_ = std::make_unique<Database>(path, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 		assert(db_);
 
