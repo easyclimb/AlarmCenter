@@ -255,7 +255,7 @@ void CClientService::ThreadWorker()
 				Connect();
 				last_conn_time_ = COleDateTime::GetTickCount();
 				if (showed_disconnected_info_to_user_ && connection_established_) {
-					m_handler->OnConnectionEstablished(this);
+					//m_handler->OnConnectionEstablished(this);
 					showed_disconnected_info_to_user_ = false;
 				}
 			}
@@ -970,6 +970,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 			case 0x01:	// conn_id
 				m_conn_id = conn_id;
 				JLOGA("07 01 Transmite server responce my conn_id %d\n", conn_id);
+				OnConnectionEstablished(service);
 				return DCR_ONLINE;
 				break;
 			case 0x02:	// alarm machine connection lost
