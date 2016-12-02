@@ -14,56 +14,6 @@ namespace core {
 using namespace ademco;
 
 
-
-typedef enum machine_type {
-	MT_UNKNOWN = 0,
-	MT_WIFI,							// wifi主机
-	MT_NETMOD,							// 带网络模块的工程主机
-	MT_IMPRESSED_GPRS_MACHINE_2050,		// 改进型卧式主机2050型
-	MT_LCD,								// 液晶主机
-	MT_WIRE,							// 网线主机
-	MT_MAX,
-}machine_type;
-
-
-static machine_type Integer2MachineType(int type)
-{
-	switch (type) {
-		case MT_WIFI:	return MT_WIFI;		break;
-		case MT_NETMOD:	return MT_NETMOD;	break;
-		case MT_IMPRESSED_GPRS_MACHINE_2050: 	return MT_IMPRESSED_GPRS_MACHINE_2050;		break;
-		case MT_LCD:	return MT_LCD;		break;
-		case MT_WIRE:	return MT_WIRE;		break;
-		default:		return MT_UNKNOWN;	break;
-	}
-}
-
-typedef enum signal_strength{
-	SIGNAL_STRENGTH_0,
-	SIGNAL_STRENGTH_1,
-	SIGNAL_STRENGTH_2,
-	SIGNAL_STRENGTH_3,
-	SIGNAL_STRENGTH_4,
-	SIGNAL_STRENGTH_5,
-}signal_strength;
-
-inline static signal_strength Integer2SignalStrength(int strength) {
-	if (0 <= strength && strength <= 5) {
-		return SIGNAL_STRENGTH_0;
-	} else if (6 <= strength && strength <= 10) {
-		return SIGNAL_STRENGTH_1;
-	} else if (11 <= strength && strength <= 15) {
-		return SIGNAL_STRENGTH_2;
-	} else if (16 <= strength && strength <= 20) {
-		return SIGNAL_STRENGTH_3;
-	} else if (21 <= strength && strength <= 25) {
-		return SIGNAL_STRENGTH_4;
-	} else {
-		return SIGNAL_STRENGTH_5;
-	}
-}
-	
-
 typedef void(__stdcall *on_other_try_enter_buffer_mode)(void* udata);
 typedef struct on_other_try_enter_buffer_mode_obj
 {

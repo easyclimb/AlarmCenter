@@ -32,6 +32,7 @@ enum ADEMCO_EVENT : unsigned int {
 	// 主机或分机状态报告
 	EVENT_ARM									= 3400, // 布防
 	EVENT_DISARM								= 1400, // 撤防
+	EVENT_HALFARM_1456							= 1456, // 半布防
 	EVENT_HALFARM								= 3456, // 半布防
 	EVENT_EMERGENCY								= 1120, // 紧急报警
 
@@ -56,6 +57,10 @@ enum ADEMCO_EVENT : unsigned int {
 	EVENT_BATTERY_EXCEPTION_RECOVER				= 3384, // 电源故障恢复
 	EVENT_OTHER_EXCEPTION						= 1380, // 其他故障
 	EVENT_OTHER_EXCEPTION_RECOVER				= 3380, // 其他故障恢复
+
+	// 标准事件，但不做处理
+	EVENT_3570									= 3570, 
+
 	// ------------------------------------------------------------------
 
 	// ------------------私有事件-----------------------------------------
@@ -83,6 +88,7 @@ enum ADEMCO_EVENT : unsigned int {
 	EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE		= 1717, // 主机类型--改进型卧式主机2050型
 	EVENT_I_AM_LCD_MACHINE						= 1727, // 主机类型--液晶主机
 	EVENT_I_AM_WIRE_MACHINE						= 1737, // 主机类型--网线主机
+	EVENT_I_AM_WIFI_MACHINE						= 1747, // 主机类型--WiFi主机
 
 	EVENT_PHONE_USER_SOS						= 1709, // 手机用户SOS
 	EVENT_PHONE_USER_CANCLE_ALARM				= 1711, // 手机用户消警
@@ -158,6 +164,7 @@ static const ADEMCO_EVENT gc_AdemcoEvent[] = {
 	EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE,
 	EVENT_I_AM_LCD_MACHINE,
 	EVENT_I_AM_WIRE_MACHINE,
+	EVENT_I_AM_WIFI_MACHINE,
 
 	EVENT_PHONE_USER_SOS,
 	EVENT_PHONE_USER_CANCLE_ALARM,
@@ -217,6 +224,7 @@ inline std::string GetAdemcoEventStringEnglish(ADEMCO_EVENT ademco_event)
 	case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:	return n_to_s(ademco_event) + "I_AM_EXPRESSED_GPRS_2050_MACHINE";	break;
 	case EVENT_I_AM_LCD_MACHINE:					return n_to_s(ademco_event) + "I_AM_LCD_MACHINE";					break;
 	case EVENT_I_AM_WIRE_MACHINE:					return n_to_s(ademco_event) + "I_AM_WIRE_MACHINE";					break;
+	case EVENT_I_AM_WIFI_MACHINE:					return n_to_s(ademco_event) + "I_AM_WIFI_MACHINE";					break;
 	case EVENT_ENTER_SETTING_MODE:					return n_to_s(ademco_event) + "ENTER_SETTING_MODE";					break;
 	case EVENT_EXIT_SETTING_MODE:					return n_to_s(ademco_event) + "EXIT_SETTING_MODE";					break;
 	case EVENT_RESTORE_FACTORY_SETTINGS:			return n_to_s(ademco_event) + "RESTORE_FACTORY_SETTINGS";			break;
@@ -275,6 +283,7 @@ inline const std::wstring GetAdemcoEventStringChinese(ADEMCO_EVENT ademco_event)
 	case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:	return n_to_s(ademco_event) + L"我是改进型卧式主机2050型";	break;
 	case EVENT_I_AM_LCD_MACHINE:					return n_to_s(ademco_event) + L"我是液晶主机";				break;
 	case EVENT_I_AM_WIRE_MACHINE:					return n_to_s(ademco_event) + L"我是网线主机";				break;
+	case EVENT_I_AM_WIFI_MACHINE:					return n_to_s(ademco_event) + L"我是WiFi主机";				break;
 	case EVENT_ENTER_SETTING_MODE:					return n_to_s(ademco_event) + L"主机进入设置状态";			break;
 	case EVENT_EXIT_SETTING_MODE:					return n_to_s(ademco_event) + L"主机退出设置状态";			break;
 	case EVENT_RESTORE_FACTORY_SETTINGS:			return n_to_s(ademco_event) + L"主机恢复出厂设置";			break;

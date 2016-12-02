@@ -50,18 +50,18 @@ private:
     //562
 
     static inline int roundup(double a) {if (aar_abs(a - (int)(a + 5e-10)) < 1e-9) return (int)(a + 5e-10); else return (int)(a + 1);}
-    static inline int round(double a) {return (int)(a + 0.5);}
-    static inline BYTE byterange(double a) {int b = round(a); if (b <= 0) return 0; else if (b >= 255) return 255; else return (BYTE)b;}
-    static inline double aar_min(double & a, double & b) {if (a < b) return a; else return b;}
-    static inline double aar_max(double & a, double & b) {if (a > b) return a; else return b;}
+	static inline int round(double a) {return (int)(a + 0.5);}
+	static inline BYTE byterange(double a) {int b = round(a); if (b <= 0) return 0; else if (b >= 255) return 255; else return (BYTE)b;}
+	static  inline double aar_min(double & a, double & b) {if (a < b) return a; else return b;}
+	static inline double aar_max(double & a, double & b) {if (a > b) return a; else return b;}
 
-    static inline double aar_cos(double);
-    static inline double aar_sin(double);
+	static inline double aar_cos(double);
+	static inline double aar_sin(double);
 
-    static inline double area();
-    static inline void sortpoints();
-    static inline bool isinsquare(aar_pnt, aar_pnt &);
-    static inline double pixoverlap(aar_pnt *, aar_pnt);
+	static inline double area();
+	static inline void sortpoints();
+	static inline bool isinsquare(aar_pnt, aar_pnt &);
+	static inline double pixoverlap(aar_pnt *, aar_pnt);
 
     static HBITMAP dorotate(HBITMAP, double, aar_callback, int, bool, int cntPt = 0, CPoint *pts = nullptr);
 };

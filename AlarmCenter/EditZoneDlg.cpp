@@ -192,7 +192,7 @@ BOOL CEditZoneDlg::OnInitDialog()
 		}
 	}
 
-	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050 || m_machine->get_machine_type() == MT_LCD) {
+	if (is_machine_can_only_add_zone_by_retrieve(m_machine->get_machine_type())) {
 		m_btnAddZone.ShowWindow(SW_HIDE);
 		m_btnDeleteZone.ShowWindow(SW_HIDE);
 		m_btnAutoRetrieveZoneInfo.ShowWindow(SW_SHOW);
@@ -267,13 +267,8 @@ void CEditZoneDlg::FormatZoneInfoText(const core::alarm_machine_ptr& machine,
 
 	if (machine->get_is_submachine()) {
 		szone.Format(L"%02d", zoneInfo->get_sub_zone());
-	}
-	else {
-		if (machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
-			szone.Format(L"%02d", zoneInfo->get_zone_value());
-		} else {
-			szone.Format(L"%03d", zoneInfo->get_zone_value());
-		}
+	} else {
+		szone.Format(get_format_string_of_machine_zone_count_figure_by_type(machine->get_machine_type()), zoneInfo->get_zone_value());
 	}
 
 	salias = zoneInfo->get_alias();

@@ -457,6 +457,12 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				NotifySubmachines(ademcoEvent);
 				return;
 				break;
+			case EVENT_I_AM_WIFI_MACHINE:
+				execute_set_machine_type(MT_WIFI);
+				notify_observers(ademcoEvent);
+				NotifySubmachines(ademcoEvent);
+				return;
+				break;
 			case EVENT_PHONE_USER_CANCLE_ALARM:
 				fmEvent = TR(IDS_STRING_PHONE_USER_CANCLE_ALARM);
 				record = get_formatted_name() + L" " + fmEvent;
@@ -471,7 +477,10 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				break;
 			case ademco::EVENT_DISARM: bMachineStatus = true; machine_status = MACHINE_DISARM; fmEvent = TR(IDS_STRING_DISARM);
 				break;
-			case ademco::EVENT_HALFARM: bMachineStatus = true; machine_status = MACHINE_HALFARM; fmEvent = TR(IDS_STRING_HALFARM);
+			case ademco::EVENT_HALFARM_1456:
+			case ademco::EVENT_HALFARM: 
+				ademcoEvent->_event = EVENT_HALFARM;
+				bMachineStatus = true; machine_status = MACHINE_HALFARM; fmEvent = TR(IDS_STRING_HALFARM);
 				break;
 			case ademco::EVENT_ARM: bMachineStatus = true; machine_status = MACHINE_ARM; fmEvent = TR(IDS_STRING_ARM);
 				break;
@@ -515,6 +524,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_WATER:
 				sound_manager::get_instance()->LoopPlay(sound_manager::SI_WATER);
 				break;
+			case ademco::EVENT_3570:
+				return;
 			default: bMachineStatus = false;
 				break;
 		}
@@ -678,11 +689,11 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 					if (zone) {
 						aliasOfZoneOrSubMachine = zone->get_alias();
 					}
-					if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050) {
-						szone.Format(L"%s%02d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
-					} else {
-						szone.Format(L"%s%03d(%s)", fmZone, ademcoEvent->_zone, aliasOfZoneOrSubMachine);
-					}
+						
+					szone += fmZone;
+					szone.AppendFormat(get_format_string_of_machine_zone_count_figure_by_type(_machine_type), ademcoEvent->_zone);
+					szone.AppendFormat(L"(%s)", aliasOfZoneOrSubMachine);
+
 				} else {
 					if (ademcoEvent->_sub_zone != INDEX_SUB_MACHINE) {
 						CString ssubzone, ssubzone_alias = fmNull;
@@ -908,7 +919,7 @@ void alarm_machine::notify_observers_with_event(ademco::ADEMCO_EVENT evnt)
 void alarm_machine::HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent)
 {
 	AUTO_LOG_FUNCTION;
-	if (_machine_type == MT_IMPRESSED_GPRS_MACHINE_2050 || _machine_type == MT_LCD) {
+	if (is_machine_can_only_add_zone_by_retrieve(_machine_type)) {
 		notify_observers(ademcoEvent);
 		return;
 	}
@@ -1107,6 +1118,11 @@ bool alarm_machine::execute_set_machine_type(machine_type type)
 	auto mgr = alarm_machine_manager::get_instance();
 	BOOL ok = mgr->ExecuteSql(query);
 	if (ok) {
+		query = get_formatted_name();
+		query += L" " + TR(IDS_STRING_REPORT_MACHINE_TYPE);
+		query += L" " + CAppResource::get_instance()->MachineTypeToString(_machine_type);
+		auto t = time(nullptr);
+		history_record_manager::get_instance()->InsertRecord(_ademco_id, 0, query, t, RECORD_LEVEL_STATUS);
 		return true;
 	}
 
@@ -1665,8 +1681,9 @@ CString alarm_machine::get_formatted_name(bool show_parent_name_if_has_parent) c
 
 CString alarm_machine::get_formatted_info(const CString& seperator) const
 {
-	CString info = L"", fmAlias, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
+	CString info = L"", fmAlias, fmType, fmContact, fmAddress, fmPhone, fmPhoneBk, fmNull;
 	CString contact, address, phone, phone_bk;
+	fmType = TR(IDS_STRING_MACHINE_TYPE);
 	fmContact = TR(IDS_STRING_CONTACT);
 	fmAddress = TR(IDS_STRING_ADDRESS);
 	fmPhone = TR(IDS_STRING_PHONE);
@@ -1678,7 +1695,8 @@ CString alarm_machine::get_formatted_info(const CString& seperator) const
 	phone = get_phone();
 	phone_bk = get_phone_bk();
 
-	info.Format(L"%s:%s%s%s:%s%s%s:%s%s%s:%s",
+	info.Format(L"%s:%s%s%s:%s%s%s:%s%s%s:%s%s%s:%s",
+				fmType, CAppResource::get_instance()->MachineTypeToString(_machine_type), seperator,
 				   fmContact, contact.IsEmpty() ? fmNull : contact, seperator,
 				   fmAddress, address.IsEmpty() ? fmNull : address, seperator,
 				   fmPhone, phone.IsEmpty() ? fmNull : phone, seperator,

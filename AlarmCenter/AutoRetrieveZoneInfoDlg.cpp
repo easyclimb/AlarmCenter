@@ -68,17 +68,11 @@ BOOL CAutoRetrieveZoneInfoDlg::OnInitDialog()
 
 	assert(m_machine);
 
-	if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
-		m_progress.SetRange32(0, 100);
-		m_staticProgress.SetWindowTextW(L"0/100");
-	} else if (m_machine->get_machine_type() == MT_LCD) {
-		m_progress.SetRange32(0, 250);
-		m_staticProgress.SetWindowTextW(L"0/250");
-	} else {
-		m_progress.SetRange32(0, 1000);
-		m_staticProgress.SetWindowTextW(L"0/1000");
-	}
-	
+	int max_zone = get_machine_max_zone_by_type(m_machine->get_machine_type()) + 1;
+	CString txt;
+	txt.Format(L"0/%d", max_zone);
+	m_staticProgress.SetWindowTextW(txt);
+	m_progress.SetRange32(0, max_zone);
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// 异常:  OCX 属性页应返回 FALSE
@@ -99,14 +93,15 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 		CString msg = L"", str = L"", fmok, fmfail, progress;
 		fmok = TR(IDS_STRING_FM_RETRIEVE_OK);
 		fmfail = TR(IDS_STRING_FM_RETRIEVE_FAILED);
+		
+		int max_machine_zone = get_machine_max_zone_by_type(m_machine->get_machine_type()) + 1;
+		
 
-		int max_machine_zone = 0;
-		std::wstring max_progress = L"";
-		if (m_machine->get_machine_type() == MT_IMPRESSED_GPRS_MACHINE_2050) {
-			max_machine_zone = 100;
-			max_progress = L"100";		
+		if (is_machine_can_only_add_zone_by_retrieve(m_machine->get_machine_type())) {
 			m_progress.SetPos(1);
-			m_staticProgress.SetWindowTextW(L"1/100");
+			CString txt;
+			txt.Format(L"1/%d", max_machine_zone);
+			m_staticProgress.SetWindowTextW(txt);
 			m_btnStart.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_STOP));
 			m_bRetrieving = TRUE;
 
@@ -124,49 +119,10 @@ void CAutoRetrieveZoneInfoDlg::OnBnClickedButtonStart()
 			// send enter set mode
 			net::CNetworkConnector::get_instance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE,
 														0, 0, nullptr, nullptr, m_machine->get_last_time_event_source());
-			/*auto path = m_machine->get_last_time_event_source();
-			switch (path)
-			{
-			case ademco::ES_TCP_CLIENT:
-				
-				break;
-			case ademco::ES_TCP_SERVER:
-				net::CNetworkConnector::get_instance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE, 
-															0, 0, nullptr, nullptr, path);
-				break;
-			case ademco::ES_UNKNOWN:
-			case ademco::ES_SMS:
-			default:
-				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, TR(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
-				Reset();
-				return;
-				break;
-			}*/
 
-		} else if (m_machine->get_machine_type() == MT_LCD) {
-			max_machine_zone = 250;
-			max_progress = L"250";
-			m_progress.SetPos(1);
-			m_staticProgress.SetWindowTextW(L"1/250");
-			m_btnStart.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_STOP));
-			m_bRetrieving = TRUE;
-
-			if (!m_machine->get_online()) {
-				m_listctrl.SetCurSel(m_listctrl.InsertString(-1, TR(IDS_STRING_STOP_RTRV_BY_OFFLINE)));
-				Reset();
-				return;
-			}
-
-			m_observer = std::make_shared<ObserverType>(this);
-			m_machine->register_observer(m_observer);
-			m_event_list.clear();
-			m_zone_list.clear();
-
-			// send enter set mode
-			net::CNetworkConnector::get_instance()->Send(m_machine->get_ademco_id(), EVENT_ENTER_SET_MODE,
-														 0, 0, nullptr, nullptr, m_machine->get_last_time_event_source());
 		} else {
 			max_machine_zone = MAX_MACHINE_ZONE;
+			std::wstring max_progress = L"";
 			max_progress = L"1000";
 			for (int i = 1; i < max_machine_zone; i++) {
 				msg.Empty();

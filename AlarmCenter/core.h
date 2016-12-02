@@ -18,6 +18,140 @@ typedef std::shared_ptr<CClientData> CClientDataPtr;
 
 namespace core {
 
+// 主机类型
+typedef enum machine_type {
+	MT_UNKNOWN = 0,
+	MT_WIFI,							// wifi主机
+	MT_NETMOD,							// 带网络模块的工程主机
+	MT_IMPRESSED_GPRS_MACHINE_2050,		// 改进型卧式主机2050型
+	MT_LCD,								// 液晶主机
+	MT_WIRE,							// 网线主机
+	MT_MAX,
+}machine_type;
+
+inline machine_type Integer2MachineType(int type)
+{
+	switch (type) {
+		case MT_WIFI:	return MT_WIFI;		break;
+		case MT_NETMOD:	return MT_NETMOD;	break;
+		case MT_IMPRESSED_GPRS_MACHINE_2050: 	return MT_IMPRESSED_GPRS_MACHINE_2050;		break;
+		case MT_LCD:	return MT_LCD;		break;
+		case MT_WIRE:	return MT_WIRE;		break;
+		default:		return MT_UNKNOWN;	break;
+	}
+}
+
+
+// 主机信号强度
+typedef enum signal_strength {
+	SIGNAL_STRENGTH_0,
+	SIGNAL_STRENGTH_1,
+	SIGNAL_STRENGTH_2,
+	SIGNAL_STRENGTH_3,
+	SIGNAL_STRENGTH_4,
+	SIGNAL_STRENGTH_5,
+}signal_strength;
+
+inline signal_strength Integer2SignalStrength(int strength) {
+	if (0 <= strength && strength <= 5) {
+		return SIGNAL_STRENGTH_0;
+	} else if (6 <= strength && strength <= 10) {
+		return SIGNAL_STRENGTH_1;
+	} else if (11 <= strength && strength <= 15) {
+		return SIGNAL_STRENGTH_2;
+	} else if (16 <= strength && strength <= 20) {
+		return SIGNAL_STRENGTH_3;
+	} else if (21 <= strength && strength <= 25) {
+		return SIGNAL_STRENGTH_4;
+	} else {
+		return SIGNAL_STRENGTH_5;
+	}
+}
+
+
+// 获取主机最大防区号
+inline int get_machine_max_zone_by_type(machine_type mt) {
+	switch (mt) {
+		case core::MT_WIFI:
+			return 30;
+			break;
+
+		case core::MT_WIRE:
+		case core::MT_IMPRESSED_GPRS_MACHINE_2050:
+			return 99;
+			break;
+
+		case core::MT_LCD:
+			return 256;
+			break;
+
+		case core::MT_NETMOD:
+		default:
+			return 999;
+			break;
+	}
+}
+
+// 获取主机防区数量的位数
+inline int get_figure_of_machine_max_zone_by_type(machine_type mt) {
+	int zone_count = get_machine_max_zone_by_type(mt);
+	int figure = 0;
+	while (zone_count) {
+		zone_count /= 10;
+		figure++;
+	}
+	return figure;
+}
+
+// 获取主机防区数量的位数的格式化字符串
+inline const wchar_t* get_format_string_of_machine_zone_count_figure_by_type(machine_type mt) {
+	auto figure = get_figure_of_machine_max_zone_by_type(mt);
+	switch (figure) {
+		case 2:
+			return L"%02d";
+			break;
+		default:
+			return L"%03d";
+			break;
+	}
+}
+
+// 是否只能以索要的方式添加防区
+inline bool is_machine_can_only_add_zone_by_retrieve(machine_type mt) {
+	switch (mt) {
+		case core::MT_WIFI:
+		case core::MT_IMPRESSED_GPRS_MACHINE_2050:
+		case core::MT_WIRE:
+			return true;
+			break;
+
+		case core::MT_LCD:
+			return false;
+			break;
+
+		case core::MT_NETMOD:
+		default:
+			return false;
+			break;
+	}
+}
+
+// 是否具有短信报警功能
+inline bool is_machine_can_report_alarm_by_sms(machine_type mt) {
+	return mt == core::MT_IMPRESSED_GPRS_MACHINE_2050;
+}
+
+// 是否具有信号强度报告功能
+inline bool is_machine_can_report_signal_strength(machine_type mt) {
+	return mt == core::MT_IMPRESSED_GPRS_MACHINE_2050;
+}
+
+// 主机是否可以挂载分机
+inline bool is_machine_can_link_submachine(machine_type mt) {
+	return mt == core::MT_NETMOD;
+}
+
+
 static const int MIN_MACHINE = 1;
 static const int MAX_MACHINE = 999999;
 

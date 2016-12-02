@@ -16,6 +16,7 @@ public:
 	~CAppResource();
 	CString AdemcoEventToString(int ademco_event);
 	CString MachineStatusToString(core::machine_status ms);
+	CString MachineTypeToString(core::machine_type mt);
 	//CString GetString(unsigned int);
 
 	static HICON m_hIconArm;

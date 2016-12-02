@@ -350,3 +350,27 @@ CString CAppResource::MachineStatusToString(core::machine_status ms)
 		break;
 	}
 }
+
+CString CAppResource::MachineTypeToString(core::machine_type mt)
+{
+	switch (mt) {
+		case core::MT_WIFI:
+			return TR(IDS_STRING_MT_WIFI);
+			break;
+		case core::MT_NETMOD:
+			return TR(IDS_STRING_MT_NETMOD);
+			break;
+		case core::MT_IMPRESSED_GPRS_MACHINE_2050:
+			return TR(IDS_STRING_MT_GPRS);
+			break;
+		case core::MT_LCD:
+			return TR(IDS_STRING_MT_LCD);
+			break;
+		case core::MT_WIRE:
+			return TR(IDS_STRING_MT_WIRE);
+			break;
+		default:
+			return TR(IDS_STRING_UNKNOWN_MT);
+			break;
+	}
+}

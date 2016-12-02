@@ -582,7 +582,8 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 			char_array private_cmd;
 			AppendConnIdToCharArray(private_cmd, GetConnIdFromCharArray(privatePacket->_cmd));
 			static PrivatePacket packet2;
-			if (machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050 || machine->get_machine_type() == core::MT_LCD) {
+			bool default_0c_01 = false;
+			if (is_machine_can_only_add_zone_by_retrieve(machine->get_machine_type())) {
 				switch (ademco_event)
 				{
 				case EVENT_ENTER_SET_MODE:
@@ -613,20 +614,26 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 					break;
 
 				default:
+					default_0c_01 = true;
+					break;
+				}
+			}
+			
+			if (default_0c_01) {
+				if (ademco_event == EVENT_WHAT_IS_YOUR_TYPE) {
+					dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x05, 0x04, private_cmd,
+										   privatePacket->_acct_machine,
+										   privatePacket->_passwd_machine,
+										   privatePacket->_acct,
+										   privatePacket->_level);
+				} else {
 					dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0c, 0x00, private_cmd,
 										   privatePacket->_acct_machine,
 										   privatePacket->_passwd_machine,
 										   privatePacket->_acct,
 										   privatePacket->_level);
-					break;
 				}
 				
-			} else {
-				dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x0c, 0x00, private_cmd,
-									   privatePacket->_acct_machine,
-									   privatePacket->_passwd_machine,
-									   privatePacket->_acct,
-									   privatePacket->_level);
 			}
 			
 			_client_service->PrepairToSend(ademco_id, data, dwSize);
@@ -890,17 +897,19 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 			else if (m_packet2._lit_type == 0x04) { // machine type
 				try {
 					int ademco_id = m_packet1._ademco_data._ademco_id;
-					ADEMCO_EVENT ademco_event = EVENT_INVALID_EVENT;
 					int type = m_packet2._cmd.at(6);
-
 					auto data = m_clientsMap[conn_id];
+
 					if (data && data->online) {
 						if (ademco_id != data->ademco_id)	
 							ademco_id = data->ademco_id;
 
+						ADEMCO_EVENT ademco_event = EVENT_INVALID_EVENT;
+
 						switch (type)
 						{
 						case 0: // WiFi主机
+							ademco_event = EVENT_I_AM_WIFI_MACHINE;
 							break;
 
 						case 1: // 网络摄像机主机
@@ -955,7 +964,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::DealCmd(CClientServic
 					HandleOffline(conn_id);
 				}
 
-			}
+			}// end 05 13
 		} // end case 0x05
 		break;
 		

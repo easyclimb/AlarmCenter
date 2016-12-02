@@ -350,11 +350,11 @@ void CButtonEx::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 		case EVENT_I_AM_EXPRESSED_GPRS_2050_MACHINE:
 		case EVENT_I_AM_LCD_MACHINE:
 		case EVENT_I_AM_WIRE_MACHINE:
+		case EVENT_I_AM_WIFI_MACHINE:
 			if (bmybusinese) {
 				UpdateIconAndColor(_machine->get_online(), _machine->get_machine_status());
 			}
 			break;
-		
 
 		default:	// means its alarming
 			if (bmybusinese || !_machine->get_is_submachine()) {
@@ -400,23 +400,29 @@ void CButtonEx::UpdateIconAndColor(bool online, core::machine_status status)
 		}
 	}
 
+	const auto machine_type = _machine->get_machine_type();
+
 	if (_machine->get_banned()) {
 		iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\warning.bmp");
 	} else {
 		if (online) {
 			//bmppath = exepath + L"\\Resource\\online.bmp";
-			if (_machine->get_machine_type() == core::machine_type::MT_WIRE) {
+			if (machine_type == core::machine_type::MT_WIRE) {
 				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\wire.bmp");
+			} else if (machine_type == core::machine_type::MT_WIFI) {
+				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\wifi_online.bmp");
 			} else {
 				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\online.bmp");
 			}
 			
 		} else {
-			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+			if (is_machine_can_report_alarm_by_sms(machine_type)) {
 				iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\phone.bmp");
 			} else {
-				if (_machine->get_machine_type() == core::machine_type::MT_WIRE) {
+				if (machine_type == core::machine_type::MT_WIRE) {
 					iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\wire_offline.bmp");
+				} else if (machine_type == core::machine_type::MT_WIFI) {
+					iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\wifi_offline.bmp");
 				} else {
 					iconOnOffLine_->ShowBmp(exepath + L"\\Resource\\offline.bmp");
 				}
@@ -439,7 +445,7 @@ void CButtonEx::UpdateIconAndColor(bool online, core::machine_status status)
 	}
 	
 
-	if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+	if (is_machine_can_report_signal_strength(machine_type)) {
 		auto signal_strength = _machine->get_signal_strength();
 		if (!online) {
 			signal_strength = core::SIGNAL_STRENGTH_0;
@@ -535,8 +541,6 @@ void CButtonEx::UpdateToolTipText()
 		CString tooltip, conn, disconn/*, online, offline*/;
 		conn = TR(IDS_STRING_TRANSMIT_CONN); // 已连接
 		disconn = TR(IDS_STRING_IDC_STATIC_LOCAL_PORT); // 未连接
-		//online = TR(IDS_STRING_ON_LINE); // 在线
-		//offline = TR(IDS_STRING_OFFLINE); // 离线
 
 		if (_machine->get_banned()) {
 			tooltip.Format(TR(IDS_STRING_FM_BANNED), _machine->get_ademco_id());
@@ -553,7 +557,7 @@ void CButtonEx::UpdateToolTipText()
 				_button->SetTooltip(tooltip);
 			}
 		} else {
-			if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+			if (is_machine_can_report_alarm_by_sms(_machine->get_machine_type())) {
 				_button->SetTooltip(TR(IDS_STRING_SMS_ONLINE));
 			} else {
 				_button->SetTooltip(TR(IDS_STRING_OFFLINE));
@@ -569,25 +573,23 @@ void CButtonEx::UpdateToolTipText()
 	case gui::CButtonEx::CIR_ICON3: // show tooltip of signal strength or has/hasn't sub-machine
 	{
 		CString tooltip;
-		if (_machine->get_machine_type() == core::MT_IMPRESSED_GPRS_MACHINE_2050) {
+		if (is_machine_can_report_alarm_by_sms(_machine->get_machine_type())) {
 			tooltip.Format(L"%s:%d",
 						   TR(IDS_STRING_SIGNAL_STRENGTH),
 						   _machine->get_online() ? _machine->get_real_signal_strength() : 0);
-		} else {
+		} else if(is_machine_can_link_submachine(_machine->get_machine_type())) {
 			tooltip = _machine->get_submachine_count() > 0 ? TR(IDS_STRING_HAS_SUB_MACHINE) : TR(IDS_STRING_HASNOT_SUB_MACHINE);
 		}
-		_button->SetTooltip(tooltip);
+		
+		if (!tooltip.IsEmpty()) {
+			_button->SetTooltip(tooltip);
+		}
 	}
 		break;
 
 	case gui::CButtonEx::CIR_TEXT:  // show tooltip of machine info
 	default:
-	{
-#pragma region set tooltip
-		CString tooltip = _machine->get_formatted_name(false) + L"\r\n" + _machine->get_formatted_info(L"\r\n");
-		_button->SetTooltip(tooltip);
-#pragma endregion
-	}
+		_button->SetTooltip(_machine->get_formatted_name(false) + L"\r\n" + _machine->get_formatted_info(L"\r\n"));
 		break;
 	}
 

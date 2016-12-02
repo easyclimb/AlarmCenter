@@ -41,12 +41,12 @@ namespace Json {
 	// ////////////////////////////////
 
 
-	static inline bool in(Reader::Char c, Reader::Char c1, Reader::Char c2, Reader::Char c3, Reader::Char c4)
+	inline bool in(Reader::Char c, Reader::Char c1, Reader::Char c2, Reader::Char c3, Reader::Char c4)
 	{
 		return c == c1 || c == c2 || c == c3 || c == c4;
 	}
 
-	static inline bool in(Reader::Char c, Reader::Char c1, Reader::Char c2, Reader::Char c3, Reader::Char c4, Reader::Char c5)
+	inline bool in(Reader::Char c, Reader::Char c1, Reader::Char c2, Reader::Char c3, Reader::Char c4, Reader::Char c5)
 	{
 		return c == c1 || c == c2 || c == c3 || c == c4 || c == c5;
 	}
