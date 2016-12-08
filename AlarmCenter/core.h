@@ -73,7 +73,7 @@ inline signal_strength Integer2SignalStrength(int strength) {
 inline int get_machine_max_zone_by_type(machine_type mt) {
 	switch (mt) {
 		case core::MT_WIFI:
-			return 30;
+			return 32;
 			break;
 
 		case core::MT_WIRE:
@@ -82,7 +82,7 @@ inline int get_machine_max_zone_by_type(machine_type mt) {
 			break;
 
 		case core::MT_LCD:
-			return 256;
+			return 249;
 			break;
 
 		case core::MT_NETMOD:
@@ -122,11 +122,8 @@ inline bool is_machine_can_only_add_zone_by_retrieve(machine_type mt) {
 		case core::MT_WIFI:
 		case core::MT_IMPRESSED_GPRS_MACHINE_2050:
 		case core::MT_WIRE:
-			return true;
-			break;
-
 		case core::MT_LCD:
-			return false;
+			return true;
 			break;
 
 		case core::MT_NETMOD:

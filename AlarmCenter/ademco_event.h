@@ -45,6 +45,8 @@ enum ADEMCO_EVENT : unsigned int {
 	EVENT_WATER									= 1113, // 水警
 	EVENT_TEMPER								= 1137, // 防拆
 	EVENT_ZONE_TEMPER							= 1383, // 防拆
+	EVENT_BY_PASS								= 1570, // 旁路
+	EVENT_BY_PASS_RESUME						= 3570, // 解除旁路
 
 	// 防区异常
 	EVENT_LOWBATTERY							= 1302, // 低电
@@ -59,7 +61,8 @@ enum ADEMCO_EVENT : unsigned int {
 	EVENT_OTHER_EXCEPTION_RECOVER				= 3380, // 其他故障恢复
 
 	// 标准事件，但不做处理
-	EVENT_3570									= 3570, 
+	EVENT_3100									= 3100, // 液晶主机清除异常指示
+	
 
 	// ------------------------------------------------------------------
 
@@ -131,6 +134,8 @@ static const ADEMCO_EVENT gc_AdemcoEvent[] = {
 	EVENT_WATER,
 	EVENT_TEMPER,
 	EVENT_ZONE_TEMPER,
+	EVENT_BY_PASS,
+	EVENT_BY_PASS_RESUME,
 
 	EVENT_LOWBATTERY,
 	EVENT_BATTERY_RECOVER,

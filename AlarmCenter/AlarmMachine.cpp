@@ -524,12 +524,20 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_WATER:
 				sound_manager::get_instance()->LoopPlay(sound_manager::SI_WATER);
 				break;
-			case ademco::EVENT_3570:
+			case ademco::EVENT_BY_PASS:
+			case ademco::EVENT_BY_PASS_RESUME:
+			case ademco::EVENT_3100:
 				return;
 			default: bMachineStatus = false;
 				break;
 		}
 #pragma endregion
+
+		// 2016-12-2 15:04:49 若此时存储的是在设置状态，且此时收到了主机状态和防区报警，说明主机退出设置的命令字已经漏掉，需要手动提示主机已退出设置
+		if (setting_mode_) {
+			setting_mode_ = false;
+			handle_setting_mode();
+		}
 
 		// define AdemcoDataSegment for sending sms
 		AdemcoDataSegment dataSegment;
@@ -911,7 +919,14 @@ void alarm_machine::handle_restore_factory_settings()
 void alarm_machine::notify_observers_with_event(ademco::ADEMCO_EVENT evnt)
 {
 	auto t = time(nullptr);
-	auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, evnt, 0, 0, t, t);
+	static AdemcoEventPtr ademcoEvent = nullptr;
+	if (!ademcoEvent) {
+		ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, evnt, 0, 0, t, t);
+	} else {
+		ademcoEvent->_event = evnt;
+		ademcoEvent->_recv_time = ademcoEvent->_timestamp = t;
+	}
+
 	notify_observers(ademcoEvent);
 }
 
@@ -1018,40 +1033,52 @@ void alarm_machine::SetAdemcoEvent(EventSource source,
 		// 内部事件立即处理
 	} else {
 
-//#define LOG_TIME_FOR_ALARM_MACHINE_SET_ADEMCO_EVENT
+		////#define LOG_TIME_FOR_ALARM_MACHINE_SET_ADEMCO_EVENT
+		//
+		//#ifdef LOG_TIME_FOR_ALARM_MACHINE_SET_ADEMCO_EVENT
+		//		wchar_t wtime[32] = { 0 };
+		//		struct tm tmtm;
+		//		localtime_s(&tmtm, &recv_time);
+		//		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+		//		JLOG(L"param: %s\n", wtime);
+		//#endif
+		//		time_t now = time(nullptr);
+		//		auto iter = _ademcoEventFilter.begin();
+		//		while (iter != _ademcoEventFilter.end()) {
+		//			const ademco::AdemcoEventPtr& oldEvent = *iter;
+		//#ifdef LOG_TIME_FOR_ALARM_MACHINE_SET_ADEMCO_EVENT
+		//			localtime_s(&tmtm, &now);
+		//			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+		//			JLOG(L"now: %s\n", wtime);
+		//			localtime_s(&tmtm, &oldEvent->_recv_time);
+		//			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
+		//			JLOG(L"old: %s\n", wtime);
+		//#endif
+		//			if (now - oldEvent->_recv_time >= 6) {
+		//				iter = _ademcoEventFilter.erase(iter);
+		//				continue;
+		//			} else if (oldEvent->operator== (*ademcoEvent)) {
+		//				JLOG(L"same AdemcoEvent, delete it. ademco_id %06d, event %04d, zone %03d, gg %02d\n", 
+		//					 _ademco_id, ademcoEvent->_event, ademcoEvent->_zone, ademcoEvent->_sub_zone);
+		//				_ademcoEventFilter.erase(iter);
+		//				_ademcoEventFilter.push_back(ademcoEvent);
+		//				return;
+		//			}
+		//			iter++;
+		//		}
+		//		_ademcoEventFilter.push_back(ademcoEvent);
+		//	}
 
-#ifdef LOG_TIME_FOR_ALARM_MACHINE_SET_ADEMCO_EVENT
-		wchar_t wtime[32] = { 0 };
-		struct tm tmtm;
-		localtime_s(&tmtm, &recv_time);
-		wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-		JLOG(L"param: %s\n", wtime);
-#endif
-		time_t now = time(nullptr);
-		auto iter = _ademcoEventFilter.begin();
-		while (iter != _ademcoEventFilter.end()) {
-			const ademco::AdemcoEventPtr& oldEvent = *iter;
-#ifdef LOG_TIME_FOR_ALARM_MACHINE_SET_ADEMCO_EVENT
-			localtime_s(&tmtm, &now);
-			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-			JLOG(L"now: %s\n", wtime);
-			localtime_s(&tmtm, &oldEvent->_recv_time);
-			wcsftime(wtime, 32, L"%Y-%m-%d %H:%M:%S", &tmtm);
-			JLOG(L"old: %s\n", wtime);
-#endif
-			if (now - oldEvent->_recv_time >= 6) {
-				iter = _ademcoEventFilter.erase(iter);
-				continue;
-			} else if (oldEvent->operator== (*ademcoEvent)) {
-				JLOG(L"same AdemcoEvent, delete it. ademco_id %06d, event %04d, zone %03d, gg %02d\n", 
-					 _ademco_id, ademcoEvent->_event, ademcoEvent->_zone, ademcoEvent->_sub_zone);
-				_ademcoEventFilter.erase(iter);
-				_ademcoEventFilter.push_back(ademcoEvent);
+		if (ademco_event_filter_) {
+			time_t now = time(nullptr);
+			if ((now - ademco_event_filter_->_recv_time < 6) && (ademco_event_filter_->operator== (*ademcoEvent))) {
+				ademco_event_filter_ = ademcoEvent;
 				return;
 			}
-			iter++;
-		}
-		_ademcoEventFilter.push_back(ademcoEvent);
+		} 
+
+		ademco_event_filter_ = ademcoEvent;
+		
 	}
 
 	if (_buffer_mode) {
@@ -1079,8 +1106,8 @@ bool alarm_machine::execute_set_banned(bool banned)
 													0, rec, t,
 													RECORD_LEVEL_USEREDIT);
 		_banned = banned;
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
-		notify_observers(ademcoEvent);
+
+		notify_observers_with_event();
 		return true;
 	}
 
@@ -1111,6 +1138,10 @@ bool alarm_machine::execute_set_machine_status(machine_status status)
 bool alarm_machine::execute_set_machine_type(machine_type type)
 {
 	AUTO_LOG_FUNCTION;
+	if (_machine_type == type) {
+		return true;
+	}
+
 	_machine_type = type;
 	CString query;
 	query.Format(L"update table_machine set machine_type=%d where id=%d and ademco_id=%d",
@@ -1123,6 +1154,8 @@ bool alarm_machine::execute_set_machine_type(machine_type type)
 		query += L" " + CAppResource::get_instance()->MachineTypeToString(_machine_type);
 		auto t = time(nullptr);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, 0, query, t, RECORD_LEVEL_STATUS);
+
+		notify_observers_with_event();
 		return true;
 	}
 
@@ -1151,8 +1184,7 @@ bool alarm_machine::execute_set_alias(const wchar_t* alias)
 				   smachine, _ademco_id, sfield, get_machine_name(), alias);
 		history_record_manager::get_instance()->InsertRecord(_ademco_id, 0, rec, t, RECORD_LEVEL_USEREDIT);
 		set_alias(alias);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
-		notify_observers(ademcoEvent);
+		notify_observers_with_event();
 		return true;
 	}
 
@@ -1182,8 +1214,7 @@ bool alarm_machine::execute_set_contact(const wchar_t* contact)
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													t, RECORD_LEVEL_USEREDIT);
 		set_contact(contact);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
-		notify_observers(ademcoEvent);
+		notify_observers_with_event();
 		return true;
 	}
 
@@ -1214,8 +1245,7 @@ bool alarm_machine::execute_set_address(const wchar_t* address)
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													t, RECORD_LEVEL_USEREDIT);
 		set_address(address);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
-		notify_observers(ademcoEvent);
+		notify_observers_with_event();
 		return true;
 	}
 
@@ -1246,9 +1276,7 @@ bool alarm_machine::execute_set_phone(const wchar_t* phone)
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													t, RECORD_LEVEL_USEREDIT);
 		set_phone(phone);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
-		notify_observers(ademcoEvent);
-		return true;
+		notify_observers_with_event();
 	}
 
 	return false;
@@ -1277,8 +1305,7 @@ bool alarm_machine::execute_set_phone_bk(const wchar_t* phone_bk)
 		history_record_manager::get_instance()->InsertRecord(get_ademco_id(), 0, rec,
 													t, RECORD_LEVEL_USEREDIT);
 		set_phone_bk(phone_bk);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
-		notify_observers(ademcoEvent);
+		notify_observers_with_event();
 		return true;
 	}
 
@@ -1579,10 +1606,10 @@ bool alarm_machine::execute_update_expire_time(const std::chrono::system_clock::
 			}
 		}
 
-		auto t = time(nullptr);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
-		notify_observers(ademcoEvent);
 		expire_time_ = tp;
+
+		notify_observers_with_event();
+		
 		return true;
 	} while (0);
 	return false;
@@ -1726,12 +1753,7 @@ void alarm_machine::set_alarm_id(int id)
 {
 	//if (alarm_id_ != id) {
 		alarm_id_ = id;
-		auto t = time(nullptr);
-		auto ademcoEvent = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 
-														 _is_submachine ? _submachine_zone : 0, 
-														 _is_submachine ? INDEX_SUB_MACHINE : 0,
-														 t, t);
-		notify_observers(ademcoEvent);
+		notify_observers_with_event();
 	//}
 }
 

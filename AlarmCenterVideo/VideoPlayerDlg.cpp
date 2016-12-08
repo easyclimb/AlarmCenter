@@ -1616,10 +1616,10 @@ void CVideoPlayerDlg::HandleJovisionMsg(const jovision_msg_ptr & msg)
 					appendix_msg_list.push_back(strMsg);
 
 					// start record video
-					if (record->zone_alarm_text_pairs_.size() == 1 && !record->zone_alarm_text_pairs_.front().second) {
+					/*if (record->zone_alarm_text_pairs_.size() == 1 && !record->zone_alarm_text_pairs_.front().second) {
 						JLOGA("no alarm, no record");
 						break;
-					}
+					}*/
 					std::string ext;
 					JCStreamInfo info;
 					if (jmgr->get_stream_info(msg->nLinkID, &info)) {
@@ -2007,6 +2007,7 @@ bool CVideoPlayerDlg::StopPlayJovision(video::jovision::jovision_device_ptr devi
 	std::lock_guard<std::recursive_mutex> lock(lock_4_record_list_);
 	auto record = record_op_get_record_info_by_device(device);
 	if (record) {
+		sdk_mgr_jovision::get_instance()->stop_record(record->link_id_);
 		sdk_mgr_jovision::get_instance()->disconnect(record->link_id_);
 		return true;
 	}

@@ -14,6 +14,63 @@
 using namespace core;
 
 
+namespace detail {
+
+auto translate_serial_property_to_zone_property = [](int zone_property) {
+	switch (zone_property) {
+		case 0x00: // buglar zone
+			return ZP_GLOBAL;
+			break;
+
+		case 0x01: // emergency zone
+			return ZP_EMERGE;
+			break;
+
+		case 0x02: // fire zone
+			return ZP_FIRE;
+			break;
+
+		case 0x03: // duress zone
+			return ZP_DURESS;
+			break;
+
+		case 0x04: // gas
+			return ZP_GAS;
+			break;
+
+		case 0x05: // water
+			return ZP_WATER;
+			break;
+
+		case 0x06: // submachine, ignore it
+			break;
+
+		case 0x07: // remote controller, ignore it
+			break;
+
+		case 0x08:
+			return ZP_HALF;
+			break;
+
+		case 0x09:
+			return ZP_SHIELD;
+			break;
+
+		case 0x0A:
+			return ZP_DOOR;
+			break;
+
+		default:
+			break;
+	}
+	return ZSOP_INVALID;
+};
+
+
+}
+
+using namespace ::detail;
+
 // CAutoRetrieveZoneInfoDlg 对话框
 
 IMPLEMENT_DYNAMIC(CAutoRetrieveZoneInfoDlg, CDialogEx)
@@ -282,44 +339,6 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 		m_staticTime.SetWindowTextW(t);
 	}
 
-	auto translate_serial_property_to_zone_property = [](int zone_property) {
-		switch (zone_property)
-		{
-		case 0x00: // buglar zone
-			return ZP_GLOBAL;
-			break;
-
-		case 0x01: // emergency zone
-			return ZP_EMERGE;
-			break;
-
-		case 0x02: // fire zone
-			return ZP_FIRE;
-			break;
-
-		case 0x03: // duress zone
-			return ZP_DURESS;
-			break;
-
-		case 0x04: // gas
-			return ZP_GAS;
-			break;
-
-		case 0x05: // water
-			return ZP_WATER;
-			break;
-
-		case 0x06: // submachine, ignore it
-			break;
-
-		case 0x07: // remote controller, ignore it
-			break;
-
-		default:
-			break;
-		}
-		return ZSOP_INVALID;
-	};
 
 	if(m_mutex.try_lock()) {
 		std::lock_guard<std::mutex> lock(m_mutex, std::adopt_lock);
@@ -352,7 +371,9 @@ void CAutoRetrieveZoneInfoDlg::OnTimer(UINT_PTR nIDEvent)
 								}
 								m_zone_list.push_back(zoneInfo);
 								m_progress.SetPos(zone);
-								txt.Format(L"%02d/100", zone);
+								txt.Format(L"%02d/", zone);
+								txt.AppendFormat(get_format_string_of_machine_zone_count_figure_by_type(m_machine->get_machine_type()), 
+												 get_machine_max_zone_by_type(m_machine->get_machine_type()));
 								m_staticProgress.SetWindowTextW(txt);
 								txt.Format(L"%s%02d", TR(IDS_STRING_ZONE), zone);
 								m_listctrl.SetCurSel(m_listctrl.InsertString(-1, txt));
@@ -478,8 +499,14 @@ void CAutoRetrieveZoneInfoDlg::Reset()
 {
 	m_btnStart.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_START));
 	KillTimer(1);
+
+	int max_zone = get_machine_max_zone_by_type(m_machine->get_machine_type()) + 1;
+	CString txt;
+	txt.Format(L"0/%d", max_zone);
+	m_staticProgress.SetWindowTextW(txt);
+	m_progress.SetRange32(0, max_zone);
 	m_progress.SetPos(0);
-	m_staticProgress.SetWindowTextW(L"0/100"); // should be expressed_gprs_machine
+
 	m_staticTime.SetWindowTextW(L"00:00");
 	m_observer.reset();
 	m_event_list.clear();

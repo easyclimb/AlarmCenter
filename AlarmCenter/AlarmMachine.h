@@ -64,7 +64,8 @@ private:
 	map_info_list _mapList = {};
 	map_info_list::iterator _curMapListIter = {};
 	std::list<AdemcoEventPtr> _ademcoEventList = {};
-	std::list<AdemcoEventPtr> _ademcoEventFilter = {};
+	//std::list<AdemcoEventPtr> _ademcoEventFilter = {};
+	AdemcoEventPtr ademco_event_filter_ = nullptr;
 	std::recursive_mutex _lock4AdemcoEventList = {};
 	std::map<int, zone_info_ptr> _zoneMap = {};
 	remote_control_command_conn_obj _rcccObj = {};

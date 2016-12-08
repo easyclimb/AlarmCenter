@@ -621,7 +621,7 @@ int CClient::SendToTransmitServer(int ademco_id, ADEMCO_EVENT ademco_event, int 
 			
 			if (default_0c_01) {
 				if (ademco_event == EVENT_WHAT_IS_YOUR_TYPE) {
-					dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x05, 0x04, private_cmd,
+					dwSize += packet2.Make(data + dwSize, sizeof(data) - dwSize, 0x04, 0x05, private_cmd,
 										   privatePacket->_acct_machine,
 										   privatePacket->_passwd_machine,
 										   privatePacket->_acct,
