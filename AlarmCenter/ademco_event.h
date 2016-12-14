@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <memory>
-
+#include "C:/dev/Global/dp.h"
 
 #ifdef USES_ADEMCO_EVENT_TO_STRING
 #include <string>

@@ -151,7 +151,10 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 				auto ademco_event = packet._ademco_data._ademco_event;
 				int zone = packet._ademco_data._zone;
 				int subzone = packet._ademco_data._gg;
-				client->ademco_id = ademco_id;
+				if (client->ademco_id != ademco_id) {
+					mgr->MachineOnline(ES_TCP_CLIENT, client->ademco_id, FALSE);
+					client->ademco_id = ademco_id;
+				}
 				/*wchar_t out[1024] = { 0 };
 				_tprintf_s(out, 1024, L"[#%04d| %04d %d %03d] %s\n",
 							client->ademco_id, ademco_event, subzone,

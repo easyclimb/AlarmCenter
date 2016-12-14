@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 
-#if defined(VC_EXTRALEAN)
-#else
-#include "const.h"
-#endif
+//#if defined(VC_EXTRALEAN)
+//#else
+//#include "const.h"
+//#endif
 
 #include <assert.h>
 #include <sstream>
@@ -400,7 +400,7 @@ bool AdemcoTimeStamp::Parse(const char* pack, unsigned int pack_len)
 	size_t ret = sscanf_s(pack, "_%02d:%02d:%02d,%02d-%02d-%04d",
 						  &tmtm.tm_hour, &tmtm.tm_min, &tmtm.tm_sec,
 						  &tmtm.tm_mon, &tmtm.tm_mday, &tmtm.tm_year);
-	VERIFY(ret == 6);
+	assert(ret == 6);
 	_len = pack_len;
 	if (tmtm.tm_year == 1900) {
 		_time = time(nullptr);
@@ -559,7 +559,7 @@ size_t AdemcoPacket::Make(char* pack, size_t pack_len, const char* id,
 	_timestamp.Make();
 
 	size_t length = GetLength();
-	VERIFY(length < pack_len);
+	assert(length < pack_len);
 
 	CopyData(pack, length);
 
@@ -847,7 +847,7 @@ void PrivatePacket::CopyData(char* dst, size_t length)
 	pos += sizeof(_crc);
 
 	size_t writed_len = pos - dst;
-	VERIFY(length == writed_len);
+	assert(length == writed_len);
 }
 
 size_t PrivatePacket::Make(char* pack,
@@ -905,7 +905,7 @@ size_t PrivatePacket::Make(char* pack,
 	for (auto c : cmd) { crc = CalculateCRC_char(c, crc); }
 	Dec2HexCharArray_4(crc, _crc, false);
 
-	VERIFY(2 + length + 4 < pack_len);
+	assert(2 + length + 4 < pack_len);
 	CopyData(pack, 2 + length + 4);
 
 	return 2 + length + 4;

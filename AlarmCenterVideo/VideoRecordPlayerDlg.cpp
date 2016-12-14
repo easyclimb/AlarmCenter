@@ -367,7 +367,7 @@ void CVideoRecordPlayerDlg::OnLbnDblclkList1()
 
 	int nFileID = m_list_rec.GetItemData(ndx);
 	if (nFileID >= 0) {
-		sdk_mgr_jovision::get_instance()->remote_play(link_id_, nFileID);
+		sdk_mgr_jovision::get_instance()->download_remote_file(link_id_, nFileID);
 	}
 }
 

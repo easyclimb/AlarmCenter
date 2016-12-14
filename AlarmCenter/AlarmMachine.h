@@ -113,7 +113,7 @@ protected:
 	void set_highestEventLevel(ademco::EventLevel level);
 	void NotifySubmachines(const ademco::AdemcoEventPtr& ademcoEvent);
 	void HandleRetrieveResult(const ademco::AdemcoEventPtr& ademcoEvent);
-	void UpdateLastActionTime() { /*AUTO_LOG_FUNCTION; */JLOG(L"subMachine %03d, %s", _submachine_zone, alias_); _lastActionTime = time(nullptr); }
+	void UpdateLastActionTime() { /*AUTO_LOG_FUNCTION; JLOG(L"subMachine %03d, %s", _submachine_zone, alias_); */_lastActionTime = time(nullptr); }
 	void SetAllSubMachineOnOffLine(bool online = true);
 	void handle_setting_mode();
 	void handle_restore_factory_settings();
@@ -146,7 +146,7 @@ public:
 	// 2015-05-18 16:42:58
 	const char* get_ipv4() const { return _ipv4; }
 	void set_ipv4(const char* ipv4) { if (ipv4) strcpy_s(_ipv4, ipv4); else memset(_ipv4, 0, sizeof(_ipv4)); }
-	// 2015年5月6日 15:58:07 分机超过16小时则自动检测相关
+	// 2015年5月6日 15:58:07 分机超过16小时则自动检测相关 // 2016年12月8日17:32:24修改，主机也用此值记录上次动作的事件
 	time_t GetLastActionTime() const { return _lastActionTime; }
 
 	// 2015年4月22日 16:55:04 按钮颜色相关。分别清除所有分机信息后清除主机按钮颜色

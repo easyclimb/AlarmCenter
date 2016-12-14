@@ -21,6 +21,7 @@ public:
 private:
 	std::shared_ptr<CAlarmMachineContainerDlg> container_ = nullptr;
 	bool init_over_ = false;
+	bool got_focus_ = false;
 	std::wstring last_input_content_ = {};
 
 protected:
@@ -31,6 +32,7 @@ protected:
 	void reposition_items();
 	void init_list_headers();
 	void insert_list_content(const core::alarm_machine_ptr& machine);
+	void do_search();
 
 public:
 	afx_msg void OnBnClickedOk();
@@ -47,4 +49,8 @@ public:
 	afx_msg void OnEnChangeEdit1();
 	afx_msg void OnTcnSelchangeTab1(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnSetFocus(CWnd* pOldWnd);
+	afx_msg void OnKillFocus(CWnd* pNewWnd);
+	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };

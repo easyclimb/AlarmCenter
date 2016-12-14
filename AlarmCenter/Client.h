@@ -43,9 +43,9 @@ private:
 	bool main_client_;
 	std::list<std::vector<char>> buffer_;
 	std::mutex buffer_lock_;
-	COleDateTime last_recv_time_;
-	COleDateTime disconnected_time_;
-	COleDateTime last_conn_time_;
+	COleDateTime last_recv_time_ = {};
+	COleDateTime disconnected_time_ = {};
+	COleDateTime last_conn_time_ = {};
 	bool showed_disconnected_info_to_user_ = true;
 public:
 	int get_cur_seq() { if (cur_seq_ > 9999) cur_seq_ = 1; return cur_seq_++; }

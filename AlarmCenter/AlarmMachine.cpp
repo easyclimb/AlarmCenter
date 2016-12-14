@@ -342,6 +342,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 	// handle ademco event
 	if (!_is_submachine) {
+		UpdateLastActionTime();
 		if (_banned) {
 			return;
 		}
@@ -872,6 +873,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 	} else { // _is_submachine
 		UpdateLastActionTime();
 	}
+	
 	notify_observers(ademcoEvent);
 }
 

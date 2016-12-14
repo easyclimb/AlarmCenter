@@ -118,7 +118,7 @@ CServerService::CServerService(unsigned int& nPort,
 	if (INVALID_SOCKET == this->m_ServSock) {
 		//throw L"server socket creation failed.";
 		int errnono = WSAGetLastError();
-		wchar_t *err = FormatWSAError(errnono);
+		auto err = FormatWSAError(errnono);
 		throw err;
 	}
 

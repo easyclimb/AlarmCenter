@@ -12,8 +12,11 @@
 
 namespace ipc {
 
-
+#ifdef _DEBUG
 const int g_start_video_process_on_start = 1;
+#else
+const int g_start_video_process_on_start = 1;
+#endif
 
 class alarm_center_video_service::alarm_center_video_service_impl : public alarm_center_video::video_service::Service
 {

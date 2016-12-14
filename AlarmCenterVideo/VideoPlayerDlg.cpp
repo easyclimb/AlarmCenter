@@ -532,15 +532,18 @@ void funJCEventCallback(JCLink_t nLinkID, JCEventType etType, DWORD_PTR pData1, 
 	}
 }
 
-void funJCDataCallback(JCLink_t /*nLinkID*/, PJCStreamFrame /*pFrame*/, LPVOID /*pUserData*/)
+void funJCDataCallback(JCLink_t nLinkID, PJCStreamFrame pFrame, LPVOID /*pUserData*/)
 {
-	/*char acBuffer[32];
-	sprintf(acBuffer, "Type:%d\n", pFrame->sType);
-	OutputDebugStringA(acBuffer);*/
+	char acBuffer[128];
+	sprintf(acBuffer, "funJCDataCallback nLinkID:%d Type:%d\n", nLinkID, pFrame->sType);
+	OutputDebugStringA(acBuffer);
 }
 
-void funJCRawDataCallback(JCLink_t /*nLinkID*/, PJCRawFrame /*pFrame*/, LPVOID /*pUserData*/)
+void funJCRawDataCallback(JCLink_t nLinkID, PJCRawFrame pFrame, LPVOID /*pUserData*/)
 {
+	char acBuffer[128];
+	sprintf(acBuffer, "funJCRawDataCallback nLinkID:%d\n", nLinkID);
+	OutputDebugStringA(acBuffer);
 }
 
 void funLanSearchCallback(PJCLanDeviceInfo /*pDevice*/)
@@ -2999,7 +3002,10 @@ void CVideoPlayerDlg::OnBnClickedButtonStopAll()
 			delete data;
 		}
 		m_ctrl_play_list.DeleteAllItems();
+
+		Invalidate();
 	}
+
 }
 
 
@@ -3078,6 +3084,7 @@ void CVideoPlayerDlg::OnClose()
 #ifdef _DEBUG
 	CDialogEx::OnClose();
 #else
+	OnBnClickedButtonStopAll();
 	ShowWindow(SW_HIDE);
 #endif
 }

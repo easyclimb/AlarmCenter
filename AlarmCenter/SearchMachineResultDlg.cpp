@@ -43,6 +43,9 @@ BEGIN_MESSAGE_MAP(CSearchMachineResultDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_EDIT1, &CSearchMachineResultDlg::OnEnChangeEdit1)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB1, &CSearchMachineResultDlg::OnTcnSelchangeTab1)
 	ON_NOTIFY(NM_DBLCLK, IDC_LIST1, &CSearchMachineResultDlg::OnNMDblclkList1)
+	ON_WM_SETFOCUS()
+	ON_WM_KILLFOCUS()
+	ON_WM_CHAR()
 END_MESSAGE_MAP()
 
 
@@ -152,10 +155,40 @@ void CSearchMachineResultDlg::insert_list_content(const core::alarm_machine_ptr 
 	}
 }
 
+void CSearchMachineResultDlg::do_search()
+{
+	CString txt;
+	m_input.GetWindowTextW(txt);
+
+	if (last_input_content_ != (LPCTSTR)txt) {
+		container_->ClearButtonList();
+		m_list.DeleteAllItems();
+
+		last_input_content_ = (LPCTSTR)txt;
+
+		if (!last_input_content_.empty()) {
+			auto mgr = core::alarm_machine_manager::get_instance();
+			auto list = mgr->fuzzy_search_machine(last_input_content_, 10);
+			for (auto id : list) {
+				auto machine = mgr->GetMachine(id);
+				if (machine) {
+					container_->InsertMachine(machine, -1, false);
+					insert_list_content(machine);
+				}
+			}
+		}
+	}
+
+	if (got_focus_) {
+		m_input.SetFocus();
+		m_input.SetSel((DWORD)-1);
+	}
+}
+
 void CSearchMachineResultDlg::OnBnClickedOk()
 {
-	// TODO: Add your control notification handler code here
-	CDialogEx::OnOK();
+	return;
+	//CDialogEx::OnOK();
 }
 
 void CSearchMachineResultDlg::OnBnClickedCancel()
@@ -203,6 +236,7 @@ BOOL CSearchMachineResultDlg::OnInitDialog()
 
 	init_list_headers();
 
+	container_->ShowWindow(SW_SHOW);
 	m_list.ShowWindow(SW_HIDE);
 
 	init_over_ = true;
@@ -230,30 +264,7 @@ void CSearchMachineResultDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	//auto_timer t(m_hWnd, 1, 2000);
 
-	CString txt;
-	m_input.GetWindowTextW(txt);
-
-	if (last_input_content_ != (LPCTSTR)txt) {
-		container_->ClearButtonList();
-		m_list.DeleteAllItems();
-
-		last_input_content_ = (LPCTSTR)txt;
-
-		if (!last_input_content_.empty()) {
-			auto mgr = core::alarm_machine_manager::get_instance();
-			auto list = mgr->fuzzy_search_machine(last_input_content_, 10);
-			for (auto id : list) {
-				auto machine = mgr->GetMachine(id);
-				if (machine) {
-					container_->InsertMachine(machine, -1, false);
-					insert_list_content(machine);
-				}
-			}
-		}
-	}
-
-	m_input.SetFocus();
-	m_input.SetSel((DWORD)-1);
+	
 
 	CDialogEx::OnTimer(nIDEvent);
 }
@@ -262,7 +273,7 @@ void CSearchMachineResultDlg::OnTimer(UINT_PTR nIDEvent)
 void CSearchMachineResultDlg::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 {
 	lpMMI->ptMinTrackSize.x = 600;
-	lpMMI->ptMinTrackSize.y = 400;
+	lpMMI->ptMinTrackSize.y = 600;
 
 	CDialogEx::OnGetMinMaxInfo(lpMMI);
 }
@@ -309,4 +320,43 @@ void CSearchMachineResultDlg::OnNMDblclkList1(NMHDR *pNMHDR, LRESULT *pResult)
 	*pResult = 0;
 	auto data = m_list.GetItemData(pNMItemActivate->iItem);
 	container_->PostMessageW(WM_BNCLKEDEX, 0, data);
+}
+
+
+void CSearchMachineResultDlg::OnSetFocus(CWnd* pOldWnd)
+{
+	CDialogEx::OnSetFocus(pOldWnd);
+
+	got_focus_ = true;
+}
+
+
+void CSearchMachineResultDlg::OnKillFocus(CWnd* pNewWnd)
+{
+	CDialogEx::OnKillFocus(pNewWnd);
+
+	got_focus_ = false;
+}
+
+
+void CSearchMachineResultDlg::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+
+
+	CDialogEx::OnChar(nChar, nRepCnt, nFlags);
+}
+
+
+BOOL CSearchMachineResultDlg::PreTranslateMessage(MSG* pMsg)
+{
+	if (m_input.GetSafeHwnd() && pMsg->hwnd == m_input.GetSafeHwnd()) {
+		if (pMsg->message == WM_KEYUP) {
+			if (pMsg->wParam == VK_RETURN) {
+				do_search();
+				return TRUE;
+			}
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }

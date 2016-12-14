@@ -12,9 +12,10 @@ namespace detail {
 
 	void __stdcall OnLoadFromDBProgress(void* udata, const core::progress_ex_ptr& progress)
 	{
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		CLoadFromDBProgressDlg* dlg = reinterpret_cast<CLoadFromDBProgressDlg*>(udata); assert(dlg);
 		dlg->AddProgress(progress);
+		std::this_thread::sleep_for(std::chrono::microseconds(0));
 	}
 
 	void ThreadWorker(LPVOID lp)

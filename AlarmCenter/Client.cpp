@@ -46,9 +46,6 @@ CClientService::CClientService(bool main_client)
 	, m_server_port(0)
 	, m_bShuttingDown(FALSE)
 	, main_client_(main_client)
-	, last_recv_time_()
-	, disconnected_time_()
-	, last_conn_time_()
 {
 	AUTO_LOG_FUNCTION;
 	disconnected_time_.SetStatus(COleDateTime::invalid);
