@@ -124,6 +124,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			seq = 1;
 
 		ademco::ademco_protocal protocal = ademco::heng_bo;
+		auto t = time(nullptr);
 
 		if (ademco::is_same_id(packet._id, AID_NULL)) {
 			// reply ACK
@@ -138,14 +139,14 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			mgr->MachineEventHandler(ES_TCP_CLIENT, client->ademco_id, EVENT_LINK_TEST, 0, 0, t, t);
 		} else if (ademco::is_valid_ademco_protocal(packet._id, protocal)) {
 			core::congwin_fe100_mgr::get_instance()->add_event(&packet._ademco_data);
-			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 			JLOGA("remote protocal %s. seq %d, ademco_id %04d\n",packet._id, seq, packet._ademco_data._ademco_id);
 			client->protocal_ = protocal;
-			//bNeed2ReplyAck = FALSE;
+
 			TaskPtr task = client->GetFirstTask();
-			if (task && task->_seq == seq && task->_last_send_time.GetStatus() == COleDateTime::valid) {
+			if (task && task->_seq == seq) {
 				client->RemoveFirstTask();
 			}
+
 			if (packet._ademco_data._len > 2) {
 				int ademco_id = packet._ademco_data._ademco_id;
 				auto ademco_event = packet._ademco_data._ademco_event;
@@ -155,16 +156,10 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 					mgr->MachineOnline(ES_TCP_CLIENT, client->ademco_id, FALSE);
 					client->ademco_id = ademco_id;
 				}
-				/*wchar_t out[1024] = { 0 };
-				_tprintf_s(out, 1024, L"[#%04d| %04d %d %03d] %s\n",
-							client->ademco_id, ademco_event, subzone,
-							zone, ademco::GetAdemcoEventStringChinese(ademco_event).c_str());
-				CLog::WriteLogW(out);*/
 
 				if (!client->online) {
-					if (mgr->CheckIsValidMachine(ademco_id, /*client->acct, */zone)) {
-						JLOGA("CheckIsValidMachine succeeded aid %04d",
-										client->ademco_id/*, client->acct*/);
+					if (mgr->CheckIsValidMachine(ademco_id, zone)) {
+						JLOGA("CheckIsValidMachine succeeded aid %04d", client->ademco_id);
 						client->online = true;
 						resolved = true;
 						BOOL bTheSameIpPortClientReconnect = FALSE;
@@ -174,9 +169,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 											   inet_ntoa(client->foreignAddIn.sin_addr),
 											   client, client->OnConnHangup);
 						}
-						mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone,
-												 subzone, /*packet._timestamp._time*/time(nullptr), time(nullptr),
-												 packet._xdata);
+						mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone, subzone, t, t, packet._xdata);
 					} else {
 						HandleInvalidClient(ademco_id);
 						server->RecycleOutstandingClient(client);
@@ -184,9 +177,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 						goto EXIT_ON_RECV;
 					}
 				} else {
-					mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone,
-											 subzone, /*packet._timestamp._time*/time(nullptr), time(nullptr),
-											 packet._xdata);
+					mgr->MachineEventHandler(ES_TCP_CLIENT, ademco_id, ademco_event, zone, subzone, t, t, packet._xdata);
 				}
 			} else {
 				bFaild = TRUE;
@@ -196,14 +187,13 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			record = TR(IDS_STRING_ILLEGAL_OP);
 			JLOG(record);
 #ifdef _DEBUG
-			core::history_record_manager::get_instance()->InsertRecord(client->ademco_id, 0, record,/* packet._timestamp._time*/ time(nullptr), core::RECORD_LEVEL_STATUS);
+			core::history_record_manager::get_instance()->InsertRecord(client->ademco_id, 0, record, t, core::RECORD_LEVEL_STATUS);
 #endif
 		} else if (ademco::is_same_id(packet._id, AID_ACK)) {
-			//int seq = ademco::NumStr2Dec(&packet._seq[0], packet._seq.size());
 			JLOG(L"remote: ACK. seq %d, ademco_id %04d\n", seq, packet._ademco_data._ademco_id);
 			bNeed2ReplyAck = FALSE;
 			TaskPtr task = client->GetFirstTask();
-			if (task && task->_seq == seq) {
+			if (task && task->send_once_ && task->_seq == seq) {
 				client->RemoveFirstTask();
 			}
 		} else {
@@ -214,14 +204,12 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 
 		if (bFaild) {
 			client->buff.Clear();
-			DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_DUH, seq,
-									   /*acct, */nullptr, client->ademco_id, ademco::EVENT_INVALID_EVENT, 0, 0);
+			auto dwSize = packet.Make(buff, BUFF_SIZE, AID_DUH, seq, nullptr, client->ademco_id, ademco::EVENT_INVALID_EVENT, 0, 0);
 			server->RealSendToClient(client, buff, dwSize);
 		} else {
 			client->buff.rpos = (client->buff.rpos + dwBytesCommited);
 			if (bNeed2ReplyAck) {
-				DWORD dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, /*acct,*/nullptr,
-										   client->ademco_id, ademco::EVENT_INVALID_EVENT, 0, 0);
+				auto dwSize = packet.Make(buff, BUFF_SIZE, AID_ACK, seq, nullptr, client->ademco_id, ademco::EVENT_INVALID_EVENT, 0, 0);
 				server->RealSendToClient(client, buff, dwSize);
 			}
 		}

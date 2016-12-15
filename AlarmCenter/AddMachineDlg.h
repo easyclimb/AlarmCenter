@@ -28,13 +28,11 @@ public:
 	CEdit m_ademco_id;
 	CComboBox m_banned;
 	CComboBox m_type;
-	//CEdit m_device_id;
 	CEdit m_alias;
 	CEdit m_contact;
 	CEdit m_address;
 	CEdit m_phone;
 	CEdit m_phone_bk;
-	//CComboBox m_group;
 	CStatic m_note;
 	CButton m_ok;
 	core::alarm_machine_ptr m_machine;

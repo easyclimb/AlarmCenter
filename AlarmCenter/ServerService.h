@@ -19,22 +19,20 @@ namespace server {
 #define CONNID_IDLE 0xffffffff
 
 typedef struct Task {
-	int _retry_times;
-	COleDateTime _last_send_time;
-	int _seq;
-	int _ademco_id;
-	ademco::ADEMCO_EVENT _ademco_event;
-	int _gg;
-	int _zone;
-	ademco::char_array_ptr _xdata;
+	int _retry_times = 0;
+	std::chrono::steady_clock::time_point _last_send_time = {};
+	bool send_once_ = false;
+	int _seq = 1;
+	int _ademco_id = 0;
+	ademco::ADEMCO_EVENT _ademco_event = ademco::EVENT_INVALID_EVENT;
+	int _gg = 0;
+	int _zone = 0;
+	ademco::char_array_ptr _xdata = nullptr;
 
-	Task() : _retry_times(0), _last_send_time(), _seq(1), _ademco_id(0),
-		_ademco_event(ademco::EVENT_INVALID_EVENT), _gg(0), _zone(0), _xdata()
-	{}
+	Task() {}
 
 	Task(int ademco_id, ademco::ADEMCO_EVENT ademco_event, int gg, int zone, const ademco::char_array_ptr& xdata) :
-		_retry_times(0), _last_send_time(), _seq(1), _ademco_id(ademco_id),
-		_ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(xdata) 
+		_retry_times(0), _last_send_time(), _seq(1), _ademco_id(ademco_id), _ademco_event(ademco_event), _gg(gg), _zone(zone), _xdata(xdata)
 	{}
 
 	~Task() {}
@@ -56,9 +54,9 @@ class CClientData
 		DATA_BUFF() { Clear(); }
 		void Clear() { memset(this, 0, sizeof(DATA_BUFF)); }
 	}DATA_BUFF;
+
 public:
 	time_t tmLastActionTime;
-	//volatile unsigned int conn_id;
 	SOCKET socket;
 	struct sockaddr_in foreignAddIn;
 	bool online;
@@ -75,6 +73,7 @@ public:
 	bool has_data_to_send;
 	bool wait_to_kill = false;
 	bool disconnectd;
+
 	CClientData() {
 		tmLastActionTime = 0;
 		Clear();
@@ -98,7 +97,7 @@ public:
 		cur_seq = 1;
 	}
 
-	void ResetTime(bool toZero)	{
+	void ResetTime(bool toZero) {
 		if (toZero) {
 			tmLastActionTime = 0;
 		} else {
@@ -143,7 +142,7 @@ public:
 			std::lock_guard<std::mutex> lock(lock4TaskList, std::adopt_lock);
 			if (!taskList.empty()) {
 				return taskList.front();
-			}	
+			}
 		}
 		return nullptr;
 	}
@@ -193,7 +192,7 @@ class CServerService
 public:
 	CServerService(unsigned int& nPort,
 				   unsigned int nMaxClients,
-				   unsigned int nTimeoutVal, 
+				   unsigned int nTimeoutVal,
 				   bool blnCreateAsync = false,
 				   bool blnBindLocal = true);
 
@@ -202,7 +201,7 @@ public:
 	inline void SetEventHander(const std::shared_ptr<CServerEventHandler>& handler) { m_handler = handler; }
 private:
 	CServerService();
-	
+
 	bool running_ = false;
 	std::thread thread_accept_ = {};
 	std::thread thread_recv_ = {};
@@ -231,7 +230,7 @@ protected:
 	HANDLE_EVENT_RESULT HandleClientEvents(const net::server::CClientDataPtr& client);
 	void RecycleLiveClient(const net::server::CClientDataPtr& client, BOOL bShowOfflineInfo);
 public:
-	
+
 	void Start();
 	void Stop();
 	void ResolveOutstandingClient(const net::server::CClientDataPtr& client, BOOL& bTheSameIpPortClientReconnect);
@@ -240,5 +239,6 @@ public:
 	bool RealSendToClient(const net::server::CClientDataPtr& client, const char* data, size_t data_len);
 };
 
-};};
+};
+};
 

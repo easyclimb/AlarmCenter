@@ -43,15 +43,14 @@ private:
 	bool main_client_;
 	std::list<std::vector<char>> buffer_;
 	std::mutex buffer_lock_;
-	COleDateTime last_recv_time_ = {};
-	COleDateTime disconnected_time_ = {};
-	COleDateTime last_conn_time_ = {};
+	std::chrono::steady_clock::time_point last_recv_time_ = {};
+	std::chrono::steady_clock::time_point disconnected_time_ = {};
+	std::chrono::steady_clock::time_point last_conn_time_ = {};
 	bool showed_disconnected_info_to_user_ = true;
 public:
 	int get_cur_seq() { if (cur_seq_ > 9999) cur_seq_ = 1; return cur_seq_++; }
 	void PrepairToSend(int ademco_id, const char* buff, size_t buff_size);
 	bool main_client() const { return main_client_; }
-	//void Restart();
 	BOOL Start(const std::string& server_ip, unsigned int server_port);
 	void SetEventHandler(std::shared_ptr<CClientEventHandler> handler);
 	void Stop();

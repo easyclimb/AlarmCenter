@@ -298,10 +298,11 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 	//AUTO_LOG_FUNCTION;
 
 	// check reminder/expire
-	if (_group_id != 0 && GetTickCount() - _last_time_check_if_expire > CHECK_EXPIRE_GAP_TIME) {
+	if (_group_id != 0 && std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - last_check_if_expire_time_).count() > CHECK_EXPIRE_GAP_TIME) {
+		
+		auto now = std::chrono::system_clock::now();
 
 		{
-			auto now = std::chrono::system_clock::now();
 			auto diff = consumer_->remind_time - now;
 			if (std::chrono::duration_cast<std::chrono::minutes>(diff).count() <= 0) {
 				CString rec;
@@ -314,10 +315,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				history_record_manager::get_instance()->InsertRecord(_ademco_id, zoneValue, rec,
 																	 ademcoEvent->_recv_time,
 																	 RECORD_LEVEL_EXCEPTION);
-				//PostMessageToMainWnd(WM_REMINDER_TIME_UP, _ademco_id, _submachine_zone);
-				auto t = time(nullptr);
-				auto dummy = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
-				notify_observers(dummy);
+				notify_observers_with_event();
 			}
 		}
 
@@ -333,11 +331,11 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 														ademcoEvent->_recv_time, 
 														RECORD_LEVEL_EXCEPTION);
 			PostMessageToMainWnd(WM_SERVICE_TIME_UP, _ademco_id, _submachine_zone);
-			auto t = time(nullptr);
-			auto dummy = std::make_shared<AdemcoEvent>(ES_UNKNOWN, EVENT_MACHINE_INFO_CHANGED, 0, 0, t, t);
-			notify_observers(dummy);
+			
+			notify_observers_with_event();
 		}
-		_last_time_check_if_expire = GetTickCount();
+
+		last_check_if_expire_time_ = std::chrono::steady_clock::now();
 	}
 
 	// handle ademco event

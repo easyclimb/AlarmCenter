@@ -78,7 +78,7 @@ private:
 	// 2016-5-5 18:28:59 for service expire
 	std::chrono::system_clock::time_point remind_time_ = {};
 
-	DWORD _last_time_check_if_expire = {};
+	std::chrono::steady_clock::time_point last_check_if_expire_time_ = {};
 	web::BaiduCoordinate _coor = {};
 	int _zoomLevel = 14;
 	sms_config _sms_cfg = {};

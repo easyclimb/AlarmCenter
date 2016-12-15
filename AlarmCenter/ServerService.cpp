@@ -442,35 +442,38 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 		TaskPtr task = client->GetFirstTask();
 		if (task) {
 			bool bNeedSend = false;
-			if (task->_last_send_time.m_dt == 0.0) {
+			if (!task->send_once_) {
 				bNeedSend = true;
 			}
+
 			if (!bNeedSend) {
-				COleDateTime now = COleDateTime::GetCurrentTime();
-				COleDateTimeSpan span = now - task->_last_send_time;
-				if (span.GetTotalSeconds() > 5) {
+				auto now = std::chrono::steady_clock::now();
+				auto span = std::chrono::duration_cast<std::chrono::seconds>(now - task->_last_send_time);
+				if (span.count() > 5) {
 					bNeedSend = true;
 				}
 			}
+
 			if (bNeedSend) {
 				if (task->_retry_times > 10) {
 					bNeedSend = false;
 					client->RemoveFirstTask();
 				}
 			}
+
 			if (bNeedSend) {
 				JLOG(L"++++++++++++++task list size %d, cur task seq %d, retry_times %d, ademco_id %d, event %d, gg %d, zone %d\n",
 					client->taskList.size(), task->_seq, task->_retry_times, task->_ademco_id,
 					task->_ademco_event, task->_gg, task->_zone);
-				if (task->_last_send_time.GetStatus() == COleDateTime::valid)
+				if (task->send_once_)
 					task->_retry_times++;
-				task->_last_send_time = COleDateTime::GetCurrentTime();
+				task->_last_send_time = std::chrono::steady_clock::now();
 				static ademco::AdemcoPacket packet;
 				char data[1024] = { 0 };
 				size_t data_len = packet.Make(data, 1024,
 											  ademco::g_valid_ademco_protocals[client->protocal_],
 											  task->_seq,
-											  /*m_clients[i].acct, */nullptr,
+											  nullptr,
 											  task->_ademco_id,
 											  task->_ademco_event,
 											  task->_gg,
