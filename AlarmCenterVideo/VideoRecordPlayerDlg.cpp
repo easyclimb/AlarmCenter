@@ -8,9 +8,16 @@
 #include "../video/jovision/VideoDeviceInfoJovision.h"
 #include "../video/jovision/VideoUserInfoJovision.h"
 #include "JovisonSdkMgr.h"
+#include "alarm_center_video_client.h"
 
 using namespace video;
 using namespace video::jovision;
+
+
+std::string g_szRecFilename = "C:\\Video.mp4";
+FILE *g_pRecFile = NULL;
+bool s_bDownload = false;
+bool s_bPlay = false;
 
 // CVideoRecordPlayerDlg dialog
 
@@ -30,6 +37,7 @@ void CVideoRecordPlayerDlg::AddLogItem(const CString & log)
 {
 	int ndx = m_list_log.AddString(log);
 	m_list_log.SetCurSel(ndx);
+	ipc::alarm_center_video_client::get_instance()->insert_record(0, 0, (LPCTSTR)log);
 }
 
 void CVideoRecordPlayerDlg::DoDataExchange(CDataExchange* pDX)
@@ -42,6 +50,8 @@ void CVideoRecordPlayerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_GET_REC_LIST, m_btn_get_rec_list);
 	DDX_Control(pDX, IDC_STATIC_LOGS, m_group_logs);
 	DDX_Control(pDX, IDC_LIST3, m_list_log);
+	DDX_Control(pDX, IDC_BUTTON_GET_REC_LIST2, m_btn_dl);
+	DDX_Control(pDX, IDC_BUTTON1, m_btn_play);
 }
 
 
@@ -56,6 +66,8 @@ BEGIN_MESSAGE_MAP(CVideoRecordPlayerDlg, CDialogEx)
 	ON_MESSAGE(WM_JC_RESETSTREAM, &CVideoRecordPlayerDlg::OnJcResetStream)
 	ON_WM_MOVE()
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON_GET_REC_LIST2, &CVideoRecordPlayerDlg::OnBnClickedButtonGetRecList2)
+	ON_BN_CLICKED(IDC_BUTTON1, &CVideoRecordPlayerDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -70,6 +82,7 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 	auto pData2 = msg->pData2;
 	//auto pUserData = msg->pUserData;
 	const char* dwMsgID = 0;
+	bool bBeginDownload = false;
 
 	switch (etType) {
 	case JCET_GetFileListOK://获取远程录像成功
@@ -134,19 +147,54 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 		dwMsgID = IDS_ServerStop;
 		break;
 
+	case JCET_DownloadData://录像下载数据
+	{
+		if (g_pRecFile == NULL && s_bDownload) {
+			g_pRecFile = fopen(g_szRecFilename.c_str(), "wb");
+			if (g_pRecFile != NULL) {
+				bBeginDownload = true;
+			} else {
+				break;
+			}
+		}
+
+		if (g_pRecFile != NULL) {
+			fwrite((char*)pData1, pData2, 1, g_pRecFile);
+		}
+	}
+	break;
+
+	case JCET_DownloadEnd://录像下载完成
+	case JCET_DownloadStop://录像下载停止
+	case JCET_DownloadError://远程下载失败
+	case JCET_DownloadTimeout://远程下载超时
+	{
+		if (g_pRecFile != NULL) {
+			fclose(g_pRecFile);
+			g_pRecFile = NULL;
+		}
+
+		m_btn_dl.SetWindowTextW(TR(IDS_STRING_DOWNLOAD));
+		s_bDownload = false;
+	}
+	break;
+
 	default:
 		return;
 		break;
 	}
 
 	CString strMsg;
-	std::wstring wMsg;
-	if (pData1 != NULL) {
-		std::string sMsg = (char*)pData1;
-		wMsg = std::wstring(sMsg.begin(), sMsg.end());
+
+	if (dwMsgID) {
+		std::wstring wMsg;
+		if (pData1 != NULL) {
+			std::string sMsg = (char*)pData1;
+			wMsg = std::wstring(sMsg.begin(), sMsg.end());
+		}
+		strMsg.Format(TR(dwMsgID), nLinkID, wMsg.c_str());
+		AddLogItem(strMsg);
 	}
-	strMsg.Format(TR(dwMsgID), nLinkID, wMsg.c_str());
-	AddLogItem(strMsg);
 
 	if (etType == JCET_ConnectOK) {
 		auto jov = sdk_mgr_jovision::get_instance();
@@ -163,19 +211,10 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 		}
 		
 		JCDateBlock data;
-		/*time_t t;
-		time(&t);
-		tm d = { 0 };
-		localtime_s(&d, &t);*/
 
 		CTime ct;
 		m_ctrl_date.GetTime(ct);
 		
-		/*data.nBeginYear = data.nEndYear = d.tm_year + 1900;
-		data.nBeginMonth = data.nEndMonth = d.tm_mon + 1;
-		data.nBeginDay = d.tm_mday - 1;
-		data.nEndDay = d.tm_mday;
-*/
 		{
 			data.nBeginYear = data.nEndYear = ct.GetYear();
 			data.nBeginMonth = data.nEndMonth = ct.GetMonth();
@@ -190,6 +229,41 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 		}
 		strMsg.Format(TR(dwMsgID), link_id_);
 		AddLogItem(strMsg);
+	} else {
+		switch (etType) {
+		case JCET_DownloadData://录像下载数据
+			if (bBeginDownload) {
+				dwMsgID = IDS_BeginDownload;
+			} else {
+				return;
+			}
+			break;
+
+		case JCET_DownloadEnd://录像下载完成
+			dwMsgID = IDS_DownloadOver;
+			break;
+
+		case JCET_DownloadStop://录像下载停止
+			dwMsgID = IDS_DownloadStop;
+			break;
+
+		case JCET_DownloadError://远程下载失败
+			dwMsgID = IDS_DownloadFailed;
+			break;
+
+		case JCET_DownloadTimeout://远程下载超时
+			dwMsgID = IDS_DownloadTimeout;
+			break;
+
+		default:
+			return;
+			break;
+		}
+
+		if (dwMsgID) {
+			strMsg.Format(TR(dwMsgID), link_id_);
+			AddLogItem(strMsg);
+		}
 	}
 }
 
@@ -207,6 +281,8 @@ BOOL CVideoRecordPlayerDlg::OnInitDialog()
 	m_group_rec_list.SetWindowTextW(TR(IDS_REC_LIST));
 	m_btn_get_rec_list.SetWindowTextW(TR(IDS_GET_REC_LIST));
 	m_group_logs.SetWindowTextW(TR(IDS_OP_LOG));
+	m_btn_play.SetWindowTextW(TR(IDS_STRING_PLAY_VIDEO));
+	m_btn_dl.SetWindowTextW(TR(IDS_STRING_DOWNLOAD));
 
 	if (automatic_) {
 		OnBnClickedButtonGetRecList();
@@ -236,6 +312,14 @@ void CVideoRecordPlayerDlg::OnClose()
 	if (link_id_ != -1) {
 		jov->disconnect(link_id_);
 		link_id_ = -1;
+	}
+
+	s_bDownload = false;
+	s_bPlay = false;
+
+	if (g_pRecFile) {
+		fclose(g_pRecFile);
+		g_pRecFile = nullptr;
 	}
 
 
@@ -363,12 +447,12 @@ void CVideoRecordPlayerDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CVideoRecordPlayerDlg::OnLbnDblclkList1()
 {
-	int ndx = m_list_rec.GetCurSel(); if (ndx < 0) return;
+	/*int ndx = m_list_rec.GetCurSel(); if (ndx < 0) return;
 
 	int nFileID = m_list_rec.GetItemData(ndx);
 	if (nFileID >= 0) {
-		sdk_mgr_jovision::get_instance()->download_remote_file(link_id_, nFileID);
-	}
+		sdk_mgr_jovision::get_instance()->remote_play(link_id_, nFileID);
+	}*/
 }
 
 
@@ -392,8 +476,6 @@ void CVideoRecordPlayerDlg::OnMove(int x, int y)
 		auto jov = sdk_mgr_jovision::get_instance();
 		jov->set_video_preview(link_id_, m_player.GetRealHwnd(), m_player.GetRealRect());
 	}
-
-
 }
 
 
@@ -407,4 +489,65 @@ void CVideoRecordPlayerDlg::OnDestroy()
 		jov->disconnect(link_id_);
 		link_id_ = -1;
 	}
+}
+
+
+void CVideoRecordPlayerDlg::OnBnClickedButtonGetRecList2()
+{
+	auto jov = jovision::sdk_mgr_jovision::get_instance();
+
+	if (s_bDownload) {
+		jov->download_remote_file(link_id_, -1);
+
+		if (g_pRecFile != NULL) {
+			fclose(g_pRecFile);
+			g_pRecFile = NULL;
+
+			CString strMsg;
+			strMsg.Format(TR(IDS_DownloadStop), link_id_);
+			AddLogItem(strMsg);
+		}
+
+		m_btn_dl.SetWindowTextW(TR(IDS_STRING_DOWNLOAD));
+		s_bDownload = false;
+
+	} else {
+		int ndx = m_list_rec.GetCurSel(); if (ndx < 0) return;
+		int nFileID = m_list_rec.GetItemData(ndx);
+		if (nFileID >= 0) {
+			std::wstring path;
+
+			if (!jlib::get_save_as_dialog_path(path, L"mp4", GetSafeHwnd())) {
+				return;
+			}
+
+			g_szRecFilename = utf8::u16_to_mbcs(path);
+			jov->download_remote_file(link_id_, nFileID);
+			m_btn_dl.SetWindowTextW(TR(IDS_STRING_STOP_DOWNLOAD));
+			s_bDownload = true;
+		}
+	}
+
+}
+
+
+void CVideoRecordPlayerDlg::OnBnClickedButton1()
+{
+	auto jov = jovision::sdk_mgr_jovision::get_instance();
+
+	//if (s_bPlay) {
+		//jov->remote_play(link_id_, -1);
+		//m_btn_play.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_PLAY));
+		//s_bPlay = false;
+	/*} else {
+		
+	}*/
+
+		int ndx = m_list_rec.GetCurSel(); if (ndx < 0) return;
+		int nFileID = m_list_rec.GetItemData(ndx);
+		if (nFileID >= 0) {
+			jov->remote_play(link_id_, nFileID);
+			//m_btn_play.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_STOP));
+			s_bPlay = true;
+		}
 }

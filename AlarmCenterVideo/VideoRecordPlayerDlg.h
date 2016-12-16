@@ -61,4 +61,8 @@ protected:
 public:
 	afx_msg void OnMove(int x, int y);
 	afx_msg void OnDestroy();
+	CButton m_btn_dl;
+	afx_msg void OnBnClickedButtonGetRecList2();
+	CButton m_btn_play;
+	afx_msg void OnBnClickedButton1();
 };

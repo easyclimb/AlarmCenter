@@ -354,12 +354,12 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 
 	if (client->wait_to_kill) {
 		JLOG(L"wait_to_kill true.");
-		return RESULT_RECYCLE_AND_BREAK;
+		//return RESULT_RECYCLE_AND_BREAK;
 	}
 
 	if (client->disconnectd) {
 		JLOG(L"disconnectd true.");
-		return RESULT_RECYCLE_AND_BREAK;
+		//return RESULT_RECYCLE_AND_BREAK;
 	}
 
 	timeval tv = { 0, 0 };

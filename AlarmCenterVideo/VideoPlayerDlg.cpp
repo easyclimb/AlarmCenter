@@ -346,6 +346,7 @@ void CVideoPlayerDlg::HandleEzvizMsg(const ezviz_msg_ptr& msg)
 		break;
 	case sdk_mgr_ezviz::INS_RECORD_FILE:
 		//pInstance->insRecordFile(pMessageInfo);
+		JLOGA("sdk_mgr_ezviz::INS_RECORD_FILE ");
 		break;
 	case sdk_mgr_ezviz::INS_RECORD_SEARCH_END:
 		break;
@@ -535,15 +536,37 @@ void funJCEventCallback(JCLink_t nLinkID, JCEventType etType, DWORD_PTR pData1, 
 void funJCDataCallback(JCLink_t nLinkID, PJCStreamFrame pFrame, LPVOID /*pUserData*/)
 {
 	char acBuffer[128];
-	sprintf(acBuffer, "funJCDataCallback nLinkID:%d Type:%d\n", nLinkID, pFrame->sType);
+	std::string ext;
+	JCStreamInfo info;
+	auto jmgr = jovision::sdk_mgr_jovision::get_instance();
+	if (jmgr->get_stream_info(nLinkID, &info)) {
+		switch (info.eRecFileType) {
+		case JCRT_SV4:
+			ext = "sv4";
+			break;
+
+		case JCRT_SV5:
+			ext = "sv5";
+			break;
+
+		case JCRT_SV6:
+			ext = "sv6";
+			break;
+
+		case JCRT_MP4:
+			ext = "mp4";
+			break;
+		}
+	}
+	sprintf(acBuffer, "funJCDataCallback nLinkID:%d Type:%d, ext %s\n", nLinkID, pFrame->sType, ext.c_str());
 	OutputDebugStringA(acBuffer);
 }
 
 void funJCRawDataCallback(JCLink_t nLinkID, PJCRawFrame pFrame, LPVOID /*pUserData*/)
 {
-	char acBuffer[128];
+	/*char acBuffer[128];
 	sprintf(acBuffer, "funJCRawDataCallback nLinkID:%d\n", nLinkID);
-	OutputDebugStringA(acBuffer);
+	OutputDebugStringA(acBuffer);*/
 }
 
 void funLanSearchCallback(PJCLanDeviceInfo /*pDevice*/)

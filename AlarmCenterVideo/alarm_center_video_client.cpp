@@ -24,7 +24,7 @@ public:
 
 
 	void get_is_show_video_user_mgr_dlg() {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 
 		alarm_center_video::is_show_mgr_dlg reply;
 		alarm_center_video::request request;
@@ -46,7 +46,7 @@ public:
 	}
 
 	bool insert_histories() {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 
 		alarm_center_video::hisroty_record record;
 		alarm_center_video::reply reply;
@@ -71,7 +71,7 @@ public:
 	}
 
 	void refresh_db() {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		alarm_center_video::request request;
 		alarm_center_video::reply reply;
 		grpc::ClientContext context;
@@ -82,14 +82,14 @@ public:
 	}
 
 	bool is_db_updated() {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		alarm_center_video::request request;
 		alarm_center_video::reply reply;
 		grpc::ClientContext context;
 
 		auto status = stub_->is_db_updated(&context, request, &reply);
 		if (status.ok()) {
-			JLOGA("is_db_updated: ", reply.place_holder().c_str());
+			//JLOGA("is_db_updated: ", reply.place_holder().c_str());
 			return reply.place_holder() == "true";
 		}
 
@@ -149,7 +149,7 @@ public:
 	}
 
 	bool delete_camera() {
-		AUTO_LOG_FUNCTION;
+		//AUTO_LOG_FUNCTION;
 		alarm_center_video::reply reply;
 		grpc::ClientContext context;
 
@@ -211,20 +211,20 @@ void alarm_center_video_client::worker()
 			auto diff = now - last_time_insert_histories;
 			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
 
-				range_log log("insert buffered histories per 1s");
+				//range_log log("insert buffered histories per 1s");
 
 				std::vector<history> histories;
 				{
 					std::lock_guard<std::mutex> lg(mutex_);
 
-					JLOGA("histories_.size = %d", histories_.size());
+					//JLOGA("histories_.size = %d", histories_.size());
 					if (!histories_.empty()) {
 						std::copy(histories_.begin(), histories_.end(), std::back_inserter(histories));
 						histories_.clear();
 					}
 				}
 
-				JLOGA("histories.size = %d", histories.size());
+				//JLOGA("histories.size = %d", histories.size());
 				if (!histories.empty()) {
 					client_->histories_ = histories;
 					client_->insert_histories();
@@ -248,7 +248,7 @@ void alarm_center_video_client::worker()
 			auto diff = now - last_time_check_is_db_updated;
 			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
 
-				range_log log("insert buffered histories per 1s");
+				//range_log log("insert buffered histories per 1s");
 
 				if (client_->is_db_updated()) {
 					video::video_manager::get_instance()->LoadFromDB(false);
@@ -266,7 +266,7 @@ void alarm_center_video_client::worker()
 			auto diff = now - last_time_check_has_device_waiting_to_play;
 			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
 
-				range_log log("get_wait_to_play_devices per 1s");
+				//range_log log("get_wait_to_play_devices per 1s");
 
 				client_->get_wait_to_play_devices();
 
@@ -280,7 +280,7 @@ void alarm_center_video_client::worker()
 			auto now = std::chrono::steady_clock::now();
 			auto diff = now - last_time_check_delete_camera;
 			if (std::chrono::duration_cast<std::chrono::seconds>(diff).count() >= 1) {
-				range_log log("delete_camera per 1s");
+				//range_log log("delete_camera per 1s");
 
 				std::vector<alarm_center_video::camera_info> cameras_waiting_to_delete;
 

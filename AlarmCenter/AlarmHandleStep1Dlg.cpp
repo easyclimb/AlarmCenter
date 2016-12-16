@@ -179,7 +179,6 @@ void CAlarmHandleStep1Dlg::handle_one()
 	case core::alarm_type_true:
 	case core::alarm_type_device_false_positive:
 	case core::alarm_type_man_made_false_positive:
-	case core::alarm_type_test_device:
 	{
 		// resolve alarm judgment
 		CAlarmHandleStep2Dlg dlg;
@@ -204,6 +203,17 @@ void CAlarmHandleStep1Dlg::handle_one()
 		}
 	}
 		break;
+
+	case core::alarm_type_test_device:
+	{
+		judgement = mgr->execute_add_judgment(alarm_judgement_by_confirm_with_owner);
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_judgment(cur_handling_alarm_info_->get_id(), judgement);
+		cur_handling_alarm_info_ = mgr->execute_update_alarm_status(cur_handling_alarm_info_->get_id(), alarm_status::alarm_status_cleared);
+		handled = true;
+
+		break;
+	}
+		
 	
 	case core::alarm_type_cannot_determine:
 		need_security_guard = true;
