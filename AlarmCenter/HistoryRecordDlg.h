@@ -97,7 +97,7 @@ protected:
 	void insert_grid_content(const core::alarm_ptr& alarm);
 	void InitListCtrlHeader(void);
 	void init_grid();
-	CString GetExcelDriver();
+	
 	BOOL GetSaveAsFilePath(CString& path);
 	void OnExportTraverseHistoryRecord(const core::history_record_ptr& record);
 	void OnExportTraverseAlarmRecord(const core::alarm_ptr& record);
@@ -110,6 +110,7 @@ public:
 	static void __stdcall ExportTraverseSeledHistoryRecord(void* udata);
 
 	static void __stdcall OnExportAlarmRecordCB(void* udata, const core::alarm_ptr& record);
+	static CString GetExcelDriver();
 
 private:
 	enum {

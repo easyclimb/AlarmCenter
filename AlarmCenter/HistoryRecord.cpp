@@ -205,7 +205,7 @@ BOOL history_record_manager::GetHistoryRecordBySql(const CString& sql, const obs
 	//std::lock_guard<std::mutex> lock(m_csRecord);
 	std::shared_ptr<observer_type> obs(ptr.lock());
 	if (!obs) return FALSE;
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500));; }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
 	
@@ -301,11 +301,9 @@ BOOL history_record_manager::GetTopNumRecordByAdemcoIDAndZone(int nums, int adem
 BOOL history_record_manager::DeleteHalfRecored()
 {
 	AUTO_LOG_FUNCTION;
-	//EnterCriticalSection(&m_csRecord);
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500));; }
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
-	/*if (db_->exec("delete from table_history_record"))	{*/
 	CString sql;
 	int num = m_nTotalRecord / 2;
 	sql.Format(L"delete from table_history_record where id in (select id from table_history_record order by id limit %d)", num);
@@ -317,10 +315,33 @@ BOOL history_record_manager::DeleteHalfRecored()
 		JLOG(L"m_csLock.UnLock()\n");
 		auto record = std::make_shared<history_record>(-1, -1, -1, m_curUserInfo->get_id(), RECORD_LEVEL_CLEARHR, L"", L"");
 		notify_observers(record);
-		//InsertRecord(-1, -1, s, time(nullptr), RECORD_LEVEL_USERCONTROL);
 		return TRUE;
 	}
-	JLOG(L"m_csLock.UnLock()\n");
+	return FALSE;
+}
+
+BOOL history_record_manager::DeleteRecordByMachine(int ademco_id, int zone_value)
+{
+	AUTO_LOG_FUNCTION;
+	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
+	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
+	JLOG(L"m_csLock.Lock()\n");
+	CString sql;
+	sql.Format(L"delete from table_history_record where ademco_id=%d", ademco_id);
+	if (zone_value != -1) {
+		sql.AppendFormat(L" and zone_value=%d", zone_value);
+	}
+
+	if (db_->exec(utf8::w2a((LPCTSTR)sql))) {
+		//db_->exec("update sqlite_sequence set seq=0 where name='table_history_record'");
+		m_nRecordCounter = 0;
+		m_nTotalRecord = GetRecordCountPro();
+		m_recordMap.clear();
+		JLOG(L"m_csLock.UnLock()\n");
+		auto record = std::make_shared<history_record>(-1, ademco_id, zone_value, m_curUserInfo->get_id(), RECORD_LEVEL_CLEARHR, L"", L"");
+		notify_observers(record);
+		return TRUE;
+	}
 	return FALSE;
 }
 
@@ -328,9 +349,9 @@ BOOL history_record_manager::DeleteHalfRecored()
 long history_record_manager::GetRecordCountPro()
 {
 	AUTO_LOG_FUNCTION;
-	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500));; }
-	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); 
-	JLOG(L"m_csLock.Lock()\n");
+	//while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
+	//std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); 
+	//JLOG(L"m_csLock.Lock()\n");
 	try {
 		Statement query(*db_, "select count(*) from table_history_record");
 		if (query.executeStep()) {
@@ -339,7 +360,7 @@ long history_record_manager::GetRecordCountPro()
 	} catch (std::exception& e) {
 		JLOGA(e.what());
 	}
-	JLOG(L"m_csLock.UnLock()\n");
+	//JLOG(L"m_csLock.UnLock()\n");
 	return 0;
 }
 
@@ -456,14 +477,19 @@ BOOL history_record_manager::GetHistoryRecordByDate(int ademco_id, int zone_valu
 	AUTO_LOG_FUNCTION;
 	CString query = _T("select * from table_history_record where ");
 	if (ademco_id != -1) {
-		query.AppendFormat(L"ademco_id=%d and ", ademco_id);
+		query.AppendFormat(L"ademco_id=%d ", ademco_id);
 	}
 
 	if (zone_value != -1) {
-		query.AppendFormat(L"zone_value=%d and ", zone_value);
+		query.AppendFormat(L" and zone_value=%d ", zone_value);
 	}
 
-	query.AppendFormat(_T("time between \"%s\" and \"%s\" order by id"), beg, end);
+	if (!beg.IsEmpty() && !end.IsEmpty()) {
+		query.AppendFormat(_T(" and time between \"%s\" and \"%s\" "), beg, end);
+	}
+
+	query += L" order by id";
+
 	return GetHistoryRecordBySql(query, ptr, FALSE);
 }
 

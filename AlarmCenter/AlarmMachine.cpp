@@ -76,7 +76,7 @@ machine_uuid alarm_machine::get_uuid() const
 void alarm_machine::SetPrivatePacketFromServer1(const ademco::PrivatePacket* privatePacket)
 {
 	if (privatePacket == nullptr) {
-		privatePacket_from_server1_ = nullptr;;
+		privatePacket_from_server1_ = nullptr;
 		return;
 	}
 
@@ -89,7 +89,7 @@ void alarm_machine::SetPrivatePacketFromServer1(const ademco::PrivatePacket* pri
 void alarm_machine::SetPrivatePacketFromServer2(const ademco::PrivatePacket* privatePacket)
 {
 	if (privatePacket == nullptr) {
-		privatePacket_from_server2_ = nullptr;;
+		privatePacket_from_server2_ = nullptr;
 		return;
 	}
 

@@ -46,7 +46,6 @@ protected:
 	//void InsertList(const core::alarm_machine_ptr& machine);
 	BOOL GetSaveAsFilePath(CString& path);
 	BOOL Export(const CString& excelPath);
-	CString GetExcelDriver();
 	BOOL PrintRecord(CListCtrl &list);
 	BOOL UpdateMachineInfo(int row, int col, const CString& txt);
 	void RepositionItems();

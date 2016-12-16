@@ -9,6 +9,7 @@
 #include "../video/jovision/VideoUserInfoJovision.h"
 #include "JovisonSdkMgr.h"
 #include "alarm_center_video_client.h"
+#include "ConfigHelper.h"
 
 using namespace video;
 using namespace video::jovision;
@@ -73,6 +74,25 @@ END_MESSAGE_MAP()
 
 // CVideoRecordPlayerDlg message handlers
 
+
+void CVideoRecordPlayerDlg::load_pos()
+{
+	auto cfg = util::CConfigHelper::get_instance();
+	auto rc = cfg->get_rc_video_rec_dlg();
+	if (rc.IsRectEmpty() || rc.IsRectNull()) {
+
+	} else {
+		MoveWindow(rc);
+	}
+}
+
+void CVideoRecordPlayerDlg::save_pos()
+{
+	auto cfg = util::CConfigHelper::get_instance();
+	CRect rc;
+	GetWindowRect(rc);
+	cfg->set_rc_video_rec_dlg(rc);
+}
 
 void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_msg_ptr & msg)
 {
@@ -263,6 +283,17 @@ void CVideoRecordPlayerDlg::HandleJovisionMsg(const video::jovision::jovision_ms
 		if (dwMsgID) {
 			strMsg.Format(TR(dwMsgID), link_id_);
 			AddLogItem(strMsg);
+
+			if (JCET_DownloadEnd == etType) {
+				auto file = utf8::mbcs_to_u16(g_szRecFilename);
+				strMsg += L"\r\n";
+				strMsg += file.c_str();
+				strMsg += L"\r\n" + TR(IDS_STRING_OPEN_FILE) + L"?";
+				int ret = MessageBox(strMsg, L"", MB_YESNO | MB_ICONQUESTION);
+				if (ret == IDYES) {
+					ShellExecute(GetSafeHwnd(), L"open", file.c_str(), nullptr, nullptr, SW_SHOW);
+				}
+			}
 		}
 	}
 }
@@ -287,6 +318,10 @@ BOOL CVideoRecordPlayerDlg::OnInitDialog()
 	if (automatic_) {
 		OnBnClickedButtonGetRecList();
 	}
+
+	load_pos();
+
+	init_over_ = true;
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // EXCEPTION: OCX Property Pages should return FALSE
@@ -322,7 +357,7 @@ void CVideoRecordPlayerDlg::OnClose()
 		g_pRecFile = nullptr;
 	}
 
-
+	save_pos();
 	ShowWindow(SW_HIDE);
 }
 
@@ -475,6 +510,10 @@ void CVideoRecordPlayerDlg::OnMove(int x, int y)
 	if (previewing_) {
 		auto jov = sdk_mgr_jovision::get_instance();
 		jov->set_video_preview(link_id_, m_player.GetRealHwnd(), m_player.GetRealRect());
+	}
+	
+	if (init_over_) {
+		save_pos();
 	}
 }
 

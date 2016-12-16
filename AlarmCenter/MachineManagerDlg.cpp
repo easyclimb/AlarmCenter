@@ -18,6 +18,11 @@
 #include "ZoneInfo.h"
 #include "ConsumerTypeMgrDlg.h"
 #include "consumer.h"
+#include <odbcinst.h>
+#include <afxdb.h>
+#include <comdef.h>
+#include "HistoryRecordDlg.h"
+#include "../contrib/sqlitecpp/SQLiteCpp.h"
 
 using namespace core;
 
@@ -834,6 +839,20 @@ void CMachineManagerDlg::OnBnClickedButtonConfirmChange()
 {}
 
 
+typedef std::function<void(const core::history_record_ptr&)> traverse_hr_func;
+
+class traverse_hr_observer : public dp::observer<core::history_record_ptr>
+{
+public:
+	virtual void on_update(const core::history_record_ptr& hr) {
+		if (func_) {
+			func_(hr);
+		}
+	}
+
+	traverse_hr_func func_ = nullptr;
+};
+
 bool CMachineManagerDlg::DoDeleteMachineReturnParentItem(HTREEITEM& hParent)
 {
 	alarm_machine_ptr machine = GetCurEditingMachine();
@@ -852,6 +871,71 @@ bool CMachineManagerDlg::DoDeleteMachineReturnParentItem(HTREEITEM& hParent)
 		m_tree.DeleteItem(m_curselTreeItemMachine);
 		m_curselTreeItemMachine = nullptr;
 		m_tree.SelectItem(m_tree.GetRootItem());
+
+		int ret = MessageBox(TR(IDS_STRING_Q_DELETE_HR_OF_MACHINE), L"", MB_YESNO | MB_ICONWARNING);
+		if (IDYES == ret) {
+			ret = MessageBox(TR(IDS_STRING_Q_EXPORT_HR_OF_MACHINE), L"", MB_YESNO | MB_ICONWARNING);
+			if (IDYES == ret) {
+
+				std::wstring excelPath;
+				if (get_save_as_dialog_path(excelPath, L"xls", GetSafeHwnd())) {
+					CString warningStr = _T("");
+					CDatabase database;
+					CString sDriver = _T("");
+					CString sSql = _T("");
+
+					// 检索是否安装有Excel驱动 "Microsoft Excel Driver (*.xls)" 
+					sDriver = CHistoryRecordDlg::GetExcelDriver();
+					if (sDriver.IsEmpty()) {
+						// 没有发现Excel驱动
+						CString e;
+						e = TR(IDS_STRING_E_NO_EXECEL);
+						MessageBox(e, L"", MB_ICONERROR);
+						return FALSE;
+					}
+
+					// 创建进行存取的字符串
+					sSql.Format(_T("DRIVER={%s};DSN='';FIRSTROWHASNAMES=1;READONLY=FALSE;CREATE_DB=\")%s\";DBQ=%s"),
+								sDriver, excelPath.c_str(), excelPath.c_str());
+
+					// 创建数据库 (既Excel表格文件)
+					if (!database.OpenEx(sSql, CDatabase::noOdbcDialog)) {
+						CString e;
+						e = TR(IDS_STRING_E_CREATE_EXCEL);
+						MessageBox(e, L"", MB_ICONERROR);
+						return FALSE;
+					}
+
+					sSql.Format(_T("CREATE TABLE HISTORY_RECORD(Id TEXT,RecordTime TEXT,Record TEXT)"));
+					database.ExecuteSQL(sSql);
+
+					traverse_hr_func func = [&database](const core::history_record_ptr& hr) {
+						CString sSql;
+						sSql.Format(_T("INSERT INTO HISTORY_RECORD (Id,RecordTime,Record) VALUES('%d','%s','%s')"),
+									hr->id, hr->record_time, SQLite::double_quotes(hr->record).c_str());
+						database.ExecuteSQL(sSql);
+					};
+
+					auto obs = std::make_shared<traverse_hr_observer>();
+					obs->func_ = func;
+
+					history_record_manager::get_instance()->GetHistoryRecordByDate(machine->get_ademco_id(), machine->get_is_submachine() ? machine->get_submachine_zone() : -1,
+																				   L"", L"", obs);
+
+					// 关闭数据库
+					database.Close();
+					CString fm;
+					fm = TR(IDS_STRING_FM_EXCEL_OK);
+					warningStr.Format(fm, excelPath.c_str());
+					if (IDYES == MessageBox(warningStr, L"", MB_YESNO | MB_ICONQUESTION)) {
+						ShellExecute(nullptr, _T("Open"), excelPath.c_str(), nullptr, nullptr, SW_SHOW);
+					}
+				}
+			}
+
+			history_record_manager::get_instance()->DeleteRecordByMachine(machine->get_ademco_id(), machine->get_is_submachine() ? machine->get_submachine_zone() : -1);
+		}
+
 		return true;
 	}
 

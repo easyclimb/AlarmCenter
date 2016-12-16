@@ -28,7 +28,7 @@ namespace web
 				int nRet = WSAStartup(MAKEWORD(2, 2), &wsData);
 				if (nRet < 0) {
 					JLOG(L"Can't load winsock.dll.\n");
-					break;;
+					break;
 				}
 
 

@@ -118,9 +118,9 @@ public:
 	BOOL GetTopNumRecordByAdemcoID(int nums, int ademco_id, const observer_ptr& ptr, BOOL bAsc = TRUE);
 	BOOL GetTopNumRecordByAdemcoIDAndZone(int nums, int ademco_id, int zone_value, const observer_ptr& ptr, BOOL bAsc = TRUE);
 	BOOL DeleteHalfRecored(void);
+	BOOL DeleteRecordByMachine(int ademco_id, int zone_value);
 	//BOOL DeleteRecord(int num);
-	void InsertRecord(int ademco_id, int zone_value, const wchar_t* record,
-					  const time_t& recored_time, record_level level);
+	void InsertRecord(int ademco_id, int zone_value, const wchar_t* record, const time_t& recored_time, record_level level);
 	long GetRecordCount() const { return m_nTotalRecord; };
 	long GetRecordConntByMachine(int ademco_id);
 	long GetRecordConntByMachineAndZone(int ademco_id, int zone_value);
@@ -134,10 +134,8 @@ public:
 	BOOL GetHistoryRecordByDate(int ademco_id, int zone_value, const CString& beg, const CString& end, const observer_ptr& ptr);
 	BOOL GetHistoryRecordByDateByRecordLevel(int ademco_id, int zone_value, const CString& beg, const CString& end, record_level level, const observer_ptr& ptr);
 	BOOL GetHistoryRecordByDateByUser(int ademco_id, int zone_value, const CString& beg, const CString& end, int user_id, const observer_ptr& ptr);
-	//BOOL GetHistoryRecordByDate(int ademco_id, const CString& beg, const CString& end, const observer_ptr& ptr);
 	history_record_ptr GetHisrotyRecordById(int id);
-	//BOOL TryLockRecord() { return m_csLock.TryLock(); }
-	//BOOL UnlockRecord() { m_csLock.UnLock(); }
+
 protected:
 	BOOL GetHistoryRecordBySql(const CString& query, const observer_ptr& ptr, BOOL bAsc = TRUE);
 	long GetRecordCountPro();

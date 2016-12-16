@@ -465,9 +465,12 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 				JLOG(L"++++++++++++++task list size %d, cur task seq %d, retry_times %d, ademco_id %d, event %d, gg %d, zone %d\n",
 					client->taskList.size(), task->_seq, task->_retry_times, task->_ademco_id,
 					task->_ademco_event, task->_gg, task->_zone);
+
 				if (task->send_once_)
 					task->_retry_times++;
 				task->_last_send_time = std::chrono::steady_clock::now();
+				task->send_once_ = true;
+
 				static ademco::AdemcoPacket packet;
 				char data[1024] = { 0 };
 				size_t data_len = packet.Make(data, 1024,

@@ -31,12 +31,16 @@ private:
 	std::chrono::steady_clock::time_point tp_;
 	int counter_ = 10;
 	bool previewing_ = false;
+	bool init_over_ = false;
 
 protected:
 	void AddLogItem(const CString& log);
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+
+	void load_pos();
+	void save_pos();
 public:
 	void HandleJovisionMsg(const video::jovision::jovision_msg_ptr& msg);
 	virtual BOOL OnInitDialog();
@@ -51,14 +55,10 @@ public:
 	afx_msg void OnBnClickedButtonGetRecList();
 	CStatic m_group_logs;
 	gui::control::CListBoxEx m_list_log;
-protected:
 	afx_msg LRESULT OnJcGetRecFileList(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnLbnDblclkList1();
-protected:
 	afx_msg LRESULT OnJcResetStream(WPARAM wParam, LPARAM lParam);
-public:
 	afx_msg void OnMove(int x, int y);
 	afx_msg void OnDestroy();
 	CButton m_btn_dl;

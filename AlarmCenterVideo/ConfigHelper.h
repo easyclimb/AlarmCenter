@@ -40,6 +40,9 @@ public:
 	void set_maximizedVideoPlayerDlg(int m) { if (m == _maximizedVideoPlayerDlg) return; _maximizedVideoPlayerDlg = m; save(); }
 	int get_show_video_same_time_route_count() const { return show_video_same_time_route_count_; }
 	void set_show_video_same_time_route_count(int cnt) { if (show_video_same_time_route_count_ == cnt)return; show_video_same_time_route_count_ = cnt; save(); }
+	// video record player dlg
+	CRect get_rc_video_rec_dlg() const { return rc_video_rec_dlg_; }
+	void set_rc_video_rec_dlg(const CRect& rc) { if (rc_video_rec_dlg_ == rc)return; rc_video_rec_dlg_ = rc; save(); }
 
 	// video
 	int get_back_end_record_minutes() const { return _back_end_record_minutes; }
@@ -65,6 +68,8 @@ private:
 	CRect _rectVideoPlayerDlg = { 0, 0, 0, 0 };
 	int _maximizedVideoPlayerDlg = 0;
 	int show_video_same_time_route_count_ = 1;
+	// video record player dlg
+	CRect rc_video_rec_dlg_ = { 0 };
 
 	// video
 	int _back_end_record_minutes = 10;

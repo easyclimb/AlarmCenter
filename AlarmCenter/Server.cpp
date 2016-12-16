@@ -252,7 +252,7 @@ void CServer::Stop()
 	if (g_select_server)
 		g_select_server->Stop();
 	g_select_server = nullptr;
-	g_event_handler = nullptr;;
+	g_event_handler = nullptr;
 	m_bServerStarted = false;
 }
 

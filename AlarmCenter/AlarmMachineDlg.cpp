@@ -57,6 +57,7 @@ public:
 		if (_dlg) {
 			if (!_dlg || !_dlg->m_machine)
 				return;
+
 			if (!ptr->record.IsEmpty()) {
 				int ademco_id = ptr->ademco_id;
 				if (ademco_id != _dlg->m_machine->get_ademco_id())
@@ -332,11 +333,11 @@ BOOL CAlarmMachineDlg::OnInitDialog()
 	// 4. setup history callback
 	auto hr = history_record_manager::get_instance();
 	if (m_machine->get_is_submachine()) {
-		hr->GetTopNumRecordByAdemcoIDAndZone(1000, m_machine->get_ademco_id(),
+		hr->GetTopNumRecordByAdemcoIDAndZone(MAX_HISTORY_RECORD, m_machine->get_ademco_id(),
 											 m_machine->get_submachine_zone(),
 											 m_new_record_observer);
 	} else {
-		hr->GetTopNumRecordByAdemcoID(1000, m_machine->get_ademco_id(),
+		hr->GetTopNumRecordByAdemcoID(MAX_HISTORY_RECORD, m_machine->get_ademco_id(),
 									  m_new_record_observer);
 	}
 	//hr->RegisterObserver(this, OnNewRecord);

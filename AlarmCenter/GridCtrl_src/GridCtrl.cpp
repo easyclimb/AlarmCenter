@@ -4243,7 +4243,7 @@ BOOL CGridCtrl::GetItem(GV_ITEM* pItem)
 	if (pItem->mask & GVIF_TEXT)
 		pItem->strText = GetItemText(pItem->row, pItem->col);
 	if (pItem->mask & GVIF_PARAM)
-		pItem->lParam = pCell->GetData();;
+		pItem->lParam = pCell->GetData();
 	if (pItem->mask & GVIF_IMAGE)
 		pItem->iImage = pCell->GetImage();
 	if (pItem->mask & GVIF_STATE)

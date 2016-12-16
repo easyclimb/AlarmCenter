@@ -19,6 +19,7 @@
 #include <set>
 #include "../contrib/sqlitecpp/SQLiteCpp.h"
 #include "consumer.h"
+#include "HistoryRecordDlg.h"
 
 
 using namespace core;
@@ -701,7 +702,7 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 	CString sSql = _T("");
 
 	// 检索是否安装有Excel驱动 "Microsoft Excel Driver (*.xls)" 
-	sDriver = GetExcelDriver();
+	sDriver = CHistoryRecordDlg::GetExcelDriver();
 	if (sDriver.IsEmpty()) {
 		// 没有发现Excel驱动
 		CString e;
@@ -790,33 +791,6 @@ BOOL CMachineExpireManagerDlg::Export(const CString& excelPath) {
 		ShellExecute(nullptr, _T("Open"), excelPath, nullptr, nullptr, SW_SHOW);
 	}
 	return TRUE;
-}
-
-
-
-CString CMachineExpireManagerDlg::GetExcelDriver() 
-{
-	TCHAR szBuf[2001];
-	WORD cbBufMax = 2000;
-	WORD cbBufOut;
-	TCHAR *pszBuf = szBuf;
-	CString sDriver = _T("");
-
-	// 获取已安装驱动的名称(涵数在odbcinst.h里)
-	if (!SQLGetInstalledDrivers(szBuf, cbBufMax, &cbBufOut))
-		return _T("");
-
-	// 检索已安装的驱动是否有Excel...
-	do {
-		if (_tcsstr(pszBuf, _T("Excel")) != 0) {
-			//发现 !
-			sDriver = CString(pszBuf);
-			break;
-		}
-		pszBuf = _tcschr(pszBuf, _T('\0')) + 1;
-	} while (pszBuf[1] != _T('\0'));
-
-	return sDriver;
 }
 
 

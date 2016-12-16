@@ -29,6 +29,8 @@ namespace detail {
 			const char* keyBottom = "bottom";
 			const char* keyMax = "max";
 			const char* keyShowVideoSameTimeRouteCount = "show_video_same_time_route_count";
+		// section video record player dlg
+		const char* sectionVideoRecordPlayerDlg = "videoRecordPlayerDlg";
 
 	// section video
 	const char* sectionVideo = "video";
@@ -92,15 +94,20 @@ bool CConfigHelper::load()
 
 		// load ui
 		// video player dlg
-		_rectVideoPlayerDlg.left = value[sectionUi][sectionVideoPlayerDlg][keyLeft].asInt();
-		_rectVideoPlayerDlg.right = value[sectionUi][sectionVideoPlayerDlg][keyRight].asInt();
-		_rectVideoPlayerDlg.top = value[sectionUi][sectionVideoPlayerDlg][keyTop].asInt();
-		_rectVideoPlayerDlg.bottom = value[sectionUi][sectionVideoPlayerDlg][keyBottom].asInt();
-		_maximizedVideoPlayerDlg = value[sectionUi][sectionVideoPlayerDlg][keyMax].asUInt();
+		_rectVideoPlayerDlg.left	= value[sectionUi][sectionVideoPlayerDlg][keyLeft].asInt();
+		_rectVideoPlayerDlg.right	= value[sectionUi][sectionVideoPlayerDlg][keyRight].asInt();
+		_rectVideoPlayerDlg.top		= value[sectionUi][sectionVideoPlayerDlg][keyTop].asInt();
+		_rectVideoPlayerDlg.bottom	= value[sectionUi][sectionVideoPlayerDlg][keyBottom].asInt();
+		_maximizedVideoPlayerDlg	= value[sectionUi][sectionVideoPlayerDlg][keyMax].asUInt();
 		show_video_same_time_route_count_ = value[sectionUi][sectionVideoPlayerDlg][keyShowVideoSameTimeRouteCount].asUInt();
 		if (show_video_same_time_route_count_ == 0) {
 			show_video_same_time_route_count_ = 1;
 		}
+		// video record player dlg
+		rc_video_rec_dlg_.left		= value[sectionUi][sectionVideoRecordPlayerDlg][keyLeft].asInt();
+		rc_video_rec_dlg_.right		= value[sectionUi][sectionVideoRecordPlayerDlg][keyRight].asInt();
+		rc_video_rec_dlg_.top		= value[sectionUi][sectionVideoRecordPlayerDlg][keyTop].asInt();
+		rc_video_rec_dlg_.bottom	= value[sectionUi][sectionVideoRecordPlayerDlg][keyBottom].asInt();
 
 		// load video
 		_back_end_record_minutes = value[sectionVideo][keyBackEndRecordMinutes].asUInt();
@@ -204,12 +211,17 @@ bool CConfigHelper::save()
 	
 	// ui
 	// video player dlg
-	value[sectionUi][sectionVideoPlayerDlg][keyLeft] = _rectVideoPlayerDlg.left;
-	value[sectionUi][sectionVideoPlayerDlg][keyRight] = _rectVideoPlayerDlg.right;
-	value[sectionUi][sectionVideoPlayerDlg][keyTop] = _rectVideoPlayerDlg.top;
-	value[sectionUi][sectionVideoPlayerDlg][keyBottom] = _rectVideoPlayerDlg.bottom;
-	value[sectionUi][sectionVideoPlayerDlg][keyMax] = _maximizedVideoPlayerDlg;
+	value[sectionUi][sectionVideoPlayerDlg][keyLeft]	= _rectVideoPlayerDlg.left;
+	value[sectionUi][sectionVideoPlayerDlg][keyRight]	= _rectVideoPlayerDlg.right;
+	value[sectionUi][sectionVideoPlayerDlg][keyTop]		= _rectVideoPlayerDlg.top;
+	value[sectionUi][sectionVideoPlayerDlg][keyBottom]	= _rectVideoPlayerDlg.bottom;
+	value[sectionUi][sectionVideoPlayerDlg][keyMax]		= _maximizedVideoPlayerDlg;
 	value[sectionUi][sectionVideoPlayerDlg][keyShowVideoSameTimeRouteCount] = show_video_same_time_route_count_;
+	// video record player dlg
+	value[sectionUi][sectionVideoRecordPlayerDlg][keyLeft]		= rc_video_rec_dlg_.left;
+	value[sectionUi][sectionVideoRecordPlayerDlg][keyRight]		= rc_video_rec_dlg_.right;
+	value[sectionUi][sectionVideoRecordPlayerDlg][keyTop]		= rc_video_rec_dlg_.top;
+	value[sectionUi][sectionVideoRecordPlayerDlg][keyBottom]	= rc_video_rec_dlg_.bottom;
 
 	// video
 	value[sectionVideo][keyBackEndRecordMinutes] = _back_end_record_minutes;
