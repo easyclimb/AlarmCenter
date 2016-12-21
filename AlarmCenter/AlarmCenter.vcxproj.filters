@@ -891,6 +891,7 @@
     <Image Include="..\..\..\Users\capta\Downloads\search.ico">
       <Filter>resource</Filter>
     </Image>
+    <Image Include="..\Installer\Resource\search.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\AlarmCenter.rc2">

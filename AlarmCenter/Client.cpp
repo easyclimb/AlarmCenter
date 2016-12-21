@@ -824,7 +824,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd(CClientSer
 }
 
 
-CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_02(CClientService* service, DWORD conn_id)
+CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_02(CClientService* /*service*/, DWORD conn_id)
 {
 	auto mgr = core::alarm_machine_manager::get_instance();
 
@@ -860,7 +860,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_02(CClient
 	return DCR_NULL;
 }
 
-CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_05(CClientService * service, DWORD conn_id)
+CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_05(CClientService * /*service*/, DWORD conn_id)
 {
 	auto mgr = core::alarm_machine_manager::get_instance();
 	if (m_packet2._lit_type == 0x00) {
@@ -1035,7 +1035,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_07(CClient
 	return DCR_NULL;
 }
 
-CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_0b(CClientService * service, DWORD conn_id)
+CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_0b(CClientService * /*service*/, DWORD conn_id)
 {
 	auto mgr = core::alarm_machine_manager::get_instance();
 	if (m_packet2._lit_type == 0x0b && 5 == m_packet2._cmd.size()) { // responce of enter set mode
@@ -1084,7 +1084,7 @@ CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_0b(CClient
 	return DCR_NULL;
 }
 
-CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_0d(CClientService * service, DWORD conn_id)
+CMyClientEventHandler::DEAL_CMD_RET CMyClientEventHandler::handle_cmd_0d(CClientService * /*service*/, DWORD conn_id)
 {
 	auto mgr = core::alarm_machine_manager::get_instance();
 

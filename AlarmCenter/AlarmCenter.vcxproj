@@ -472,6 +472,7 @@
     <Image Include="..\..\..\Users\capta\Downloads\search.ico" />
     <Image Include="..\..\AlarmCenterNet\AlarmCenter\res\history.ico" />
     <Image Include="..\Installer\Resource\flags.bmp" />
+    <Image Include="..\Installer\Resource\search.ico" />
     <Image Include="res\AlarmCenter.ico" />
     <Image Include="res\bbb.bmp" />
     <Image Include="res\bitmap2.bmp" />

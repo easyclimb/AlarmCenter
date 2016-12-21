@@ -29,6 +29,7 @@ void CSearchMachineResultDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT1, m_input);
 	DDX_Control(pDX, IDC_TAB1, m_tab);
 	DDX_Control(pDX, IDC_LIST1, m_list);
+	DDX_Control(pDX, IDC_BUTTON1, m_btn_search);
 }
 
 
@@ -46,6 +47,7 @@ BEGIN_MESSAGE_MAP(CSearchMachineResultDlg, CDialogEx)
 	ON_WM_SETFOCUS()
 	ON_WM_KILLFOCUS()
 	ON_WM_CHAR()
+	ON_BN_CLICKED(IDC_BUTTON1, &CSearchMachineResultDlg::OnBnClickedButton1)
 END_MESSAGE_MAP()
 
 
@@ -60,7 +62,22 @@ void CSearchMachineResultDlg::reposition_items()
 	GetClientRect(rc);
 	int b = rc.bottom;
 	rc.bottom = rc.top + h;
-	m_input.MoveWindow(rc);
+	{
+		CRect rc_btn;
+		m_btn_search.GetWindowRect(rc_btn);
+		int w = rc_btn.Width();
+		rc.right -= w + 10;
+		m_input.MoveWindow(rc);
+
+		rc_btn.left = rc.right + 5;
+		rc_btn.top = rc.top;
+		rc_btn.right = rc.right + w + 5;
+		rc_btn.bottom = rc.bottom;
+		m_btn_search.MoveWindow(rc_btn);
+
+		rc.right += w + 10;
+	}
+	
 	rc.top = rc.bottom + 5;
 	rc.bottom = b;
 
@@ -211,6 +228,7 @@ BOOL CSearchMachineResultDlg::OnInitDialog()
 	CenterWindow();
 
 	SetWindowTextW(TR(IDS_STRING_SEARCH_MACHINE));
+	m_btn_search.SetWindowTextW(TR(IDS_STRING_SEARCH_MACHINE));
 
 	auto icon = LoadIcon(AfxGetInstanceHandle(), MAKEINTRESOURCE(IDI_ICON_SEARCH));
 	SetIcon(icon, TRUE);
@@ -359,4 +377,10 @@ BOOL CSearchMachineResultDlg::PreTranslateMessage(MSG* pMsg)
 	}
 
 	return CDialogEx::PreTranslateMessage(pMsg);
+}
+
+
+void CSearchMachineResultDlg::OnBnClickedButton1()
+{
+	do_search();
 }

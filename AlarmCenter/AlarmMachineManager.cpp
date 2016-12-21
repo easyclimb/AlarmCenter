@@ -1372,7 +1372,8 @@ values(%d,%d,%d,%d,%d,\
 			machine->execute_set_machine_type(iter->second->get_machine_type());
 			machine->set_machine_status(iter->second->get_machine_status());
 			machine->set_signal_strength(iter->second->get_signal_strength());
-			
+			machine->SetPrivatePacketFromServer1(iter->second->GetPrivatePacketFromServer1().get());
+			machine->SetPrivatePacketFromServer2(iter->second->GetPrivatePacketFromServer2().get());
 			
 			invalid_machine_map_.erase(ademco_id);
 		}

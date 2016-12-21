@@ -53,4 +53,6 @@ public:
 	afx_msg void OnKillFocus(CWnd* pNewWnd);
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CButton m_btn_search;
+	afx_msg void OnBnClickedButton1();
 };

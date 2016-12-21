@@ -1025,10 +1025,11 @@ bool alarm_handle_mgr::get_records_by_date(int ademco_id, int zone, const CStrin
 {
 	AUTO_LOG_FUNCTION;
 	CString query =  L"";
-	query.Format(_T("select table_alarm.* from table_alarm left outer join table_alarm_text on table_alarm.id==table_alarm_text.alarm_id and table_alarm_text.alarm_date between \"%s\" and \"%s\""), beg, end);
+	query.Format(_T("select table_alarm.* from table_alarm \
+left outer join table_alarm_text on table_alarm.id==table_alarm_text.alarm_id WHERE table_alarm_text.alarm_date between \"%s\" and \"%s\""), beg, end);
 
 	if (ademco_id != -1) {
-		query.AppendFormat(L" where table_alarm.aid=%d", ademco_id);
+		query.AppendFormat(L" AND table_alarm.aid=%d", ademco_id);
 		if (zone != -1) {
 			query.AppendFormat(L" and table_alarm.zone=%d", zone);
 		}
@@ -1041,7 +1042,8 @@ bool alarm_handle_mgr::get_records_by_date_and_status(int ademco_id, int zone, c
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select table_alarm.* from table_alarm left outer join table_alarm_text on table_alarm.id==table_alarm_text.alarm_id and table_alarm_text.alarm_date between \"%s\" and \"%s\" where"), beg, end);
+	query.Format(_T("select table_alarm.* from table_alarm \
+left outer join table_alarm_text on table_alarm.id==table_alarm_text.alarm_id WHERE table_alarm_text.alarm_date between \"%s\" and \"%s\" AND"), beg, end);
 
 	if (ademco_id != -1) {
 		query.AppendFormat(L"table_alarm.aid=%d ", ademco_id);
@@ -1058,7 +1060,8 @@ bool alarm_handle_mgr::get_records_by_date_and_user(int ademco_id, int zone, con
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("");
-	query.Format(_T("select table_alarm.* from table_alarm left outer join table_alarm_text on table_alarm.id==table_alarm_text.alarm_id and table_alarm_text.alarm_date between \"%s\" and \"%s\" where"), beg, end);
+	query.Format(_T("select table_alarm.* from table_alarm \
+left outer join table_alarm_text on table_alarm.id==table_alarm_text.alarm_id WHERE table_alarm_text.alarm_date between \"%s\" and \"%s\" AND"), beg, end);
 
 	if (ademco_id != -1) {
 		query.AppendFormat(L"table_alarm.aid=%d ", ademco_id);

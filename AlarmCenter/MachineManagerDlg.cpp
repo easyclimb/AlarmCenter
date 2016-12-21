@@ -924,7 +924,6 @@ bool CMachineManagerDlg::DoDeleteMachineReturnParentItem(HTREEITEM& hParent)
 
 					// 关闭数据库
 					database.Close();
-					CString fm;
 					fm = TR(IDS_STRING_FM_EXCEL_OK);
 					warningStr.Format(fm, excelPath.c_str());
 					if (IDYES == MessageBox(warningStr, L"", MB_YESNO | MB_ICONQUESTION)) {

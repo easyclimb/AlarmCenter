@@ -1012,13 +1012,15 @@ void CHistoryRecordDlg::OnExportTraverseHistoryRecord(const core::history_record
 void CHistoryRecordDlg::OnExportTraverseAlarmRecord(const core::alarm_ptr & record)
 {
 	static CString sSql;
-	std::wstring suser, sguard;
+	std::wstring suser, sguard, sjudgment, sjudgdetail, sjudgattach1, sjudgattach2, sreason, sreasondetail, sreasonattach;
 	auto user = core::user_manager::get_instance()->get_user_info(record->get_user_id());
 	if (user) {
 		suser = user->get_name();
 	}
+
+	auto mgr = core::alarm_handle_mgr::get_instance();
+
 	if (record->get_handle_id() != 0) {
-		auto mgr = core::alarm_handle_mgr::get_instance();
 		auto handle = mgr->get_alarm_handle(record->get_handle_id());
 		if (handle) {
 			auto guard = mgr->get_security_guard(handle->get_guard_id());
@@ -1028,9 +1030,40 @@ void CHistoryRecordDlg::OnExportTraverseAlarmRecord(const core::alarm_ptr & reco
 		}
 	}
 
-	sSql.Format(_T("INSERT INTO ALARM_RECORD (Id,Status,SheetMaker,Guard,Record) VALUES('%d','%s','%s','%s','%s')"),
-				record->get_id(), record->get_alarm_status_text(record->get_status()).c_str(), SQLite::double_quotes(suser).c_str(),
-				SQLite::double_quotes(sguard).c_str(), SQLite::double_quotes(record->get_text(false)).c_str());
+	if (record->get_judgement_id() != 0) {
+		auto judge = mgr->get_alarm_judgement(record->get_judgement_id());
+		if (judge) {
+			sjudgment = judge->get_alarm_judgement_type_text(judge->get_judgement_type_id());
+			sjudgdetail = judge->get_note();
+			sjudgattach1 = judge->get_note1();
+			sjudgattach2 = judge->get_note2();
+		}
+	}
+
+	if (record->get_reason_id() != 0) {
+		auto reason = mgr->get_alarm_reason(record->get_reason_id());
+		if (reason) {
+			sreason = reason->get_reason_text(reason->get_reason());
+			sreasondetail = reason->get_detail();
+			sreasonattach = reason->get_attach();
+		}
+	}
+
+	sSql.Format(_T("INSERT INTO ALARM_RECORD (Id,Status,SheetMaker,Guard,Record,Judgment,JudgDetail,JudgAttach1,JudgAttach2,Reason,ReasonDetail,ReasonAttach\
+) VALUES('%d','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')"),
+				record->get_id(), 
+				record->get_alarm_status_text(record->get_status()).c_str(), 
+				SQLite::double_quotes(suser).c_str(),
+				SQLite::double_quotes(sguard).c_str(),
+				SQLite::double_quotes(record->get_text(false)).c_str(),
+				SQLite::double_quotes(sjudgment).c_str(),
+				SQLite::double_quotes(sjudgdetail).c_str(),
+				SQLite::double_quotes(sjudgattach1).c_str(),
+				SQLite::double_quotes(sjudgattach2).c_str(),
+				SQLite::double_quotes(sreason).c_str(),
+				SQLite::double_quotes(sreasondetail).c_str(),
+				SQLite::double_quotes(sreasonattach).c_str()
+	);
 
 	m_pDatabase->ExecuteSQL(sSql);
 }
@@ -1108,7 +1141,20 @@ BOOL CHistoryRecordDlg::Export(const CString& excelPath, TraverseHistoryRecordCB
 	if (show_what_ == show_history) {
 		sSql.Format(_T("CREATE TABLE HISTORY_RECORD(Id TEXT,RecordTime TEXT,Record TEXT)"));
 	} else {
-		sSql.Format(L"CREATE TABLE ALARM_RECORD(Id TEXT,Status TEXT,SheetMaker TEXT,Guard TEXT,Record TEXT)");
+		sSql.Format(L"CREATE TABLE ALARM_RECORD(\
+Id TEXT,\
+Status TEXT,\
+SheetMaker TEXT,\
+Guard TEXT,\
+Record TEXT,\
+Judgment TEXT,\
+JudgDetail TEXT,\
+JudgAttach1 TEXT,\
+JudgAttach2 TEXT,\
+Reason TEXT,\
+ReasonDetail TEXT,\
+ReasonAttach TEXT\
+)");
 	}
 	//sSql.Format(_T("CREATE TABLE HISTORY_RECORD(Id TEXT,RecordTime TEXT,Record TEXT)"));
 
