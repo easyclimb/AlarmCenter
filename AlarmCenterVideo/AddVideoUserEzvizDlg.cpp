@@ -6,7 +6,7 @@
 #include "AddVideoUserEzvizDlg.h"
 #include "afxdialogex.h"
 #include "VideoManager.h"
-
+#include "InputDlg.h"
 // CAddVideoUserEzvizDlg dialog
 
 IMPLEMENT_DYNAMIC(CAddVideoUserEzvizDlg, CDialogEx)
@@ -51,6 +51,9 @@ BOOL CAddVideoUserEzvizDlg::OnInitDialog()
 
 void CAddVideoUserEzvizDlg::OnBnClickedOk()
 {
+	//CInputPasswdDlg dlg;
+	//dlg.DoModal();
+
 	m_name.GetWindowTextW(m_strName);
 	m_phone.GetWindowTextW(m_strPhone);
 	if (m_strName.IsEmpty() || m_strPhone.IsEmpty()) {
