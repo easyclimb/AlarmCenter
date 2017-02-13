@@ -80,6 +80,11 @@ namespace detail {
 	// section congwin com
 	const char* sectionCongwinCom = "congwin";
 		const char* keyRouterMode = "router_mode";
+
+	// section sound
+	const char* sectionSound = "sound";
+		const char* keyPlayAlarmSound = "alarm";
+		const char* keyPlayExceptionSound = "exception";
 }
 
 
@@ -132,6 +137,9 @@ void CConfigHelper::init()
 	_back_end_record_minutes = 10;
 	default_video_level_ = 0;
 	auto_play_rec_if_available_ = 0;
+
+	play_alarm_sound_ = 1;
+	play_exception_sound_ = 1;
 }
 
 
@@ -228,6 +236,14 @@ bool CConfigHelper::load()
 		congwin_com_port_ = value[sectionCongwinCom][keyComPort].asUInt();
 		auto_conn_congwin_com_ = value[sectionCongwinCom][keyAutoConn].asUInt();
 		congwin_fe100_router_mode_ = value[sectionCongwinCom][keyRouterMode].asUInt();
+
+		// load sound
+		Json::Value sound_settings;
+		sound_settings[keyPlayAlarmSound] = 1;
+		sound_settings[keyPlayExceptionSound] = 1;
+		sound_settings = value.get(sectionSound, sound_settings);
+		play_alarm_sound_ = sound_settings[keyPlayAlarmSound].asUInt();
+		play_exception_sound_ = sound_settings[keyPlayExceptionSound].asUInt();
 
 		in.close();
 		ok1 = true;
@@ -350,6 +366,10 @@ bool CConfigHelper::save()
 	value[sectionCongwinCom][keyComPort] = congwin_com_port_;
 	value[sectionCongwinCom][keyAutoConn] = auto_conn_congwin_com_;
 	value[sectionCongwinCom][keyRouterMode] = congwin_fe100_router_mode_;
+
+	// sound
+	value[sectionSound][keyPlayAlarmSound] = play_alarm_sound_;
+	value[sectionSound][keyPlayExceptionSound] = play_exception_sound_;
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

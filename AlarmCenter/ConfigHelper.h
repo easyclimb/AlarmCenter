@@ -122,6 +122,12 @@ public:
 	int get_congwin_fe100_router_mode() const { return congwin_fe100_router_mode_; }
 	void set_congwin_fe100_router_mode(int mode) { if (congwin_fe100_router_mode_ == mode) return; congwin_fe100_router_mode_ = mode; save(); }
 
+	// sound settings
+	int get_play_alarm_sound() const { return play_alarm_sound_; }
+	void set_play_alarm_sound(int play) { if (play_alarm_sound_ == play)return; play_alarm_sound_ = play; save(); }
+	int get_play_exception_sound() const { return play_exception_sound_; }
+	void set_play_exception_sound(int play) { if (play_exception_sound_ == play)return; play_exception_sound_ = play; save(); }
+
 	void save_to_file() { save(); save2(); }
 	~CConfigHelper();
 private:
@@ -178,6 +184,10 @@ private:
 	int congwin_com_port_ = 0;
 	int auto_conn_congwin_com_ = 0;
 	int congwin_fe100_router_mode_ = 0;
+
+	// sound settings
+	int play_alarm_sound_ = 0;
+	int play_exception_sound_ = 0;
 
 protected:
 	void init();

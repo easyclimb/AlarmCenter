@@ -3,11 +3,8 @@
 
 #include <vector>
 #include <memory>
-#ifdef __GNUG__
-#include "../../../global/dp.h"
-#else
 #include "C:/dev/Global/dp.h"
-#endif
+
 #ifdef USES_ADEMCO_EVENT_TO_STRING
 #include <string>
 #include <sstream>
@@ -24,6 +21,8 @@ namespace ademco
 typedef std::vector<char> char_array;
 typedef std::shared_ptr<char_array> char_array_ptr;
 
+
+#pragma region event_definetion
 
 enum ADEMCO_EVENT : unsigned int {
 
@@ -309,7 +308,7 @@ typedef enum EventLevel
 	EVENT_LEVEL_ALARM,				// 红色报警
 }EventLevel;
 
-#ifndef __GNUG__
+
 inline COLORREF GetEventLevelColor(EventLevel level)
 {
 	switch (level) {
@@ -330,7 +329,7 @@ inline COLORREF GetEventLevelColor(EventLevel level)
 		break;
 	}
 }
-#endif // __GNUG__
+
 
 // 获取安定宝事件级别
 inline EventLevel GetEventLevel(ADEMCO_EVENT ademco_event)
@@ -391,6 +390,8 @@ inline const ADEMCO_EVENT GetExceptionEventByResumeEvent(ADEMCO_EVENT resume_eve
 	}
 }
 
+#pragma endregion
+
 // 安定宝事件源
 typedef enum EventSource
 {
@@ -401,7 +402,7 @@ typedef enum EventSource
 	ES_SMS,				// 接警中心短信模块收到的事件
 }EventSource;
 
-static inline const char* get_event_source_name(EventSource es) {
+static const char* get_event_source_name(EventSource es) {
 	switch (es) {
 	case ademco::ES_TCP_CLIENT:
 		return "ES_TCP_CLIENT";
@@ -483,7 +484,6 @@ typedef struct AdemcoEvent
 
 typedef std::shared_ptr<AdemcoEvent> AdemcoEventPtr;
 
-#ifndef __GNUG__
 template <typename dlg_type>
 class AdemcoEventObserver : public dp::observer<AdemcoEventPtr>
 {
@@ -498,6 +498,6 @@ public:
 private:
 	dlg_type* _dlg;
 };
-#endif // __GNUG__
+
 
 };

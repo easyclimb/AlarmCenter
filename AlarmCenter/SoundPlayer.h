@@ -21,6 +21,11 @@ public:
 		SI_PLEASE_HELP,	// 胁迫
 		SI_MAX,
 	};
+
+	static bool is_alarm_sound(SoundIndex si);
+	static bool is_exception_sound(SoundIndex si);
+
+
 	void Stop();
 	void LoopPlay(SoundIndex si);
 	void PlayOnce(SoundIndex si);

@@ -6,33 +6,12 @@
 
 #pragma once
 
-#include <cassert>
-#include <cstring>
 #include <list>
 #include <math.h>
 #include "ademco_event.h"
 
 namespace ademco
 {
-
-#ifdef __GNUG__
-
-typedef unsigned char       BYTE;
-typedef unsigned short      WORD;
-typedef unsigned int	    DWORD;
-typedef DWORD				DWORD_PTR;
-
-#define MAKEWORD(a, b)      ((WORD)(((BYTE)(((DWORD_PTR)(a)) & 0xff)) | ((WORD)((BYTE)(((DWORD_PTR)(b)) & 0xff))) << 8))
-#define MAKEDWORD(a, b)     ((DWORD)(((WORD)(((DWORD_PTR)(a)) & 0xffff)) | ((DWORD)((WORD)(((DWORD_PTR)(b)) & 0xffff))) << 16))
-#define LOWORD(l)           ((WORD)(((DWORD_PTR)(l)) & 0xffff))
-#define HIWORD(l)           ((WORD)((((DWORD_PTR)(l)) >> 16) & 0xffff))
-#define LOBYTE(w)           ((BYTE)(((DWORD_PTR)(w)) & 0xff))
-#define HIBYTE(w)           ((BYTE)((((DWORD_PTR)(w)) >> 8) & 0xff))
-
-#else // __GNUG__
-#define MAKEDWORD MAKELONG
-#endif // __GNUG__
-
 
 typedef enum ParseResult
 {
@@ -105,6 +84,7 @@ inline bool is_valid_ademco_protocal(const char_array& protocal, ademco_protocal
 
 class AdemcoDataSegment
 {
+
 public:
 	bool			_valid;
 	char_array		_data;
@@ -154,7 +134,7 @@ public:
 	}
 
 	// parser
-	bool Parse(const char* pack, size_t pack_len);
+	bool Parse(const char* pack, unsigned int pack_len);
 
 	bool operator==(const AdemcoDataSegment& rhs) const {
 		return _valid == rhs._valid
@@ -179,14 +159,14 @@ class AdemcoTimeStamp
 {
 public:
 	char _data[32];
-	size_t _len;
+	int _len;
 	time_t _time;
 
 	AdemcoTimeStamp() { memset(this, 0, sizeof(AdemcoTimeStamp)); }
 
 	void Make();
 
-	bool Parse(const char* pack, size_t pack_len);
+	bool Parse(const char* pack, unsigned int pack_len);
 };
 
 class AdemcoPacket
@@ -270,7 +250,7 @@ public:
 
 	int ToInt()
 	{
-		return valid() ? MAKEDWORD(MAKEWORD(_3, _2), MAKEWORD(_1, 0)) : -1;
+		return valid() ? MAKELONG(MAKEWORD(_3, _2), MAKEWORD(_1, 0)) : -1;
 	}
 
 	operator int()
@@ -287,7 +267,7 @@ inline void AppendConnIdToCharArray(char_array& a, const ConnID& id) {
 
 inline ConnID GetConnIdFromCharArray(const char_array& a) {
 	assert(a.size() >= 3);
-	char c[3] = {};
+	char c[3];
 	for (int i = 0; i < 3; i++) { c[i] = a[i]; }
 	ConnID connId; connId.FromCharArray(c);
 	return connId;
@@ -309,12 +289,9 @@ public:
 	char _lit_type = { 0 };
 	char_array _cmd;
 	char _crc[4] = { 0 };
-
 public:
-	PrivatePacket() {}
-
+	PrivatePacket() {  }
 	size_t GetLength() const;
-
 	size_t Make(char* pack,
 				size_t pack_len,
 				char big_type,
@@ -325,7 +302,6 @@ public:
 				const char* acct_csr,
 				char level
 				);
-
 	size_t MakeAsc(char* pack,
 				   size_t pack_len,
 				   char big_type,
@@ -336,11 +312,8 @@ public:
 				   const char* acct_csr,
 				   char level
 				   );
-
 	ParseResult Parse(const char* pack, size_t pack_len, size_t& cbCommited);
-
 	ParseResult ParseAsc(char* pack, size_t pack_len, size_t& cbCommited, size_t& cbNewLength);
-
 	void Copy(const PrivatePacket* rhs)
 	{
 #define COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(elem) memcpy(&elem, &rhs->elem, sizeof(elem));
@@ -356,7 +329,6 @@ public:
 		_cmd = rhs->_cmd;
 		COPY_MEMORY_FUNCTION_FOR_CLASS_PRIVATE_PACKET(_crc);
 	}
-
 protected:
 	void CopyData(char* dst, size_t length);
 
@@ -407,20 +379,20 @@ char Dec2Hex(char d);
 // e.g.
 // input: "10"
 // output: 16
-int HexCharArrayToDec(const char *hex, size_t len);
+int HexCharArrayToDec(const char *hex, int len);
 
 // e.g.
 // input: "10"
 // output: 10
-int NumStr2Dec(const char* str, size_t str_len);
+int NumStr2Dec(const char* str, int str_len);
 
 // e.g.
 // input: "10"
 // output: "16"
-const char* HexCharArrayToStr(const char* hex, size_t len, unsigned char mask = (char)0x0f);
+const char* HexCharArrayToStr(const char* hex, int len, unsigned char mask = (char)0x0f);
 
 // like upper, but cat result to dst. 
-const char* HexCharArrayToStr(char* dst, const char* hex, size_t len,
+const char* HexCharArrayToStr(char* dst, const char* hex, int len,
 							  unsigned char mask = (char)0x0f);
 
 // format number to hex char array(max dec is 0x0fff
@@ -433,11 +405,11 @@ void Dec2HexCharArray_4(int dec, char* hex, bool bMax0FFF = true);
 // e.g.
 // input: "18240888101"
 // output: 18 24 08 88  10 1f ff ff  ff
-void NumStr2HexCharArray_N(const char* str, char* hexarr, size_t max_hex_len = 9);
+void NumStr2HexCharArray_N(const char* str, char* hexarr, int max_hex_len = 9);
 
 void ConvertHiLoAsciiToAscii(char* dst, const char* src, size_t len);
 
-unsigned short CalculateCRC(const char* buff, size_t len, unsigned short crc = 0);
+unsigned short CalculateCRC(const char* buff, int len, unsigned short crc = 0);
 
 /*static bool is_null_data(const char* id, unsigned int len)
 {

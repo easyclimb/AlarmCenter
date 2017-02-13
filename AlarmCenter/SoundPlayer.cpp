@@ -51,6 +51,33 @@ void sound_manager::PlayOnce(SoundIndex si)
 }
 
 
+bool sound_manager::is_alarm_sound(SoundIndex si)
+{
+	switch (si) {
+	case core::sound_manager::SI_BUGLAR:
+		break;
+	case core::sound_manager::SI_DOORRING:
+		break;
+	case core::sound_manager::SI_FIRE:
+		break;
+	case core::sound_manager::SI_WATER:
+		break;
+	case core::sound_manager::SI_GAS:
+		break;
+	case core::sound_manager::SI_PLEASE_HELP:
+		break;
+	default:
+		
+		break;
+	}
+	return false;
+}
+
+bool sound_manager::is_exception_sound(SoundIndex si)
+{
+	return false;
+}
+
 void sound_manager::Stop()
 {
 	if (m_siLooping != SI_MAX) {
