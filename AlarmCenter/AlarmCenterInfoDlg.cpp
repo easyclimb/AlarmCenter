@@ -106,6 +106,16 @@ void CAlarmCenterInfoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON_CONN_GSM2, m_btn_conn_congwin_com);
 	DDX_Control(pDX, IDC_CHECK7, m_chk_rem_congwin_com_port);
 	DDX_Control(pDX, IDC_CHECK8, m_chk_auto_conn_congwin_com);
+	DDX_Control(pDX, IDC_CHECK9, m_chk_play_alarm);
+	DDX_Control(pDX, IDC_CHECK10, m_chk_play_exception);
+	DDX_Control(pDX, IDC_CHECK11, m_chk_play_offline);
+	DDX_Control(pDX, IDC_RADIO1, m_radio_alarm_once);
+	DDX_Control(pDX, IDC_RADIO2, m_radio_alarm_loop);
+	DDX_Control(pDX, IDC_RADIO3, m_radio_ex_once);
+	DDX_Control(pDX, IDC_RADIO4, m_radio_ex_loop);
+	DDX_Control(pDX, IDC_RADIO5, m_radio_offline_once);
+	DDX_Control(pDX, IDC_RADIO6, m_radio_offline_loop);
+
 }
 
 
@@ -128,6 +138,15 @@ BEGIN_MESSAGE_MAP(CAlarmCenterInfoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_CONN_GSM2, &CAlarmCenterInfoDlg::OnBnClickedButtonConnGsm2)
 	ON_BN_CLICKED(IDC_CHECK7, &CAlarmCenterInfoDlg::OnBnClickedCheck7)
 	ON_BN_CLICKED(IDC_CHECK8, &CAlarmCenterInfoDlg::OnBnClickedCheck8)
+	ON_BN_CLICKED(IDC_CHECK9, &CAlarmCenterInfoDlg::OnBnClickedCheckPlayAlarm)
+	ON_BN_CLICKED(IDC_RADIO1, &CAlarmCenterInfoDlg::OnBnClickedRadioAlarmOnce)
+	ON_BN_CLICKED(IDC_RADIO2, &CAlarmCenterInfoDlg::OnBnClickedRadioAlarmLoop)
+	ON_BN_CLICKED(IDC_CHECK10, &CAlarmCenterInfoDlg::OnBnClickedCheckPlayExcpt)
+	ON_BN_CLICKED(IDC_RADIO3, &CAlarmCenterInfoDlg::OnBnClickedRadioExcptOnce)
+	ON_BN_CLICKED(IDC_RADIO4, &CAlarmCenterInfoDlg::OnBnClickedRadioExcptLoop)
+	ON_BN_CLICKED(IDC_CHECK11, &CAlarmCenterInfoDlg::OnBnClickedCheckPlayOffline)
+	ON_BN_CLICKED(IDC_RADIO5, &CAlarmCenterInfoDlg::OnBnClickedRadioOfflineOnce)
+	ON_BN_CLICKED(IDC_RADIO6, &CAlarmCenterInfoDlg::OnBnClickedRadioOfflineLoop)
 END_MESSAGE_MAP()
 
 
@@ -373,6 +392,9 @@ void CAlarmCenterInfoDlg::OnShowWindow(BOOL bShow, UINT nStatus)
 			core::user_manager::get_instance()->register_observer(m_cur_user_changed_observer);
 		}
 		m_cur_user_changed_observer->on_update(core::user_manager::get_instance()->get_cur_user_info());
+
+		// sound settings
+		update_alarm_settings();
 	}
 }
 
@@ -539,6 +561,44 @@ void CAlarmCenterInfoDlg::SaveCongwinComConfigure(BOOL bRem, int nCom, BOOL bAut
 	cfg->set_remember_congwin_com_port(bRem);
 	cfg->set_congwin_com_port(nCom);
 	cfg->set_auto_conn_congwin_com(bAuto);
+}
+
+void CAlarmCenterInfoDlg::update_alarm_settings()
+{
+	auto cfg = util::CConfigHelper::get_instance();
+
+	// alarm
+	{
+		int play_alarm_sound = cfg->get_play_alarm_sound();
+		int play_alarm_loop = cfg->get_play_alarm_loop();
+		m_chk_play_alarm.SetCheck(play_alarm_sound);
+		m_radio_alarm_once.SetCheck(!play_alarm_loop);
+		m_radio_alarm_loop.SetCheck(play_alarm_loop);
+		m_radio_alarm_once.EnableWindow(play_alarm_sound);
+		m_radio_alarm_loop.EnableWindow(play_alarm_sound);
+	}
+
+	// exception
+	{
+		int play_exception_sound = cfg->get_play_exception_sound();
+		int play_exception_loop = cfg->get_play_exception_loop();
+		m_chk_play_exception.SetCheck(play_exception_sound);
+		m_radio_ex_once.SetCheck(!play_exception_loop);
+		m_radio_ex_loop.SetCheck(play_exception_loop);
+		m_radio_ex_once.EnableWindow(play_exception_sound);
+		m_radio_ex_loop.EnableWindow(play_exception_sound);
+	}
+
+	// offline
+	{
+		int play_offline_sound = cfg->get_play_offline_sound();
+		int play_offline_loop = cfg->get_play_offline_loop();
+		m_chk_play_offline.SetCheck(play_offline_sound);
+		m_radio_offline_once.SetCheck(!play_offline_loop);
+		m_radio_offline_loop.SetCheck(play_offline_loop);
+		m_radio_offline_once.EnableWindow(play_offline_sound);
+		m_radio_offline_loop.EnableWindow(play_offline_sound);
+	}
 }
 
 
@@ -784,3 +844,72 @@ void CAlarmCenterInfoDlg::OnBnClickedButtonRestartApp()
 }
 
 
+
+
+void CAlarmCenterInfoDlg::OnBnClickedCheckPlayAlarm()
+{
+	int chk = m_chk_play_alarm.GetCheck();
+	util::CConfigHelper::get_instance()->set_play_alarm_sound(chk);
+	m_radio_alarm_once.EnableWindow(chk);
+	m_radio_alarm_loop.EnableWindow(chk);
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedRadioAlarmOnce()
+{
+	int chk = m_radio_alarm_once.GetCheck();
+	util::CConfigHelper::get_instance()->set_play_alarm_loop(!chk);
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedRadioAlarmLoop()
+{
+	int chk = m_radio_alarm_loop.GetCheck();
+	util::CConfigHelper::get_instance()->set_play_alarm_loop(chk);
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedCheckPlayExcpt()
+{
+	int chk = m_chk_play_exception.GetCheck();
+	util::CConfigHelper::get_instance()->set_play_exception_sound(chk);
+	m_radio_ex_once.EnableWindow(chk);
+	m_radio_ex_loop.EnableWindow(chk);
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedRadioExcptOnce()
+{
+	int chk = m_radio_ex_once.GetCheck();
+	util::CConfigHelper::get_instance()->set_play_exception_loop(!chk);
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedRadioExcptLoop()
+{
+	int chk = m_radio_ex_loop.GetCheck();
+	util::CConfigHelper::get_instance()->set_play_exception_loop(chk);
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedCheckPlayOffline()
+{
+	int chk = m_chk_play_offline.GetCheck();
+	util::CConfigHelper::get_instance()->set_play_offline_sound(chk);
+	m_radio_offline_once.EnableWindow(chk);
+	m_radio_offline_loop.EnableWindow(chk);
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedRadioOfflineOnce()
+{
+	int chk = m_radio_offline_once.GetCheck();
+	util::CConfigHelper::get_instance()->set_play_offline_loop(!chk);
+}
+
+
+void CAlarmCenterInfoDlg::OnBnClickedRadioOfflineLoop()
+{
+	int chk = m_radio_offline_loop.GetCheck();
+	util::CConfigHelper::get_instance()->set_play_offline_loop(chk);
+}

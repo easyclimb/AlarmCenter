@@ -5,7 +5,6 @@
 
 namespace core {
 
-#define LOOP_PLAY_OFFLINE_SOUND 0
 
 class sound_manager : public dp::singleton<sound_manager>
 {
@@ -22,39 +21,39 @@ public:
 		SI_MAX,
 	};
 
-	static bool is_alarm_sound(SoundIndex si);
-	static bool is_exception_sound(SoundIndex si);
+	
 
-
+	void Play(SoundIndex si);
 	void Stop();
-	void LoopPlay(SoundIndex si);
-	void PlayOnce(SoundIndex si);
+	
 	void AlwaysMute(bool b = true) {
 		always_mute_ = b;
 	}
 
 
 	virtual ~sound_manager();
-#if LOOP_PLAY_OFFLINE_SOUND
 	void IncOffLineMachineNum() { InterlockedIncrement(&m_llOfflineNum); }
 	void DecOffLineMachineNum() { if (m_llOfflineNum > 0) InterlockedDecrement(&m_llOfflineNum); }
-#endif
+
 protected:
 	void PlayWavSound(SoundIndex si);
 	void ThreadPlay();
+	void LoopPlay(SoundIndex si);
+	void PlayOnce(SoundIndex si);
+	static bool is_alarm_sound(SoundIndex si);
+	static bool is_exception_sound(SoundIndex si);
+
+
 private:
 	volatile bool always_mute_ = false;
 	volatile SoundIndex m_siLooping;
-#if LOOP_PLAY_OFFLINE_SOUND
 	volatile LONG m_llOfflineNum;
-#endif
+
 	std::list<SoundIndex> m_si_list_4_play_once;
 	std::mutex m_mutex_4_list_play_once;
 
 	bool running_ = true;
 	std::thread thread_ = {};
-
-	//DECLARE_SINGLETON(sound_manager);
 
 protected:
 	sound_manager();

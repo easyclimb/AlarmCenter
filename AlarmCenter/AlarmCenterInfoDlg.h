@@ -37,7 +37,8 @@ protected:
 	void InitCom();
 	void SaveComConfigure(BOOL bRem = FALSE, int nCom = 0, BOOL bAuto = FALSE);
 	void SaveCongwinComConfigure(BOOL bRem = FALSE, int nCom = 0, BOOL bAuto = FALSE);
-	
+	void update_alarm_settings();
+
 	DECLARE_MESSAGE_MAP()
 public:
 	CString m_acct_text;
@@ -109,4 +110,23 @@ public:
 	CButton m_btn_conn_congwin_com;
 	CButton m_chk_rem_congwin_com_port;
 	CButton m_chk_auto_conn_congwin_com;
+	CButton m_chk_play_alarm;
+	CButton m_chk_play_exception;
+	CButton m_chk_play_offline;
+	CButton m_radio_alarm_once;
+	CButton m_radio_alarm_loop;
+	CButton m_radio_ex_once;
+	CButton m_radio_ex_loop;
+	CButton m_radio_offline_once;
+	CButton m_radio_offline_loop;
+
+	afx_msg void OnBnClickedCheckPlayAlarm();
+	afx_msg void OnBnClickedRadioAlarmOnce();
+	afx_msg void OnBnClickedRadioAlarmLoop();
+	afx_msg void OnBnClickedCheckPlayExcpt();
+	afx_msg void OnBnClickedRadioExcptOnce();
+	afx_msg void OnBnClickedRadioExcptLoop();
+	afx_msg void OnBnClickedCheckPlayOffline();
+	afx_msg void OnBnClickedRadioOfflineOnce();
+	afx_msg void OnBnClickedRadioOfflineLoop();
 };

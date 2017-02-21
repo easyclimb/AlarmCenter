@@ -502,26 +502,26 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
 			case ademco::EVENT_BATTERY_EXCEPTION:
 			case ademco::EVENT_OTHER_EXCEPTION:
-				sound_manager::get_instance()->LoopPlay(sound_manager::SI_BUGLAR);
+				sound_manager::get_instance()->Play(sound_manager::SI_BUGLAR);
 				break;
 			case ademco::EVENT_DISCONNECT:
 			case ademco::EVENT_SERIAL485DIS:
-				sound_manager::get_instance()->LoopPlay(sound_manager::SI_OFFLINE);
+				sound_manager::get_instance()->Play(sound_manager::SI_OFFLINE);
 				break;
 			case ademco::EVENT_DOORRINGING:
-				sound_manager::get_instance()->LoopPlay(sound_manager::SI_DOORRING);
+				sound_manager::get_instance()->Play(sound_manager::SI_DOORRING);
 				break;
 			case ademco::EVENT_FIRE:
-				sound_manager::get_instance()->LoopPlay(sound_manager::SI_FIRE);
+				sound_manager::get_instance()->Play(sound_manager::SI_FIRE);
 				break;
 			case ademco::EVENT_GAS:
-				sound_manager::get_instance()->LoopPlay(sound_manager::SI_GAS);
+				sound_manager::get_instance()->Play(sound_manager::SI_GAS);
 				break;
 			case ademco::EVENT_DURESS:
-				sound_manager::get_instance()->LoopPlay(sound_manager::SI_PLEASE_HELP);
+				sound_manager::get_instance()->Play(sound_manager::SI_PLEASE_HELP);
 				break;
 			case ademco::EVENT_WATER:
-				sound_manager::get_instance()->LoopPlay(sound_manager::SI_WATER);
+				sound_manager::get_instance()->Play(sound_manager::SI_WATER);
 				break;
 			case ademco::EVENT_BY_PASS:
 			case ademco::EVENT_BY_PASS_RESUME:
@@ -544,6 +544,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 		if (bMachineStatus) {	// status of machine
 			bool bStatusChanged = false;
+			bool is_need_write_history = false;
 #pragma region online or armed
 			if ((ademcoEvent->_zone == 0) && (ademcoEvent->_sub_zone == INDEX_ZONE)) {
 				if (bOnofflineStatus) {
@@ -571,17 +572,18 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 					}
 
 					if (old_online != get_online()) {
+						is_need_write_history = true;
 						auto groupMgr = group_manager::get_instance();
 						group_info_ptr group = groupMgr->GetGroupInfo(_group_id);
 						group->UpdateOnlineDescendantMachineCount(get_online());
 						if (get_online()) {
 							fmEvent = TR(IDS_STRING_ONLINE);
-#if LOOP_PLAY_OFFLINE_SOUND
+#if 1
 							sound_manager::get_instance()->DecOffLineMachineNum();
 #endif
 						} else {
 							fmEvent = TR(IDS_STRING_OFFLINE);
-#if LOOP_PLAY_OFFLINE_SOUND
+#if 1
 							sound_manager::get_instance()->IncOffLineMachineNum();
 #else
 							sound_manager::get_instance()->PlayOnce(sound_manager::SI_OFFLINE);
@@ -594,6 +596,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 
 				if (!bOnofflineStatus && (_machine_status != machine_status)) {
 					bStatusChanged = true;
+					is_need_write_history = true;
 					execute_set_machine_status(machine_status);
 
 					// 2016-11-26 14:54:55
@@ -667,11 +670,14 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 					}
 				}
 			}
-			history_record_manager::get_instance()->InsertRecord(get_ademco_id(),
-																 ademcoEvent->_zone,
-																 record,
-																 ademcoEvent->_recv_time, 
-																 RECORD_LEVEL_STATUS);
+
+			if (is_need_write_history) {
+				history_record_manager::get_instance()->InsertRecord(get_ademco_id(),
+																	 ademcoEvent->_zone,
+																	 record,
+																	 ademcoEvent->_recv_time,
+																	 RECORD_LEVEL_STATUS);
+			}
 #pragma endregion
 		} else { // alarm or exception event
 			/*if (_banned) {

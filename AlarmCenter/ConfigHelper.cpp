@@ -83,8 +83,12 @@ namespace detail {
 
 	// section sound
 	const char* sectionSound = "sound";
-		const char* keyPlayAlarmSound = "alarm";
-		const char* keyPlayExceptionSound = "exception";
+		const char* sectionAlarmSound = "alarm";
+		const char* sectionExceptionSound = "exception";
+		const char* sectionOfflineSound = "offline";
+		const char* keyPlay = "play";
+		const char* keyLoop = "loop";
+
 }
 
 
@@ -238,12 +242,20 @@ bool CConfigHelper::load()
 		congwin_fe100_router_mode_ = value[sectionCongwinCom][keyRouterMode].asUInt();
 
 		// load sound
-		Json::Value sound_settings;
-		sound_settings[keyPlayAlarmSound] = 1;
-		sound_settings[keyPlayExceptionSound] = 1;
-		sound_settings = value.get(sectionSound, sound_settings);
-		play_alarm_sound_ = sound_settings[keyPlayAlarmSound].asUInt();
-		play_exception_sound_ = sound_settings[keyPlayExceptionSound].asUInt();
+		Json::Value default_sound_settings;
+		default_sound_settings[sectionAlarmSound][keyPlay] = 1;
+		default_sound_settings[sectionAlarmSound][keyLoop] = 1;
+		default_sound_settings[sectionExceptionSound][keyPlay] = 1;
+		default_sound_settings[sectionExceptionSound][keyLoop] = 1;
+		default_sound_settings[sectionOfflineSound][keyPlay] = 1;
+		default_sound_settings[sectionOfflineSound][keyLoop] = 1;
+		auto sound_settings = value.get(sectionSound, default_sound_settings);
+		play_alarm_sound_ = sound_settings[sectionAlarmSound][keyPlay].asUInt();
+		play_alarm_loop_ = sound_settings[sectionAlarmSound][keyLoop].asUInt();
+		play_exception_sound_ = sound_settings[sectionExceptionSound][keyPlay].asUInt();
+		play_exception_loop_ = sound_settings[sectionExceptionSound][keyLoop].asUInt();
+		play_offline_sound_ = sound_settings[sectionOfflineSound][keyPlay].asUInt();
+		play_offline_loop_ = sound_settings[sectionOfflineSound][keyLoop].asUInt();
 
 		in.close();
 		ok1 = true;
@@ -368,8 +380,14 @@ bool CConfigHelper::save()
 	value[sectionCongwinCom][keyRouterMode] = congwin_fe100_router_mode_;
 
 	// sound
-	value[sectionSound][keyPlayAlarmSound] = play_alarm_sound_;
-	value[sectionSound][keyPlayExceptionSound] = play_exception_sound_;
+	Json::Value sound_settings;
+	sound_settings[sectionAlarmSound][keyPlay] = play_alarm_sound_;
+	sound_settings[sectionAlarmSound][keyLoop] = play_alarm_loop_;
+	sound_settings[sectionExceptionSound][keyPlay] = play_exception_sound_;
+	sound_settings[sectionExceptionSound][keyLoop] = play_exception_loop_;
+	sound_settings[sectionOfflineSound][keyPlay] = play_offline_sound_;
+	sound_settings[sectionOfflineSound][keyLoop] = play_offline_loop_;
+	value[sectionSound] = sound_settings;
 
 	Json::StyledWriter writer;
 	out << writer.write(value);

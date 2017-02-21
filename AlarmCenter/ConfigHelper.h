@@ -125,8 +125,19 @@ public:
 	// sound settings
 	int get_play_alarm_sound() const { return play_alarm_sound_; }
 	void set_play_alarm_sound(int play) { if (play_alarm_sound_ == play)return; play_alarm_sound_ = play; save(); }
+	int get_play_alarm_loop() const { return play_alarm_loop_; }
+	void set_play_alarm_loop(int loop) { if (loop == play_alarm_loop_)return; play_alarm_loop_ = loop; save(); }
+	
 	int get_play_exception_sound() const { return play_exception_sound_; }
 	void set_play_exception_sound(int play) { if (play_exception_sound_ == play)return; play_exception_sound_ = play; save(); }
+	int get_play_exception_loop() const { return play_exception_loop_; }
+	void set_play_exception_loop(int loop) { if (play_exception_loop_ == loop)return; play_exception_loop_ = loop; save(); }
+
+	int get_play_offline_sound() const { return play_offline_sound_; }
+	void set_play_offline_sound(int play) { if (play_offline_sound_ == play)return; play_offline_sound_ = play; save(); }
+	int get_play_offline_loop() const { return play_offline_loop_; }
+	void set_play_offline_loop(int loop) { if (play_offline_loop_ == loop)return; play_offline_loop_ = loop; save(); }
+
 
 	void save_to_file() { save(); save2(); }
 	~CConfigHelper();
@@ -186,8 +197,15 @@ private:
 	int congwin_fe100_router_mode_ = 0;
 
 	// sound settings
+	// 播放报警音
 	int play_alarm_sound_ = 0;
+	// 是否循环播放 0 播放一次， 1循环播放
+	int play_alarm_loop_ = 0;
 	int play_exception_sound_ = 0;
+	int play_exception_loop_ = 0;
+	int play_offline_sound_ = 0;
+	int play_offline_loop_ = 0;
+
 
 protected:
 	void init();
