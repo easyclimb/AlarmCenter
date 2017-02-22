@@ -66,27 +66,7 @@ bool sound_manager::is_alarm_sound(SoundIndex si)
 
 bool sound_manager::is_exception_sound(SoundIndex si)
 {
-	switch (si) {
-	case core::sound_manager::SI_OFFLINE:
-		break;
-	case core::sound_manager::SI_BUGLAR:
-		break;
-	case core::sound_manager::SI_DOORRING:
-		break;
-	case core::sound_manager::SI_FIRE:
-		break;
-	case core::sound_manager::SI_WATER:
-		break;
-	case core::sound_manager::SI_GAS:
-		break;
-	case core::sound_manager::SI_PLEASE_HELP:
-		break;
-	case core::sound_manager::SI_MAX:
-		break;
-	default:
-		break;
-	}
-	return false;
+	return si == SI_EXCEPTION;
 }
 
 void sound_manager::Play(SoundIndex si)
@@ -108,7 +88,7 @@ void sound_manager::Play(SoundIndex si)
 				PlayOnce(si);
 			}
 		}
-	} /*else if (is_exception_sound(si)) {
+	} else if (is_exception_sound(si)) {
 		if (cfg->get_play_exception_sound()) {
 			if (cfg->get_play_exception_loop()) {
 				LoopPlay(si);
@@ -116,7 +96,7 @@ void sound_manager::Play(SoundIndex si)
 				PlayOnce(si);
 			}
 		}
-	}*/
+	}
 }
 
 void sound_manager::Stop()

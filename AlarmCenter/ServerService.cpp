@@ -353,15 +353,21 @@ CServerService::HANDLE_EVENT_RESULT CServerService::HandleClientEvents(const net
 	}
 
 	if (client->wait_to_kill) {
-		//JLOG(L"wait_to_kill true.");
-		//return RESULT_RECYCLE_AND_BREAK;
+#ifdef _DEBUG
+		JLOG(L"wait_to_kill true.");
+		return RESULT_RECYCLE_AND_BREAK;
+#else
 		return RESULT_CONTINUE;
+#endif // _DEBUG	
 	}
 
 	if (client->disconnectd) {
-		//JLOG(L"disconnectd true.");
-		//return RESULT_RECYCLE_AND_BREAK;
+#ifdef _DEBUG
+		JLOG(L"disconnectd true.");
+		return RESULT_RECYCLE_AND_BREAK;
+#else
 		return RESULT_CONTINUE;
+#endif // _DEBUG		
 	}
 
 	timeval tv = { 0, 0 };

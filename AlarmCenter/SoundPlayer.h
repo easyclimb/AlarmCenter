@@ -18,6 +18,7 @@ public:
 		SI_WATER,		// 水警
 		SI_GAS,			// 煤气
 		SI_PLEASE_HELP,	// 胁迫
+		SI_EXCEPTION,   // 异常
 		SI_MAX,
 	};
 
