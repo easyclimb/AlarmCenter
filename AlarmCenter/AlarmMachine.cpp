@@ -491,17 +491,21 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_OTHER_EXCEPTION_RECOVER:
 				bMachineStatus = false;
 				break;
-			case ademco::EVENT_EMERGENCY:
-			case ademco::EVENT_BADBATTERY:
-			case ademco::EVENT_LOWBATTERY:
-			case ademco::EVENT_BURGLAR:
+			
 			case ademco::EVENT_TEMPER:
 			case ademco::EVENT_ZONE_TEMPER:
+			case ademco::EVENT_BADBATTERY:
+			case ademco::EVENT_LOWBATTERY:
 			case ademco::EVENT_SOLARDISTURB:
 			case ademco::EVENT_SUB_MACHINE_SENSOR_EXCEPTION:
 			case ademco::EVENT_SUB_MACHINE_POWER_EXCEPTION:
 			case ademco::EVENT_BATTERY_EXCEPTION:
 			case ademco::EVENT_OTHER_EXCEPTION:
+				sound_manager::get_instance()->Play(sound_manager::SI_EXCEPTION);
+				break;
+
+			case ademco::EVENT_EMERGENCY:
+			case ademco::EVENT_BURGLAR:
 				sound_manager::get_instance()->Play(sound_manager::SI_BUGLAR);
 				break;
 			case ademco::EVENT_DISCONNECT:
@@ -585,6 +589,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 							fmEvent = TR(IDS_STRING_OFFLINE);
 #if 1
 							sound_manager::get_instance()->IncOffLineMachineNum();
+							sound_manager::get_instance()->Play(sound_manager::SI_OFFLINE);
 #else
 							sound_manager::get_instance()->PlayOnce(sound_manager::SI_OFFLINE);
 #endif
