@@ -287,7 +287,12 @@ BOOL CAlarmCenterDlg::OnInitDialog()
 	TraySetMinimizeToTray(FALSE);
 	TrayShow();
 
-	SetWindowText(TR(IDS_STRING_ALARM_CENTER));
+	if (util::CConfigHelper::get_instance()->get_language() == util::AL_CHINESE) {
+		SetWindowText(L"上海彤逸接警中心平台  技术服务热线：021-36310097");
+	} else {
+		SetWindowText(TR(IDS_STRING_ALARM_CENTER));
+	}
+
 	m_groupControlPanel.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_CONTROL_PANEL));
 	m_btn_alarm_center_info.SetWindowTextW(TR(IDS_STRING_IDC_BUTTON_VIEW_QRCODE));
 	m_static_listening_port.SetWindowTextW(TR(IDS_STRING_IDC_STATIC_001));

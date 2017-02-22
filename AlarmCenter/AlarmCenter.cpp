@@ -235,12 +235,14 @@ _id);
 		SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
 		CLoginDlg loginDlg;
+		//m_pMainWnd = &loginDlg;
 		if (loginDlg.DoModal() != IDOK) {
 			JLOG(L"user canceled login.\n");
 			break;
 		}
 
 		CSetupNetworkDlg setupDlg;
+		//m_pMainWnd = &setupDlg;
 		if (setupDlg.DoModal() != IDOK) {
 			JLOG(L"user canceled setup network.\n");
 			break;

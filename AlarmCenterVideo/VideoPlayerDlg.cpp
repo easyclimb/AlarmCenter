@@ -702,6 +702,9 @@ END_MESSAGE_MAP()
 BOOL CVideoPlayerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+	auto m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	SetWindowText(TR(IDS_STRING_IDD_DIALOG_VIDEO_PLAYER));
 	SET_WINDOW_TEXT(IDC_STATIC_VIDEO_LIST, IDS_STRING_IDC_STATIC_VIDEO_LIST);

@@ -13,7 +13,7 @@
 namespace ipc {
 
 #ifdef _DEBUG
-const int g_start_video_process_on_start = 0;
+const int g_start_video_process_on_start = 1;
 #else
 const int g_start_video_process_on_start = 1;
 #endif
