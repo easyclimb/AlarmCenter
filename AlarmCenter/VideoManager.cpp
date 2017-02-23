@@ -159,6 +159,7 @@ from table_device_info_jovision_old");
 					std::this_thread::sleep_for(std::chrono::seconds(1));
 				}
 			}
+
 			db_->exec("drop table table_device_info_jovision_old");
 			db_->exec("update table_device_info_jovision set channel_num=1");
 		}

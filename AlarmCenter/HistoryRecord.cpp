@@ -72,20 +72,12 @@ history_record_manager::history_record_manager()
 
 	try {
 		// check if db empty
+		bool is_need_create = false;
+
 		{
 			Statement query(*db_, "select name from sqlite_master where type='table'");
 			if (!query.executeStep()) {
-				// init tables
-				db_->exec("drop table if exists table_history_record");
-				db_->exec("create table table_history_record (id integer primary key AUTOINCREMENT, \
-ademco_id integer, \
-zone_value integer, \
-user_id integer, \
-level integer, \
-record text, \
-time text)");
-				
-				
+				is_need_create = true;
 			} else {
 				std::string name = query.getColumn(0);
 				JLOGA(name.c_str());
@@ -95,6 +87,66 @@ time text)");
 				}
 			}
 		}
+
+		if (is_need_create) {
+			// init tables
+			db_->exec("drop table if exists table_history_record");
+			db_->exec("create table table_history_record (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+zone_value integer, \
+user_id integer, \
+level integer, \
+record text, \
+time text)");
+
+		} else {
+			
+			bool is_need_rebuild = false;
+
+			{
+				Statement query(*db_, "select id from table_history_record");
+				int last_id = 0;
+
+				while (query.executeStep()) {
+					int id = query.getColumn(0).getInt();
+					if (is_need_rebuild) { continue; }
+					if (last_id == 0) {
+						last_id = id;
+						continue;
+					}
+
+					if (id - last_id != 1) {
+						is_need_rebuild = true;
+						continue;
+					}
+
+					last_id = id;
+				}
+
+			}
+
+			if (is_need_rebuild) {
+				
+				db_->exec("create table tmp (id integer primary key AUTOINCREMENT, \
+ademco_id integer, \
+zone_value integer, \
+user_id integer, \
+level integer, \
+record text, \
+time text)");
+
+				db_->exec("INSERT INTO tmp(ademco_id, zone_value, user_id, level, record, time) \
+						  SELECT ademco_id, zone_value, user_id, level, record, time \
+						  FROM table_history_record \
+						  ORDER BY id; ");
+
+				db_->exec("drop table table_history_record");
+
+				db_->exec("alter table tmp rename to table_history_record");
+			}
+
+		}
+		
 
 
 
@@ -208,40 +260,44 @@ BOOL history_record_manager::GetHistoryRecordBySql(const CString& sql, const obs
 	while (!m_csLock.try_lock()) { JLOG(L"m_csLock.TryLock() failed.\n"); std::this_thread::sleep_for(std::chrono::milliseconds(500)); }
 	std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock);
 	JLOG(L"m_csLock.Lock()\n");
-	
-	Statement query(*db_, utf8::w2a((LPCTSTR)sql));
+	try {
+		Statement query(*db_, utf8::w2a((LPCTSTR)sql));
 
-	std::list<history_record_ptr> tmp_list;
+		std::list<history_record_ptr> tmp_list;
 
-	while (query.executeStep()) {
-		int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1, index = 0;
-		std::string record_content, record_time;
+		while (query.executeStep()) {
+			int id = -1, ademco_id = -1, zone_value = -1, user_id = -1, level = -1, index = 0;
+			std::string record_content, record_time;
 
-		id = static_cast<int>(query.getColumn(index++));
-		ademco_id = query.getColumn(index++);
-		zone_value = query.getColumn(index++);
-		user_id = query.getColumn(index++);
-		level = query.getColumn(index++);
-		record_content = query.getColumn(index++).getText();
-		record_time = query.getColumn(index++).getText();
-		
-		history_record_ptr record = std::make_shared<history_record>(id, ademco_id, 
-																	 zone_value,
-																	 user_id, 
-																	 Int2RecordLevel(level),
-																	 utf8::a2w(record_content).c_str(), 
-																	 utf8::a2w(record_time).c_str());
-		m_recordMap[id] = record;
-		tmp_list.push_back(record);
-		
-	}
+			id = static_cast<int>(query.getColumn(index++));
+			ademco_id = query.getColumn(index++);
+			zone_value = query.getColumn(index++);
+			user_id = query.getColumn(index++);
+			level = query.getColumn(index++);
+			record_content = query.getColumn(index++).getText();
+			record_time = query.getColumn(index++).getText();
 
-	if (!bAsc) {
-		tmp_list.reverse();
-	}
+			history_record_ptr record = std::make_shared<history_record>(id, ademco_id,
+																		 zone_value,
+																		 user_id,
+																		 Int2RecordLevel(level),
+																		 utf8::a2w(record_content).c_str(),
+																		 utf8::a2w(record_time).c_str());
+			m_recordMap[id] = record;
+			tmp_list.push_back(record);
 
-	for (auto hr : tmp_list) {
-		obs->on_update(hr);
+		}
+
+		if (!bAsc) {
+			tmp_list.reverse();
+		}
+
+		for (auto hr : tmp_list) {
+			obs->on_update(hr);
+		}
+
+	} catch (SQLite::Exception& e) {
+		JLOGA(e.what());
 	}
 	
 	JLOG(L"m_csLock.UnLock()\n");
@@ -353,10 +409,11 @@ long history_record_manager::GetRecordCountPro()
 	//std::lock_guard<std::mutex> lock(m_csLock, std::adopt_lock); 
 	//JLOG(L"m_csLock.Lock()\n");
 	try {
-		Statement query(*db_, "select count(*) from table_history_record");
+		Statement query(*db_, "select count(id) from table_history_record");
 		if (query.executeStep()) {
 			return query.getColumn(0).getInt();
 		}
+
 	} catch (std::exception& e) {
 		JLOGA(e.what());
 	}
@@ -476,16 +533,26 @@ BOOL history_record_manager::GetHistoryRecordByDate(int ademco_id, int zone_valu
 {
 	AUTO_LOG_FUNCTION;
 	CString query = _T("select * from table_history_record where ");
+	bool need_and = false;
 	if (ademco_id != -1) {
 		query.AppendFormat(L"ademco_id=%d ", ademco_id);
+		need_and = true;
 	}
 
 	if (zone_value != -1) {
-		query.AppendFormat(L" and zone_value=%d ", zone_value);
+		if (need_and) {
+			query += L" and";
+		}
+
+		query.AppendFormat(L" zone_value=%d ", zone_value);
+		need_and = true;
 	}
 
 	if (!beg.IsEmpty() && !end.IsEmpty()) {
-		query.AppendFormat(_T(" and time between \"%s\" and \"%s\" "), beg, end);
+		if (need_and) {
+			query += L" and";
+		}
+		query.AppendFormat(_T(" time between \"%s\" and \"%s\" "), beg, end);
 	}
 
 	query += L" order by id";
