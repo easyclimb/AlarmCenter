@@ -492,6 +492,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				bMachineStatus = false;
 				break;
 			
+			case ademco::EVENT_DISCONNECT:
 			case ademco::EVENT_TEMPER:
 			case ademco::EVENT_ZONE_TEMPER:
 			case ademco::EVENT_BADBATTERY:
@@ -508,7 +509,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 			case ademco::EVENT_BURGLAR:
 				sound_manager::get_instance()->Play(sound_manager::SI_BUGLAR);
 				break;
-			case ademco::EVENT_DISCONNECT:
+			
 			case ademco::EVENT_SERIAL485DIS:
 				sound_manager::get_instance()->Play(sound_manager::SI_OFFLINE);
 				break;
