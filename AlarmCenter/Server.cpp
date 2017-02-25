@@ -137,7 +137,7 @@ DWORD CMyServerEventHandler::OnRecv(CServerService *server, const net::server::C
 			seq = 0;
 			mgr->MachineEventHandler(ES_TCP_CLIENT, client->ademco_id, EVENT_LINK_TEST, 0, 0, t, t);
 		} else if (ademco::is_valid_ademco_protocal(packet._id, protocal)) {
-			core::congwin_fe100_mgr::get_instance()->add_event(&packet._ademco_data);
+			
 			JLOGA("remote protocal %s. seq %d, ademco_id %04d\n",packet._id, seq, packet._ademco_data._ademco_id);
 			client->protocal_ = protocal;
 

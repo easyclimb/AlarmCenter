@@ -674,7 +674,7 @@ DWORD CMyClientEventHandler::OnRecv(CClientService* service)
 										  dwBytesCmted);
 
 	if (result1 == RESULT_OK) {
-		core::congwin_fe100_mgr::get_instance()->add_event(&m_packet1._ademco_data);
+		//core::congwin_fe100_mgr::get_instance()->add_event(&m_packet1._ademco_data);
 		service->m_buff.rpos = (service->m_buff.rpos + dwBytesCmted);
 		return OnRecv2(service);
 	} else if (result1 == RESULT_NOT_ENOUGH) {

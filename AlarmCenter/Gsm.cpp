@@ -242,7 +242,7 @@ void gsm_manager::ThreadWorker()
 						for (auto data : data_array) {
 							if (parser.Parse(data.c_str(), data.size())) {
 
-								congwin_fe100_mgr::get_instance()->add_event(&parser);
+								//congwin_fe100_mgr::get_instance()->add_event(&parser);
 
 								auto mgr = alarm_machine_manager::get_instance();
 								if (mgr->CheckIsValidMachine(parser._ademco_id, parser._zone)) {

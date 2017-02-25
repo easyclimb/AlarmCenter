@@ -26,6 +26,7 @@
 #include "alarm_center_video_service.h"
 #include "consumer.h"
 #include "alarm_handle_mgr.h"
+#include "congwin_fe100_mgr.h"
 
 using namespace ademco;
 namespace core {
@@ -683,6 +684,8 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 																	 record,
 																	 ademcoEvent->_recv_time,
 																	 RECORD_LEVEL_STATUS);
+
+				core::congwin_fe100_mgr::get_instance()->add_event(&dataSegment);
 			}
 #pragma endregion
 		} else { // alarm or exception event
@@ -690,6 +693,7 @@ void alarm_machine::HandleAdemcoEvent(const ademco::AdemcoEventPtr& ademcoEvent)
 				return;
 			}*/
 #pragma region alarm event
+			core::congwin_fe100_mgr::get_instance()->add_event(&dataSegment);
 			if (!_alarming) {
 				_alarming = true;
 				auto groupMgr = group_manager::get_instance();
