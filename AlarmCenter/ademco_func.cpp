@@ -298,6 +298,11 @@ void AdemcoDataSegment::Make(int ademco_id, int gg, ADEMCO_EVENT ademco_event, i
 	str = ss.str();
 	std::copy(str.begin(), str.end(), std::back_inserter(_data));
 	_data.push_back(']');
+
+	_ademco_id = ademco_id;
+	_ademco_event = ademco_event;
+	_zone = zone;
+	_gg = gg;
 	_len = 21;
 	_valid = true;
 }
